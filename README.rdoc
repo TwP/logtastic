@@ -1,32 +1,40 @@
-logging-couchdb
-    by FIXME (your name)
-    FIXME (url)
+= Logging CouchDB
+* by Tim Pease
+* http://github.com/TwP/logging-couchdb/tree/master
 
 == DESCRIPTION:
 
-FIXME (describe your package)
+Provides a CouchDB appender to the Ruby Logging framework. This appender
+enables log messages to be written to a CouchDB instance.
 
-== FEATURES/PROBLEMS:
+== FEATURES:
 
-* FIXME (list of features or problems)
+Provides an appender for the Ruby Logging framework that is capable of writing
+log messages to a CouchDB instance.
+
+Provides a "couchapp" that gives a nice web interface to the log messages.
 
 == SYNOPSIS:
 
-  FIXME (code sample of usage)
+  Logging.plugin :couch_db
+
+  Logging.appenders.couch_db( "app_id", :uri => "http://localhost:5984", :db_name => "logging" )
 
 == REQUIREMENTS:
 
-* FIXME (list of requirements)
+logging
+couchrest
+couchapp
 
 == INSTALL:
 
-* FIXME (sudo gem install, anything else)
+  gem install logging-couchdb
 
 == LICENSE:
 
 (The MIT License)
 
-Copyright (c) 2008 FIXME (different license?)
+Copyright (c) 2009
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
