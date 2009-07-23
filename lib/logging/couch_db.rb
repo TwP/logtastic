@@ -74,7 +74,7 @@ module Logging::Appenders
 
       if event.instance_of?(::Logging::LogEvent)
         h[:logger]  = event.logger
-        h[:level]   = ::Logging::LNAMES[event.level]
+        h[:level]   = event.level
         h[:message] = layout.format_obj(event.data)
         h[:file]    = event.file
         h[:line]    = event.line

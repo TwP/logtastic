@@ -5,10 +5,60 @@
     <link rel="stylesheet" href="style/main.css" type="text/css">
   </head>
   <body>
-    <h1>CouchApp Logging</h1>
-    <p>This is a placeholder page</p>
+    <div id="header">
+      <h1>CouchApp Logging</h1>
+      <p>This is a placeholder page</p>
+    </div>
+    <div id="content">
+      <h2>Summary</h2>
+      <div id="summary">
+        <table>
+          <tr>
+            <td>application</td>
+            <td>debug</td>
+            <td>info</td>
+            <td>warn</td>
+            <td>error</td>
+            <td>fatal</td>
+          </tr>
+        </table>
+      </div>
+    </div>
   </body>
   <script src="/_utils/script/json2.js"></script>
   <script src="/_utils/script/jquery.js?1.3.1"></script>
   <script src="/_utils/script/jquery.couch.js?0.9.0"></script>
+  <script src="vendor/couchapp/jquery.couchapp.js"></script>
+  <script src="logging.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    $.CouchApp(function(app) {
+      var L = new Logging(app);
+
+      function row_for_app_id( app_id ) {
+        var selector = '#' + L.selector(app_id);
+        var row = $(selector);
+        if (row.length == 0) {
+          $('#summary table').append(L.app_id_row(app_id));
+          row = $(selector);
+        }
+        return row;
+      };
+
+      function summary() {
+        app.design.view('count', {
+          group: true,
+          success: function(json) {
+            var table = $('#summary table');
+            for (var ii=0; ii<json.rows.length; ii++) {
+              var result = json.rows[ii];
+              var row = row_for_app_id(result.key[0]);
+              row.find('td.'+L.level_name(result.key[1])).text(result.value);
+            }
+          }
+        });
+      };
+
+      summary();
+    });
+  </script>
 </html>

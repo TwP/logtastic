@@ -28,9 +28,7 @@ Array.prototype.contains = function( value ) {
 var uniq = function( values ) {
   var output = [];
   for_each(values, function(v) {
-    if (v && typeof v === 'string') {
-      if (!output.contains(v)) { output.push(v); }
-    }
+    if (v != null && !output.contains(v)) { output.push(v) }
   });
   return output;
 }
