@@ -10,7 +10,7 @@ function Logging(app) {
   };
 
   this.selector = function( str ) {
-    return (new String(str)).replace(/[:-]/g, '_');
+    return (new String(str)).replace(/[^A-Za-z0-9_]/g, '_');
   }
 
   this.app_id_row = function( app_id ) {

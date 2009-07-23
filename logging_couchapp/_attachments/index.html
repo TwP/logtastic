@@ -33,28 +33,30 @@
   <script type="text/javascript" charset="utf-8">
     $.CouchApp(function(app) {
       var L = new Logging(app);
+      var table = $('#summary table');
 
       function row_for_app_id( app_id ) {
         var selector = '#' + L.selector(app_id);
         var row = $(selector);
         if (row.length == 0) {
-          $('#summary table').append(L.app_id_row(app_id));
+          table.append(L.app_id_row(app_id));
           row = $(selector);
         }
         return row;
       };
 
+      function display_counts( json ) {
+        for (var ii=0; ii<json.rows.length; ii++) {
+          var result = json.rows[ii];
+          var row = row_for_app_id(result.key[0]);
+          row.find('td.'+L.level_name(result.key[1])).text(result.value);
+        }
+      };
+
       function summary() {
         app.design.view('count', {
-          group: true,
-          success: function(json) {
-            var table = $('#summary table');
-            for (var ii=0; ii<json.rows.length; ii++) {
-              var result = json.rows[ii];
-              var row = row_for_app_id(result.key[0]);
-              row.find('td.'+L.level_name(result.key[1])).text(result.value);
-            }
-          }
+          group_level: 2,
+          success: display_counts
         });
       };
 

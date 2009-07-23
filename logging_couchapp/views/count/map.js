@@ -1,4 +1,4 @@
 
 function(doc) {
-  emit([doc.app_id, doc.level], 1);
+  emit([doc.app_id, doc.level, doc.timestamp], 1);
 }
