@@ -17,7 +17,7 @@ module Logging::Appenders
   class CouchDB < ::Logging::Appender
     include ::Logging::Appenders::Buffering
 
-    TIME_FMT = '%Y/%m/%d %H:%M:%S.%%d'
+    TIME_FMT = '%Y-%m-%dT%H:%M:%S.%%dZ'
 
     #
     #
@@ -65,20 +65,14 @@ module Logging::Appenders
         :app_id    => @app_id,
         :timestamp => utc.strftime(TIME_FMT) % utc.usec,
         :logger    => 'Unknown',
-        :level     => ::Logging::LNAMES[1],
-        :message   => nil,
-        :file      => nil,
-        :line      => nil,
-        :method    => nil
+        :level     => 0,
+        :message   => nil
       }
 
       if event.instance_of?(::Logging::LogEvent)
         h[:logger]  = event.logger
         h[:level]   = event.level
         h[:message] = layout.format_obj(event.data)
-        h[:file]    = event.file
-        h[:line]    = event.line
-        h[:method]  = event.method
       else
         h[:message] = event.to_s
       end
