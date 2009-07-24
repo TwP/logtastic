@@ -3,17 +3,26 @@
 @import url(reset.css);
 @import url(typography.css);
 
-#summary { width: 45.0em }
-#summary th { font-weight: bold; background: #eee }
+#summary { width: 45.0em; -moz-border-radius: 7px; border: 1px solid #ccc }
+#summary thead th {
+  background: #eee;
+  border-bottom: 1px solid #ccc;
+  font-weight: bold;
+  text-shadow: #999 2px 1px 2px;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+#summary thead th:first-child { -moz-border-radius-topleft: 7px }
+#summary thead th:last-child { -moz-border-radius-topright: 7px }
 
 #summary td.count,
-#summary th.count { text-align: center; width: 5.0em }
+#summary thead th.count { text-align: center; width: 5.0em }
 
-#summary th.color4 { color: #a22 }
-#summary th.color3 { color: #880 }
-#summary th.color2 { color: #444 }
-#summary th.color1 { color: #099 }
-#summary th.color0 { color: #469 }
+#summary thead th.color4 { color: #a22 }
+#summary thead th.color3 { color: #880 }
+#summary thead th.color2 { color: #444 }
+#summary thead th.color1 { color: #099 }
+#summary thead th.color0 { color: #469 }
 
 #summary td.color4 { background: #fdc;    border-color: #e88; color: #a22 }
 #summary td.color3 { background: #ffb;    border-color: #eea; color: #880 }
@@ -21,4 +30,6 @@
 #summary td.color1 { background: #e7ffff; border-color: #cee; color: #099 }
 #summary td.color0 { background: #e7eeff; border-color: #cde; color: #469 }
 
-#summary tbody.footer td { background: #eee; color: #888 }
+#summary tbody.footer td { background: #eee; color: #888; border-top: 1px solid #ccc }
+#summary tbody.footer td:first-child { -moz-border-radius-bottomleft: 7px }
+#summary tbody.footer td:last-child { -moz-border-radius-bottomright: 7px }
