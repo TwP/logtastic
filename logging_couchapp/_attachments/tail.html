@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CouchApp Logging</title>
+    <link rel="stylesheet" href="style/main.css" type="text/css">
+  </head>
+  <body>
+    <div id="content">
+      <h1>CouchLog Tail</h1>
+      <table id="tail">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Application</th>
+            <th>Logger</th>
+            <th>Level</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+        <tbody class="content">
+        </tbody>
+      </table>
+    </div>
+  </body>
+  <script src="/_utils/script/json2.js"></script>
+  <script src="/_utils/script/jquery.js?1.3.1"></script>
+  <script src="/_utils/script/jquery.couch.js?0.9.0"></script>
+  <script src="vendor/couchapp/jquery.couchapp.js"></script>
+  <script src="logging.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    $.CouchApp(function(app) {
+      var L = new Logging(app);
+      var table = $('#tail tbody.content');
+      var last_timestamp = null;
+
+      function display_log_events( json ) {
+        for (var ii=json.rows.length-1; ii>=0; ii--) {
+          var doc = json.rows[ii].doc;
+          table.prepend(L.log_event_row(doc));
+          if (ii == 0) { last_timestamp = doc.timestamp + '~'; }
+        }
+      };
+
+      function init_tail() {
+        app.design.view('events', {
+          descending: true,
+          limit: 10,
+          include_docs: true,
+          success: function(json) {
+            display_log_events(json);
+            window.setTimeout(tail, 5000);
+          }
+        });
+      };
+
+      function tail() {
+        app.design.view('events', {
+          descending: true,
+          endkey: last_timestamp,
+          include_docs: true,
+          success: function(json) {
+            display_log_events(json);
+            window.setTimeout(tail, 5000);
+          }
+        });
+      };
+
+      init_tail();
+
+      setInterval(function() {
+        $('td[data-timestamp]').each(function() {
+          var e = $(this);
+          e.text(app.prettyDate(e.attr('data-timestamp')));
+        })
+      }, 5000);
+    });
+  </script>
+</html>
