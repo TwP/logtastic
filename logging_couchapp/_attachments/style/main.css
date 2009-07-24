@@ -1,1 +1,24 @@
 /* add styles here */
+
+@import url(reset.css);
+@import url(typography.css);
+
+#summary { width: 45.0em }
+#summary th { font-weight: bold; background: #eee }
+
+#summary td.count,
+#summary th.count { text-align: center; width: 5.0em }
+
+#summary th.color4 { color: #a22 }
+#summary th.color3 { color: #880 }
+#summary th.color2 { color: #444 }
+#summary th.color1 { color: #099 }
+#summary th.color0 { color: #469 }
+
+#summary td.color4 { background: #fdc;    border-color: #e88; color: #a22 }
+#summary td.color3 { background: #ffb;    border-color: #eea; color: #880 }
+#summary td.color2 { background: #fbfbfb; border-color: #ddd; color: #444 }
+#summary td.color1 { background: #e7ffff; border-color: #cee; color: #099 }
+#summary td.color0 { background: #e7eeff; border-color: #cde; color: #469 }
+
+#summary tbody.footer td { background: #eee; color: #888 }

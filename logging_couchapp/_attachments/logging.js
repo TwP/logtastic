@@ -10,16 +10,22 @@ function Logging(app) {
   };
 
   this.selector = function( str ) {
-    return (new String(str)).replace(/[^A-Za-z0-9_]/g, '_');
+    return str.replace(/[^A-Za-z0-9_]/g, '_');
   }
 
   this.app_id_row = function( app_id ) {
     var str = '<tr id="'+this.selector(app_id)+'"><td>'+app_id+'</td>';
     for (ii in this.levels) {
-      str += '<td class="'+this.levels[ii]+'"></td>';
+      str += '<td class="count color'+ii+'"></td>';
     }
     str += '</tr>';
     return str;
   };
 
+};
+
+String.prototype.capitalize = function() {
+  return this.replace(/\w+/g, function(s) {
+    return s.charAt(0).toUpperCase() + s.substr(1).toLowerCase();
+  });
 };

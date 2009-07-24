@@ -5,24 +5,16 @@
     <link rel="stylesheet" href="style/main.css" type="text/css">
   </head>
   <body>
-    <div id="header">
-      <h1>CouchApp Logging</h1>
-      <p>This is a placeholder page</p>
-    </div>
     <div id="content">
-      <h2>Summary</h2>
-      <div id="summary">
-        <table>
-          <tr>
-            <td>application</td>
-            <td>debug</td>
-            <td>info</td>
-            <td>warn</td>
-            <td>error</td>
-            <td>fatal</td>
-          </tr>
-        </table>
-      </div>
+      <h1>CouchDB Logging</h1>
+      <table id="summary">
+        <thead>
+        </thead>
+        <tbody class="content">
+        </tbody>
+        <tbody class="footer">
+        </tbody>
+      </table>
     </div>
   </body>
   <script src="/_utils/script/json2.js"></script>
@@ -33,13 +25,13 @@
   <script type="text/javascript" charset="utf-8">
     $.CouchApp(function(app) {
       var L = new Logging(app);
-      var table = $('#summary table');
+      var table = $('#summary');
 
       function row_for_app_id( app_id ) {
         var selector = '#' + L.selector(app_id);
         var row = $(selector);
         if (row.length == 0) {
-          table.append(L.app_id_row(app_id));
+          table.find('tbody.content').append(L.app_id_row(app_id));
           row = $(selector);
         }
         return row;
@@ -49,17 +41,34 @@
         for (var ii=0; ii<json.rows.length; ii++) {
           var result = json.rows[ii];
           var row = row_for_app_id(result.key[0]);
-          row.find('td.'+L.level_name(result.key[1])).text(result.value);
+          row.find('td.color'+result.key[1]).text(result.value);
         }
       };
 
       function summary() {
         app.design.view('count', {
           group_level: 2,
-          success: display_counts
+          success: function(json) {
+            display_counts(json);
+            var d = new Date();
+            table.find('tbody.footer tr td').text('Updated '+d.toJSON());
+            window.setTimeout(summary, 5000);
+          }
         });
       };
 
+      function summary_table_setup() {
+        var str = '<tr><th>Application</th>';
+        for (ii in L.levels) {
+          str += '<th class="count color'+ii+'">'+L.levels[ii].capitalize()+'</th>'
+        }
+        str += '</tr>';
+        table.find('thead').append(str);
+        table.find('tbody.footer').append(
+            '<trd><td colspan="'+(L.levels.length+1)+'"></td></tr>');
+      };
+
+      summary_table_setup();
       summary();
     });
   </script>
