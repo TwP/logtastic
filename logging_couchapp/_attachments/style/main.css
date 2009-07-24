@@ -3,7 +3,7 @@
 @import url(reset.css);
 @import url(typography.css);
 
-#summary { width: 45.0em; -moz-border-radius: 7px; border: 1px solid #ccc }
+#summary { width: 45.0em; border: 1px solid #ccc; -moz-border-radius: 7px; -webkit-border-radius: 7px }
 #summary thead th {
   background: #eee;
   border-bottom: 1px solid #ccc;
@@ -12,8 +12,8 @@
   text-transform: capitalize;
   white-space: nowrap;
 }
-#summary thead th:first-child { -moz-border-radius-topleft: 7px }
-#summary thead th:last-child { -moz-border-radius-topright: 7px }
+#summary thead th:first-child { -moz-border-radius-topleft: 7px; -webkit-border-top-left-radius: 7px }
+#summary thead th:last-child { -moz-border-radius-topright: 7px; -webkit-border-top-right-radius: 7px }
 
 #summary td.count,
 #summary thead th.count { text-align: center; width: 5.0em }
@@ -31,5 +31,5 @@
 #summary td.color0 { background: #e7eeff; border-color: #cde; color: #469 }
 
 #summary tbody.footer td { background: #eee; color: #888; border-top: 1px solid #ccc }
-#summary tbody.footer td:first-child { -moz-border-radius-bottomleft: 7px }
-#summary tbody.footer td:last-child { -moz-border-radius-bottomright: 7px }
+#summary tbody.footer td:first-child { -moz-border-radius-bottomleft: 7px; -webkit-border-bottom-left-radius: 7px }
+#summary tbody.footer td:last-child { -moz-border-radius-bottomright: 7px; -webkit-border-bottom-right-radius: 7px }
