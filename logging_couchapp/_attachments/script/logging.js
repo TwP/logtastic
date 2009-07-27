@@ -41,7 +41,6 @@ function Logging(app) {
         replace(/T/, ' ').
         replace(/\.\d+Z$/, ' UTC');
   };
-
 };
 
 String.prototype.capitalize = function() {
