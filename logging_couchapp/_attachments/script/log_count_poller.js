@@ -1,4 +1,4 @@
-var LogEventPoller = function( app, opts ) {
+var LogCountPoller = function( app, opts ) {
   // make sure we have a "success" callback function
   if (opts.success && typeof opts.success === 'function') {
     this.success = opts.success;
@@ -15,11 +15,10 @@ var LogEventPoller = function( app, opts ) {
 
   this.app = app;
   this.running = false;
-  this.timestamp = null;
 };
 
 
-LogEventPoller.prototype.start = function() {
+LogCountPoller.prototype.start = function() {
   if (this.running) { return this; }
   this.running = true;
   this.poll();
@@ -27,24 +26,20 @@ LogEventPoller.prototype.start = function() {
 };
 
 
-LogEventPoller.prototype.stop = function() {
+LogCountPoller.prototype.stop = function() {
   if (!this.running) { return this; }
   this.running = false;
   return this;
 };
 
 
-LogEventPoller.prototype.poll = function() {
+LogCountPoller.prototype.poll = function() {
   if (!this.running) { return null; }
 
   var that = this;
   opts = {
-    descending: true,
-    include_docs: true,
-    success: function(json) {
-      if (json.rows.length > 0) {
-        that.timestamp = json.rows[0].doc.timestamp + '~';
-      }
+    group_level: 2,
+    success: function( json ) {
       that.success(json);
       if (that.running) {
         window.setTimeout(function() {that.poll()}, that.interval);
@@ -52,9 +47,6 @@ LogEventPoller.prototype.poll = function() {
     }
   };
 
-  if (this.timestamp) { opts.endkey = this.timestamp; }
-  else { opts.limit = 10; }
-
-  this.app.design.view('events', opts);
+  this.app.design.view('count', opts);
   return null;
 };

@@ -7,6 +7,9 @@
   <body>
     <div id="content">
       <h1>CouchLog Tail</h1>
+      <ul id="toolbar">
+        <li><button class="play">Pause</button></li>
+      </ul>
       <table id="tail">
         <thead>
           <tr>
@@ -39,6 +42,16 @@
           for (var ii=json.rows.length-1; ii>=0; ii--) {
             table.prepend(L.log_event_row(json.rows[ii].doc));
           }
+        }
+      });
+
+      $('button.play').click(function() {
+        if (poller.running) {
+          poller.stop();
+          $(this).text('Play');
+        } else {
+          poller.start();
+          $(this).text('Pause');
         }
       });
 

@@ -22,6 +22,7 @@
   <script src="/_utils/script/jquery.couch.js?0.9.0"></script>
   <script src="vendor/couchapp/jquery.couchapp.js"></script>
   <script src="script/logging.js"></script>
+  <script src="script/log_count_poller.js"></script>
   <script type="text/javascript" charset="utf-8">
     $.CouchApp(function(app) {
       var L = new Logging(app);
@@ -37,25 +38,18 @@
         return row;
       };
 
-      function display_counts( json ) {
-        for (var ii=0; ii<json.rows.length; ii++) {
-          var result = json.rows[ii];
-          var row = row_for_app_id(result.key[0]);
-          row.find('td.color'+result.key[1]).text(result.value);
-        }
-      };
-
-      function summary() {
-        app.design.view('count', {
-          group_level: 2,
-          success: function(json) {
-            display_counts(json);
-            var d = new Date();
-            table.find('tbody.footer tr td').text('Updated '+d.toJSON());
-            window.setTimeout(summary, 5000);
+      var poller = new LogCountPoller(app, {
+        interval: 5000,
+        success: function( json ) {
+          for (var ii=0; ii<json.rows.length; ii++) {
+            var result = json.rows[ii];
+            var row = row_for_app_id(result.key[0]);
+            row.find('td.color'+result.key[1]).text(result.value);
           }
-        });
-      };
+          var d = new Date();
+          table.find('tbody.footer tr td:first-child').text('Updated '+d.toJSON());
+        }
+      });
 
       function summary_table_setup() {
         var str = '<tr><th>Application</th>';
@@ -65,11 +59,21 @@
         str += '</tr>';
         table.find('thead').append(str);
         table.find('tbody.footer').append(
-            '<trd><td colspan="'+(L.levels.length+1)+'"></td></tr>');
+            '<trd><td colspan="'+(L.levels.length)+'"></td><td><button class="play">Pause</button></td></tr>');
       };
 
       summary_table_setup();
-      summary();
+
+      $('button.play').click(function() {
+        if (poller.running) {
+          poller.stop();
+          $(this).text('Play');
+        } else {
+          poller.start();
+          $(this).text('Pause');
+        }
+      });
+      poller.start();
     });
   </script>
 </html>
