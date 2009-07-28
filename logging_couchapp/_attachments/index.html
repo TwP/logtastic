@@ -53,13 +53,13 @@
 
       function summary_table_setup() {
         var str = '<tr><th>Application</th>';
-        for (ii in L.levels) {
-          str += '<th class="count color'+ii+'">'+L.levels[ii].capitalize()+'</th>'
+        for (ii in Logging.levels) {
+          str += '<th class="count color'+ii+'">'+Logging.levels[ii].capitalize()+'</th>'
         }
         str += '</tr>';
         table.find('thead').append(str);
         table.find('tbody.footer').append(
-            '<trd><td colspan="'+(L.levels.length)+'"></td><td><button class="play">Pause</button></td></tr>');
+            '<trd><td colspan="'+(Logging.levels.length)+'"></td><td><button class="play">Pause</button></td></tr>');
       };
 
       summary_table_setup();

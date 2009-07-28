@@ -1,4 +1,4 @@
 
 function( doc ) {
-  emit(null, doc.app_id);
+  emit(doc.app_id, doc.app_id);
 }

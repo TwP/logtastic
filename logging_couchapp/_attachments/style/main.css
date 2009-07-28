@@ -3,7 +3,60 @@
 @import url(reset.css);
 @import url(typography.css);
 
+#content {
+  display: block;
+  padding-right: 210px;
+}
+
+#sidebar {
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 210px;
+}
+
+#filter,
+#filter ul {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  list-style: none outside none;
+}
+#filter li {
+  padding: 0 1.0em;
+}
+#filter ul {
+  border: 1px solid #ccc;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
+}
+#filter ul li:first-child {
+  -moz-border-radius-topleft: 7px;
+  -moz-border-radius-topright: 7px;
+  -webkit-border-top-left-radius: 7px;
+  -webkit-border-top-right-radius: 7px;
+}
+#filter ul li:last-child {
+  -moz-border-radius-bottomleft: 7px;
+  -moz-border-radius-bottomright: 7px;
+  -webkit-border-bottom-left-radius: 7px;
+  -webkit-border-bottom-right-radius: 7px;
+}
+#filter ul li {
+  background: #eee; color: #888;
+  white-space: nowrap;
+  padding: 0 1.5em;
+  cursor: pointer;
+}
+#filter ul li.selected {
+  color: #222;
+  font-weight: bold;
+  text-shadow: #999 2px 1px 2px;
+}
+
 table {
+  clear: both;
   border: 1px solid #ccc;
   -moz-border-radius: 7px;
   -webkit-border-radius: 7px;
@@ -59,3 +112,5 @@ table tbody.footer td:last-child {
 #tail tr.color2 { background: #fbfbfb; border-color: #ddd; color: #444 }
 #tail tr.color1 { background: #e7ffff; border-color: #cee; color: #099 }
 #tail tr.color0 { background: #e7eeff; border-color: #cde; color: #469 }
+
+
