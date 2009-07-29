@@ -15,6 +15,7 @@ var LogEventPoller = function( app, opts ) {
 
   this.app = app;
   this.running = false;
+  this.count = 0;
   this.timestamp = null;
 };
 
@@ -35,7 +36,8 @@ LogEventPoller.prototype.stop = function() {
 
 
 LogEventPoller.prototype.poll = function() {
-  if (!this.running) { return null; }
+  if (!this.running || this.count > 0) { return null; }
+  this.count++;
 
   var that = this;
   opts = {
@@ -47,7 +49,7 @@ LogEventPoller.prototype.poll = function() {
       }
       that.success(json);
       if (that.running) {
-        window.setTimeout(function() {that.poll()}, that.interval);
+        window.setTimeout(function() { that.count--; that.poll(); }, that.interval);
       }
     }
   };

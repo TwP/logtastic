@@ -15,6 +15,7 @@ var LogCountPoller = function( app, opts ) {
 
   this.app = app;
   this.running = false;
+  this.count = 0;
 };
 
 
@@ -34,7 +35,8 @@ LogCountPoller.prototype.stop = function() {
 
 
 LogCountPoller.prototype.poll = function() {
-  if (!this.running) { return null; }
+  if (!this.running || this.count > 0) { return null; }
+  this.count++;
 
   var that = this;
   opts = {
@@ -42,7 +44,7 @@ LogCountPoller.prototype.poll = function() {
     success: function( json ) {
       that.success(json);
       if (that.running) {
-        window.setTimeout(function() {that.poll()}, that.interval);
+        window.setTimeout(function() {that.count--; that.poll()}, that.interval);
       }
     }
   };

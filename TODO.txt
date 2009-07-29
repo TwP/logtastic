@@ -1,9 +1,9 @@
 
 == TODO
 
-- Add a count for making sure we don't spawn multiple pollers from viscious clicks of the play/pause button
 - Kepp the tail table columns a fixed width
 - Need a configuration document to store things like the level names and the columns to use in the tail table
+- click on "Time" in the tail window to toggle between normal dates and "pretty dates"
 
 
 == DONE
@@ -12,3 +12,4 @@
 - Make a JSON specific layout for use by the CouchDB appender
 - Keep the table a fixed height, and add a scroll bar to the tbody
 - Table footer with play/pause button in the tail page
+- Add a count for making sure we don't spawn multiple pollers from viscious clicks of the play/pause button
