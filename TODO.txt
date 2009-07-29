@@ -4,6 +4,15 @@
 - Kepp the tail table columns a fixed width
 - Need a configuration document to store things like the level names and the columns to use in the tail table
 - click on "Time" in the tail window to toggle between normal dates and "pretty dates"
+- populate the tail window with "N hours" worth of past messages
+  * possibly allow the user to select some time range to display
+  * maybe this should be it's own page in the couchapp ??
+  * infinite scroll on the tail window (pull in older messages as the user scrolls down)
+- use the "list" and "show" capabilities of couchapp
+- better formatting of messages
+  - show a summary
+  - hover or click to show all the details for a log event
+  - format messages that are not strings (JSON arrays or objects)
 
 
 == DONE

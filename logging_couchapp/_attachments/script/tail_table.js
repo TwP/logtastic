@@ -79,13 +79,14 @@ TailTable.prototype.initScrolling = function() {
 };
 
 
+
 TailTable.prototype.addEvents = function(json) {
   var tbody = $('tbody', this.table);
   for (var ii=json.rows.length-1; ii>=0; ii--) {
     var doc = json.rows[ii].doc;
     var timestamp = Logging.format_timestamp(doc);
     tbody.prepend(
-      '<tr id="'+doc._id+'" class="color'+doc.level+'">'
+      '<tr id="'+doc._id+'" class="color'+doc.level+'" style="display:none">'
       + '<td data-timestamp="'+timestamp+'">'+this.app.prettyDate(timestamp)+'</td>'
       + '<td>'+doc.app_id+'</td>'
       + '<td>'+doc.logger+'</td>'
@@ -93,14 +94,19 @@ TailTable.prototype.addEvents = function(json) {
       + '<td>'+doc.message+'</td>'
       + '</tr>'
     );
+    if (this.show(doc)) { $('tr:first', tbody).fadeIn('fast'); }
   }
   if (json.rows.length > 0) {
-    this.filter();
     var timestamp = new Date(Logging.format_timestamp(json.rows[0].doc));
     $('tfoot tr td:first-child', this.table).text("Latest: "+timestamp);
   }
 };
 
+TailTable.prototype.show = function(doc) {
+  if (!this.filters.Application[doc.app_id]) { return false; }
+  if (!this.filters.Level[Logging.level_name(doc.level).capitalize()]) { return false; }
+  return true;
+}
 
 TailTable.prototype.updateFilters = function() {
   var filters = this.filters;
