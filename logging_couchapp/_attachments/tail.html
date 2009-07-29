@@ -45,9 +45,6 @@
   <body>
     <div id="content">
       <h1>CouchLog Tail</h1>
-      <ul id="toolbar">
-        <li><button class="play">Pause</button></li>
-      </ul>
       <table id="tail">
         <thead>
           <tr>
@@ -58,7 +55,13 @@
             <th>Message</th>
           </tr>
         </thead>
-        <tbody class="content">
+        <tfoot>
+          <tr>
+            <td colspan="4">Latest: </td>
+            <td style="text-align:right"><button class="play">Pause</button></td>
+          </tr>
+        </tfoot>
+        <tbody>
         </tbody>
       </table>
     </div>
