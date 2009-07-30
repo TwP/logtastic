@@ -9,6 +9,7 @@ var TailTable = function( app, opts ) {
   this.app = app;
   this.table = $(opts.table);
 
+  this.initTimeFormatter();
   this.initScrolling();
   this.initFilters();
 
@@ -68,16 +69,61 @@ TailTable.prototype.initFilters = function() {
 TailTable.prototype.initScrolling = function() {
   var tbody = $('tbody', this.table);
 
-  tbody.append('<tr><td>&nbsp;</td></tr>');
-  var row_height = $('tr', tbody).attr('clientHeight');
+  var row_height = 0;
+  if ($('tr:first-child', tbody).length > 0) {
+    row_height = $('tr:first-child', tbody).attr('clientHeight');
+  } else {
+    tbody.append('<tr><td>&nbsp;</td></tr>');
+    row_height = $('tr', tbody).attr('clientHeight');
+    $('tr', tbody).remove();
+  }
 
-  tbody.css('height', 10*row_height);
+  var row_count = Math.floor($(window).height() / row_height) - 6;
+
+  tbody.css('height', row_count*row_height);
   tbody.css('overflow-x', 'hidden');
   tbody.css('overflow-y', 'scroll');
-
-  $('tr', tbody).remove();
 };
 
+TailTable.prototype.initTimeFormatter = function() {
+  this.time = {
+    format: 'normal',
+    interval_id: 0
+  };
+  this.toggleTimeFormat();
+};
+
+TailTable.prototype.toggleTimeFormat = function() {
+  if (this.time.format === 'pretty') {
+    if (this.time.interval_id !== 0) { clearInterval(this.time.interval_id); }
+    this.time.interval_id = 0;
+    this.time.format = 'normal';
+    $('thead th.timestamp', this.table).css('width', '11.0em');
+    this.prettyDate();
+  } else {
+    var that = this;
+    this.time.format = 'pretty';
+    $('thead th.timestamp', this.table).css('width', '8.0em');
+    this.prettyDate();
+    this.time.interval_id = setInterval(function() { that.prettyDate() }, 5000);
+  }
+};
+
+TailTable.prototype.prettyDate = function( timestamp ) {
+  if (arguments.length == 1) {
+    if (this.time.format === 'pretty') {
+      return this.app.prettyDate(timestamp);
+    } else {
+      return timestamp;
+    }
+  }
+
+  var that = this;
+  $('td[data-timestamp]').each(function() {
+    var e = $(this);
+    e.text(that.prettyDate(e.attr('data-timestamp')));
+  });
+};
 
 
 TailTable.prototype.addEvents = function(json) {
@@ -87,7 +133,7 @@ TailTable.prototype.addEvents = function(json) {
     var timestamp = Logging.format_timestamp(doc);
     tbody.prepend(
       '<tr id="'+doc._id+'" class="color'+doc.level+'" style="display:none">'
-      + '<td data-timestamp="'+timestamp+'">'+this.app.prettyDate(timestamp)+'</td>'
+      + '<td data-timestamp="'+timestamp+'">'+this.prettyDate(timestamp)+'</td>'
       + '<td>'+doc.app_id+'</td>'
       + '<td>'+doc.logger+'</td>'
       + '<td>'+Logging.level_name(doc.level).capitalize()+'</td>'
@@ -101,6 +147,7 @@ TailTable.prototype.addEvents = function(json) {
     $('tfoot tr td:first-child', this.table).text("Latest: "+timestamp);
   }
 };
+
 
 TailTable.prototype.show = function(doc) {
   if (!this.filters.Application[doc.app_id]) { return false; }

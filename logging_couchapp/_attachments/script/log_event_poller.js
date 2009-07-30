@@ -55,7 +55,7 @@ LogEventPoller.prototype.poll = function() {
   };
 
   if (this.timestamp) { opts.endkey = this.timestamp; }
-  else { opts.limit = 10; }
+  else { opts.limit = 23; }
 
   this.app.design.view('events', opts);
   return null;

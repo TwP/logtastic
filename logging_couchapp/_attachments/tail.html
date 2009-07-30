@@ -30,15 +30,15 @@
           }
         });
 
+        $('#tail thead th.timestamp').click(function() {
+          table.toggleTimeFormat();
+        });
+
         poller.start();
 
-        setInterval(function() {
-          $('td[data-timestamp]').each(function() {
-            var e = $(this);
-            e.text(app.prettyDate(e.attr('data-timestamp')));
-          })
-        }, 5000);
-
+        $(window).resize(function() {
+          table.initScrolling();
+        });
       });
     </script>
   </head>
@@ -48,11 +48,11 @@
       <table id="tail">
         <thead>
           <tr>
-            <th>Time</th>
-            <th>Application</th>
-            <th>Logger</th>
-            <th>Level</th>
-            <th>Message</th>
+            <th class="timestamp">Time</th>
+            <th class="app-id">Application</th>
+            <th class="logger">Logger</th>
+            <th class="level">Level</th>
+            <th class="message">Message</th>
           </tr>
         </thead>
         <tfoot>
