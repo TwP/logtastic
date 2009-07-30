@@ -98,7 +98,7 @@ TailTable.prototype.toggleTimeFormat = function() {
     if (this.time.interval_id !== 0) { clearInterval(this.time.interval_id); }
     this.time.interval_id = 0;
     this.time.format = 'normal';
-    $('thead th.timestamp', this.table).css('width', '11.0em');
+    $('thead th.timestamp', this.table).css('width', '9.0em');
     this.prettyDate();
   } else {
     var that = this;
@@ -114,7 +114,7 @@ TailTable.prototype.prettyDate = function( timestamp ) {
     if (this.time.format === 'pretty') {
       return this.app.prettyDate(timestamp);
     } else {
-      return timestamp;
+      return timestamp.replace(/ UTC$/, '');
     }
   }
 

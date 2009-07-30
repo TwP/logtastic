@@ -15,7 +15,7 @@ var LogEventPoller = function( app, opts ) {
 
   this.app = app;
   this.running = false;
-  this.count = 0;
+  this.timeout_id = 0;
   this.timestamp = null;
 };
 
@@ -31,13 +31,14 @@ LogEventPoller.prototype.start = function() {
 LogEventPoller.prototype.stop = function() {
   if (!this.running) { return this; }
   this.running = false;
+  if (this.timeout_id !== 0) { clearTimeout(this.timeout_id); }
+  this.timeout_id = 0;
   return this;
 };
 
 
 LogEventPoller.prototype.poll = function() {
-  if (!this.running || this.count > 0) { return null; }
-  this.count++;
+  if (!this.running || this.timeout_id !== 0) { return null; }
 
   var that = this;
   opts = {
@@ -49,7 +50,7 @@ LogEventPoller.prototype.poll = function() {
       }
       that.success(json);
       if (that.running) {
-        window.setTimeout(function() { that.count--; that.poll(); }, that.interval);
+        that.timeout_id = setTimeout(function() { that.timeout_id = 0; that.poll(); }, that.interval);
       }
     }
   };
