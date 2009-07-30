@@ -55,11 +55,12 @@ TailTable.prototype.initFilters = function() {
   }
 
   this.app.design.view('app_ids', {
+    group: true,
     success: function(json) {
-      if (json.rows.length === 0) { return null; }
       var list = $('#application ul');
-      var ary = json.rows[0].value;
-      for (ii in ary) { list.append('<li class="selected">'+ary[ii]+'</li>'); }
+      for (ii in json.rows) {
+        list.append('<li class="selected">'+json.rows[ii].key+'</li>');
+      }
       that.start();
     }
   });
