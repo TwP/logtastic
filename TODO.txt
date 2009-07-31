@@ -18,6 +18,8 @@
 - Incrementally add to the chart data based on the last collected data point
 - Add to historical chart data (go back further in time) ??
 - Better colors [blue, green, yellow, orange, red] instead of the use of grey and cyan
+- Put the Ruby code under a "ruby" directory
+- Make a Log4j appender
 
 
 == DONE
