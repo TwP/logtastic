@@ -39,7 +39,7 @@ var Grapher = function( app, opts ) {
       for (var level=0; level<Logging.levels.length; level++) {
         if (!row) { row = rows.shift(); }
 
-        if (row && row.key[0] === timestamp && row.key[2] === level) {
+        if (row && row.key[1] === timestamp && row.key[2] === level) {
           datasets[level].data.push([time, row.value]);
           row = null;
         } else {
@@ -50,8 +50,7 @@ var Grapher = function( app, opts ) {
   }
 
   // TODO: document
-  function display( json, s, e ) {
-    homogenize(json, s, e);
+  function display() {
     $.plot($("#"+type), datasets, {
       yaxis: { min: 0 },
       xaxis: { tickDecimals: 0, mode: 'time' }
@@ -64,15 +63,11 @@ var Grapher = function( app, opts ) {
     var start = (new Date(Date.parse(end) - (24*step))).toUTC();
     app.design.view(type, {
       group: true,
-      startkey: [start],
-      endkey: [end],
+      startkey: [app_id, start],
+      endkey: [app_id, end],
       success: function(json) {
-        var ary = [];
-        for (ii in json.rows) {
-          if (app_id === json.rows[ii].key[1]) { ary.push(json.rows[ii]); }
-        }
-        json.rows = ary;
-        display(json, start, end);
+        homogenize(json, start, end);
+        display();
       }
     });
   };

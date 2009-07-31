@@ -5,5 +5,5 @@ function(doc) {
       replace(/T/, ' ').
       replace(/:\d+:\d+\.\d+Z$/, ':00:00 UTC');
 
-  emit([timestamp, doc.app_id, doc.level], 1);
+  emit([doc.app_id, timestamp, doc.level], 1);
 }
