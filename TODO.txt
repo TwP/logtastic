@@ -20,6 +20,7 @@
 - Better colors [blue, green, yellow, orange, red] instead of the use of grey and cyan
 - Put the Ruby code under a "ruby" directory
 - Make a Log4j appender
+- Admin interface to modify level names / colors / ??
 
 
 == DONE
