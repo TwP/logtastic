@@ -55,13 +55,18 @@
   text-shadow: #999 2px 1px 2px;
 }
 
-table {
+table { width: auto }
+div.legend table tbody tr td {
+  padding: 0.2em 0.4em;
+}
+
+table.logging {
   clear: both;
   border: 1px solid #ccc;
   -moz-border-radius: 7px;
   -webkit-border-radius: 7px;
 }
-table thead th {
+table.logging thead th {
   background: #eee;
   border-bottom: 1px solid #ccc;
   font-weight: bold;
@@ -69,36 +74,36 @@ table thead th {
   text-transform: capitalize;
   white-space: nowrap;
 }
-table thead th:first-child {
+table.logging thead th:first-child {
   -moz-border-radius-topleft: 7px;
   -webkit-border-top-left-radius: 7px;
 }
-table thead th:last-child {
+table.logging thead th:last-child {
   -moz-border-radius-topright: 7px;
   -webkit-border-top-right-radius: 7px;
 }
-table tbody.footer td {
+table.logging tbody.footer td {
   background: #eee; color: #888;
   border-top: 1px solid #ccc;
 }
-table tbody.footer td:first-child {
+table.logging tbody.footer td:first-child {
   -moz-border-radius-bottomleft: 7px;
   -webkit-border-bottom-left-radius: 7px;
 }
-table tbody.footer td:last-child {
+table.logging tbody.footer td:last-child {
   -moz-border-radius-bottomright: 7px;
   -webkit-border-bottom-right-radius: 7px;
 }
-table tfoot td {
+table.logging tfoot td {
   background: #eee; color: #888;
   border-top: 1px solid #ccc;
   white-space: nowrap;
 }
-table tfoot td:first-child {
+table.logging tfoot td:first-child {
   -moz-border-radius-bottomleft: 7px;
   -webkit-border-bottom-left-radius: 7px;
 }
-table tfoot td:last-child {
+table.logging tfoot td:last-child {
   -moz-border-radius-bottomright: 7px;
   -webkit-border-bottom-right-radius: 7px;
 }

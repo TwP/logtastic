@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>CouchApp Logging</title>
+    <link rel="stylesheet" href="style/main.css" type="text/css">
     <script src="/_utils/script/json2.js"></script>
     <script src="/_utils/script/jquery.js?1.3.1"></script>
     <script src="/_utils/script/jquery.couch.js?0.9.0"></script>
@@ -12,12 +13,14 @@
     <script type="text/javascript" charset="utf-8">
       $.CouchApp(function(app) {
         var L = new Logging(app);
-        var grapher = new Grapher(app, {
+        var hourly = new Grapher(app, {
           app_id: searchParams().app_id,
           type: 'hourly'
         });
 
-        grapher.poll();
+        hourly.poll();
+
+        // setInterval(function() {hourly.reset(); hourly.poll();}, 300000);
       });
     </script>
   </head>
