@@ -1,7 +1,11 @@
 
-# We will only load the CouchDB appender if we have the
-# couchrest gem installed
-require 'couchrest'
+require 'rest_client'
+begin
+  require 'json/ext'
+rescue LoadError
+  require 'json'
+end
+
 
 module Logging::Appenders
 
@@ -49,7 +53,7 @@ module Logging::Appenders
       db_name = opts.getopt(:db_name, 'logging')
       self.app_id = opts.getopt(:app_id, name)
 
-      @db = CouchRest.database(uri + '/' + db_name)
+      @db_uri = uri + '/' + db_name + '/_bulk_docs'
 
       configure_buffering(opts)
     end
@@ -59,7 +63,10 @@ module Logging::Appenders
     # buffer and all subsequent messages will be lost.
     #
     def flush
-      @db.bulk_save(buffer)
+      return self if buffer.empty?
+
+      payload = {:docs => buffer}.to_json
+      RestClient.post(@db_uri, payload)
       self
     rescue StandardError => err
       self.level = :off

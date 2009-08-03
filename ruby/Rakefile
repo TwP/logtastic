@@ -36,8 +36,9 @@ PROJ.ann.email[:server] = 'smtp.gmail.com'
 PROJ.ann.email[:port] = 587
 PROJ.ann.email[:from] = 'Tim Pease'
 
+depend_on 'json'
 depend_on 'logging'
-depend_on 'couchrest'
+depend_on 'rest-client'
 depend_on 'rspec'
 
 # EOF
