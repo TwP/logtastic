@@ -12,16 +12,33 @@ module Logging::Appenders
     ::Logging::Appenders::CouchDB.new(*args)
   end
 
-  #
+  # This class provides an Appender that sends log messages to a CouchDB
+  # instance.
   #
   class CouchDB < ::Logging::Appender
     include ::Logging::Appenders::Buffering
 
-    #
+    # The string that uniquely identifies this application in the CouchDB
+    # messages.
     #
     attr_accessor :app_id
 
+    # call-seq:
+    #    CouchDB.new( name, :uri => 'http://localhost:5984',
+    #                       :db_name => 'logging', :app_id => name )
     #
+    # Creates a new CouchDB appender that will format log events and send
+    # them to the CouchDB specified by the <tt>:uri</tt> and the
+    # <tt>:db_name</tt>. Your applications should specify a unique
+    # <tt>:app_id</tt> so that metrics about your application can be easily
+    # generated. If an app_id is not given, then the appender <tt>name</tt>
+    # is used as the app_id.
+    #
+    # The CouchDB appender uses message buffering. Log events are saved in
+    # bulk to the CouchDB instance. You can specify the buffer size by
+    # setting <tt>:auto_flushing</tt> to the number of messages to buffer.
+    # Setting the auto_flushing to +true+ will cause messages to be
+    # immediately sent to the CouchDB instance.
     #
     def initialize( name, opts = {} )
       opts = opts.merge(:layout => ::Logging::Layouts::CouchDB.new)
@@ -37,7 +54,9 @@ module Logging::Appenders
       configure_buffering(opts)
     end
 
-    #
+    # Send all buffered log events to the CouchDB instance. If the messages
+    # cannot be saved the appender will be disabled, and all messages in the
+    # buffer and all subsequent messages will be lost.
     #
     def flush
       @db.bulk_save(buffer)
@@ -54,8 +73,9 @@ module Logging::Appenders
 
     private
 
-    # call-seq:
-    #    write( event )
+    # Write the given _event_ to the CouchDB instance. The message is
+    # formatted into a Ruby Hash instance suitable for conversion into a
+    # CouchDB JSON document.
     #
     def write( event )
       h =
