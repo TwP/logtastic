@@ -9,6 +9,7 @@ module Logging::Plugins
   end  # module CouchDB
 end  # module Logging::Plugins
 
-require File.join(root, 'couch_db')
+require File.join(root, 'couch_db_layout')
+require File.join(root, 'couch_db_appender')
 
 # EOF
