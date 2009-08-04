@@ -44,6 +44,12 @@ module Logging::Appenders
     # Setting the auto_flushing to +true+ will cause messages to be
     # immediately sent to the CouchDB instance.
     #
+    # Communication with the CouchDB instance is asynchronous; calls to the
+    # appender sould return quickly. However, there will be some delay
+    # before the log events appear in the CouchDB instance. The
+    # communication thread must be woken up and scheduled in order for the
+    # events to be posted.
+    #
     def initialize( name, opts = {} )
       opts = opts.merge(:layout => ::Logging::Layouts::CouchDB.new)
       super(name, opts)
@@ -54,8 +60,21 @@ module Logging::Appenders
       self.app_id = opts.getopt(:app_id, name)
 
       @db_uri = uri + '/' + db_name + '/_bulk_docs'
-
+      @flush_buffer = []
+      @flush_events = false
       configure_buffering(opts)
+
+      @flush_thread = Thread.new(self) {
+        loop {
+          Thread.stop unless @flush_events or closed?
+          break if closed?
+          sync {
+            @flush_events = false
+            @buffer, @flush_buffer = @flush_buffer, @buffer
+          }
+          flush_events
+        }
+      }
     end
 
     # Send all buffered log events to the CouchDB instance. If the messages
@@ -64,17 +83,9 @@ module Logging::Appenders
     #
     def flush
       return self if buffer.empty?
-
-      payload = {:docs => buffer}.to_json
-      RestClient.post(@db_uri, payload)
+      @flush_events = true
+      @flush_thread.wakeup
       self
-    rescue StandardError => err
-      self.level = :off
-      ::Logging.log_internal {"appender #{name.inspect} has been disabled"}
-      ::Logging.log_internal(-2) {err}
-      raise
-    ensure
-      buffer.clear
     end
 
 
@@ -102,6 +113,25 @@ module Logging::Appenders
       flush if buffer.length >= auto_flushing || immediate?(event)
 
       self
+    end
+
+    # This method performs the actual HTTP POST to the CouchDB instance. All
+    # messages in the buffer are posted using the CouchDB bulk storage
+    # semantics.
+    #
+    def flush_events
+      return if @flush_buffer.empty?
+
+      payload = {:docs => @flush_buffer}.to_json
+      RestClient.post(@db_uri, payload)
+      self
+    rescue StandardError => err
+      self.level = :off
+      ::Logging.log_internal {"appender #{name.inspect} has been disabled"}
+      ::Logging.log_internal(-2) {err}
+      raise
+    ensure
+      @flush_buffer.clear
     end
 
   end  # class CouchDB
