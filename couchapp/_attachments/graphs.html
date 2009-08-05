@@ -13,13 +13,18 @@
     <script type="text/javascript" charset="utf-8">
       $.CouchApp(function(app) {
         logging.app = app;
+        var app_id = logging.searchParams().app_id;
         var hourly = logging.grapher({
-          app_id: logging.searchParams().app_id,
+          app_id: app_id,
           type: 'hourly'
         });
-
         hourly.poll();
 
+        var daily = logging.grapher({
+          app_id: app_id,
+          type: 'daily'
+        });
+        daily.poll();
         // setInterval(function() {hourly.reset(); hourly.poll();}, 300000);
       });
     </script>
@@ -28,7 +33,11 @@
     <div id="content">
       <h1>CouchLog Graphs</h1>
 
+      <h2>Hourly Log Counts</h2>
       <div id="hourly" style="width:600px;height:300px;"></div>
+
+      <h2>Daily Log Counts</h2>
+      <div id="daily" style="width:600px;height:300px;"></div>
 
     </div>
   </body>

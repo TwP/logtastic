@@ -19,7 +19,7 @@ logging.grapher = function( opts ) {
     step = 3600 * 1000;
     break;
   case 'daily':
-    setp = 86400 * 1000;
+    step = 86400 * 1000;
     break;
   default:
     throw {
@@ -121,8 +121,19 @@ logging.Grapher = function( app, app_id, type, step ) {
   this.end = function() {
     time = (new Date()).getTime();
     time = new Date(time + step);
-    time.setUTCMinutes(0);
-    time.setUTCSeconds(0);
+
+    switch (type) {
+    case 'hourly':
+      time.setUTCMinutes(0);
+      time.setUTCSeconds(0);
+      break;
+    case 'daily':
+      time.setUTCHours(0);
+      time.setUTCMinutes(0);
+      time.setUTCSeconds(0);
+      break;
+    }
+
     return time.toUTC();
   };
 };
