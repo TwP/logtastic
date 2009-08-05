@@ -5,7 +5,8 @@ function Logging(app) {
   }
 
   this.app_id_row = function( app_id ) {
-    var str = '<tr id="'+this.selector(app_id)+'"><td>'+app_id+'</td>';
+    var str = '<tr id="'+this.selector(app_id)+'">'
+        + '<td><a href="graphs.html?app_id='+app_id+'">'+app_id+'</a></td>';
     for (ii in Logging.levels) {
       str += '<td class="count color'+ii+'"></td>';
     }

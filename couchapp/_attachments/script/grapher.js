@@ -12,7 +12,8 @@ var Grapher = function( app, opts ) {
       ary.push({
         label: level.capitalize(),
         color: colors[index],
-        data: []
+        data: [],
+        shadowSize: 0
       });
     });
     datasets = ary;
@@ -53,7 +54,10 @@ var Grapher = function( app, opts ) {
   function display() {
     $.plot($("#"+type), datasets, {
       yaxis: { min: 0 },
-      xaxis: { tickDecimals: 0, mode: 'time' }
+      xaxis: { tickDecimals: 0, mode: 'time' },
+      legend: {
+        position: 'nw'
+      }
     });
   }
 
