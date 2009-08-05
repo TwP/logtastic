@@ -1,55 +1,73 @@
-var LogCountPoller = function( app, opts ) {
-  // make sure we have a "success" callback function
-  if (opts.success && typeof opts.success === 'function') {
-    this.success = opts.success;
-  } else {
+
+/**
+ *
+ */
+logging.logCountPoller = function( opts ) {
+  if (!$.isFunction(opts.success)) {
     throw {
       name: 'ArgumentError',
       message: 'A "success" callback function must be provided.'
     }
   }
 
-  // setup the poll interval
-  if (opts.interval) { this.interval = opts.interval; }
-  else { this.interval = 5000; }
-
-  this.app = app;
-  this.running = false;
-  this.timeout_id = 0;
+  if (!opts.interval) { opts.interval = 5000; }
+  return new logging.LogCountPoller(this.app, opts);
 };
 
+/**
+ *
+ */
+logging.LogCountPoller = function( app, opts ) {
+  var success = opts.success;
+  var interval = opts.interval;
+  var running = false;
+  var timeoutId = 0;
 
-LogCountPoller.prototype.start = function() {
-  if (this.running) { return this; }
-  this.running = true;
-  this.poll();
-  return this;
-};
-
-
-LogCountPoller.prototype.stop = function() {
-  if (!this.running) { return this; }
-  this.running = false;
-  if (this.timeout_id !== 0) { clearTimeout(this.timeout_id); }
-  this.timeout_id = 0;
-  return this;
-};
-
-
-LogCountPoller.prototype.poll = function() {
-  if (!this.running || this.timeout_id !== 0) { return null; }
-
-  var that = this;
-  opts = {
-    group_level: 2,
-    success: function( json ) {
-      that.success(json);
-      if (that.running) {
-        that.timeout_id = setTimeout(function() {that.timeout_id = 0; that.poll()}, that.interval);
-      }
-    }
+  /**
+   *
+   */
+  this.running = function() {
+    return running;
   };
 
-  this.app.design.view('count', opts);
-  return null;
+  /**
+   *
+   */
+  this.start = function() {
+    if (running) { return this; }
+    running = true;
+    poll();
+    return this;
+  };
+
+  /**
+   *
+   */
+  this.stop = function() {
+    if (!running) { return this; }
+    running = false;
+    if (timeoutId != 0) { clearTimeout(timeoutId); }
+    timeoutId = 0;
+    return this;
+  };
+
+  /**
+   *
+   */
+  function poll() {
+    if (!running || timeoutId !== 0) { return null; }
+
+    opts = {
+      group_level: 2,
+      success: function( json ) {
+        success(json);
+        if (running) {
+          timeoutId = setTimeout(function() {timeoutId = 0; poll()}, interval);
+        }
+      }
+    };
+
+    app.design.view('count', opts);
+    return null;
+  };
 };

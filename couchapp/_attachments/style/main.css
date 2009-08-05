@@ -82,18 +82,6 @@ table.logging thead th:last-child {
   -moz-border-radius-topright: 7px;
   -webkit-border-top-right-radius: 7px;
 }
-table.logging tbody.footer td {
-  background: #eee; color: #888;
-  border-top: 1px solid #ccc;
-}
-table.logging tbody.footer td:first-child {
-  -moz-border-radius-bottomleft: 7px;
-  -webkit-border-bottom-left-radius: 7px;
-}
-table.logging tbody.footer td:last-child {
-  -moz-border-radius-bottomright: 7px;
-  -webkit-border-bottom-right-radius: 7px;
-}
 table.logging tfoot td {
   background: #eee; color: #888;
   border-top: 1px solid #ccc;

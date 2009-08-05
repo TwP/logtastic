@@ -9,57 +9,12 @@
     <script src="vendor/couchapp/jquery.couchapp.js"></script>
     <script src="script/logging.js"></script>
     <script src="script/log_count_poller.js"></script>
+    <script src="script/count_table.js"></script>
     <script type="text/javascript" charset="utf-8">
       $.CouchApp(function(app) {
-        var L = new Logging(app);
-        var table = $('#summary');
-
-        function row_for_app_id( app_id ) {
-          var selector = '#' + L.selector(app_id);
-          var row = $(selector);
-          if (row.length == 0) {
-            table.find('tbody.content').append(L.app_id_row(app_id));
-            row = $(selector);
-          }
-          return row;
-        };
-
-        var poller = new LogCountPoller(app, {
-          interval: 5000,
-          success: function( json ) {
-            for (var ii=0; ii<json.rows.length; ii++) {
-              var result = json.rows[ii];
-              var row = row_for_app_id(result.key[0]);
-              row.find('td.color'+result.key[1]).text(result.value);
-            }
-            var d = new Date();
-            table.find('tbody.footer tr td:first-child').text('Updated '+d.toJSON());
-          }
-        });
-
-        function summary_table_setup() {
-          var str = '<tr><th>Application</th>';
-          for (ii in Logging.levels) {
-            str += '<th class="count color'+ii+'">'+Logging.levels[ii].capitalize()+'</th>'
-          }
-          str += '</tr>';
-          table.find('thead').append(str);
-          table.find('tbody.footer').append(
-              '<trd><td colspan="'+(Logging.levels.length)+'"></td><td><button class="play">Pause</button></td></tr>');
-        };
-
-        summary_table_setup();
-
-        $('button.play').click(function() {
-          if (poller.running) {
-            poller.stop();
-            $(this).text('Play');
-          } else {
-            poller.start();
-            $(this).text('Pause');
-          }
-        });
-        poller.start();
+        logging.app = app;
+        var table = logging.countTable({table: '#summary'});
+        table.setup();
       });
     </script>
   </head>
@@ -69,9 +24,9 @@
       <table id="summary" class="logging">
         <thead>
         </thead>
+        <tfoot>
+        </tfoot>
         <tbody class="content">
-        </tbody>
-        <tbody class="footer">
         </tbody>
       </table>
     </div>
