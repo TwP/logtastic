@@ -12,9 +12,9 @@
     <script src="script/grapher.js"></script>
     <script type="text/javascript" charset="utf-8">
       $.CouchApp(function(app) {
-        var L = new Logging(app);
-        var hourly = new Grapher(app, {
-          app_id: searchParams().app_id,
+        logging.app = app;
+        var hourly = logging.grapher({
+          app_id: logging.searchParams().app_id,
           type: 'hourly'
         });
 

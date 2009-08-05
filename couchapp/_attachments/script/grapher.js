@@ -1,16 +1,50 @@
 
-var Grapher = function( app, opts ) {
+/**
+ *
+ */
+logging.grapher = function( opts ) {
   var app_id = opts.app_id;
   var type = opts.type;
-  var step = 3600 * 1000;
+  var step = undefined;
+
+  if (!app_id && typeof app_id !== 'string') {
+    throw {
+      name: 'ArgumentError',
+      message: 'An app_id must be provided in order for graphs to be generated.'
+    }
+  }
+
+  switch (type) {
+  case 'hourly':
+    step = 3600 * 1000;
+    break;
+  case 'daily':
+    setp = 86400 * 1000;
+    break;
+  default:
+    throw {
+      name: 'ArgumentError',
+      message: 'Unknown graph type: ' + type
+    }
+  }
+
+  var grapher = new logging.Grapher(this.app, app_id, type, step);
+  grapher.reset();
+  return grapher;
+};
+
+logging.Grapher = function( app, app_id, type, step ) {
   var colors = ['#469', '#099', '#444', '#880', '#a22'];
   var datasets = null;
 
+  /**
+   *
+   */
   this.reset = function() {
     var ary = [];
-    $.each(Logging.levels, function(index, level) {
+    $.each(logging.levels, function(index, level) {
       ary.push({
-        label: level.capitalize(),
+        label: logging.levelName(index),
         color: colors[index],
         data: [],
         shadowSize: 0
@@ -18,9 +52,10 @@ var Grapher = function( app, opts ) {
     });
     datasets = ary;
   };
-  this.reset();
 
-  // TODO: document this function
+  /**
+   *
+   */
   function homogenize ( json, s, e ) {
     if (json.rows.length === 0) { return null; }
 
@@ -37,7 +72,7 @@ var Grapher = function( app, opts ) {
     for (var time=start; time<=end; time+=step) {
       var timestamp = (new Date(time)).toUTC();
 
-      for (var level=0; level<Logging.levels.length; level++) {
+      for (var level=0; level<logging.levels.length; level++) {
         if (!row) { row = rows.shift(); }
 
         if (row && row.key[1] === timestamp && row.key[2] === level) {
@@ -48,9 +83,11 @@ var Grapher = function( app, opts ) {
         }
       }
     }
-  }
+  };
 
-  // TODO: document
+  /**
+   *
+   */
   function display() {
     $.plot($("#"+type), datasets, {
       yaxis: { min: 0 },
@@ -59,9 +96,11 @@ var Grapher = function( app, opts ) {
         position: 'nw'
       }
     });
-  }
+  };
 
-  // TODO: document
+  /**
+   *
+   */
   this.poll = function() {
     var end = this.end();
     var start = (new Date(Date.parse(end) - (24*step))).toUTC();
@@ -76,7 +115,9 @@ var Grapher = function( app, opts ) {
     });
   };
 
-  // TODO: document
+  /**
+   *
+   */
   this.end = function() {
     time = (new Date()).getTime();
     time = new Date(time + step);
@@ -84,5 +125,4 @@ var Grapher = function( app, opts ) {
     time.setUTCSeconds(0);
     return time.toUTC();
   };
-
 };
