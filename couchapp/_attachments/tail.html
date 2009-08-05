@@ -12,33 +12,9 @@
     <script src="script/tail_table.js"></script>
     <script type="text/javascript" charset="utf-8">
       $.CouchApp(function(app) {
-        var L = new Logging(app);
-        var table = new TailTable(app, { table: '#tail' });
-
-        var poller = new LogEventPoller(app, {
-          interval: 5000,
-          success: function( json ) { table.addEvents(json); }
-        });
-
-        $('button.play').click(function() {
-          if (poller.running) {
-            poller.stop();
-            $(this).text('Play');
-          } else {
-            poller.start();
-            $(this).text('Pause');
-          }
-        });
-
-        $('#tail thead th.timestamp').click(function() {
-          table.toggleTimeFormat();
-        });
-
-        poller.start();
-
-        $(window).resize(function() {
-          table.initScrolling();
-        });
+        logging.app = app;
+        var table = logging.tailTable({table: '#tail'});
+        table.setup();
       });
     </script>
   </head>
