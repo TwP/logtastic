@@ -19,8 +19,26 @@
     </script>
   </head>
   <body>
+    <div id="header">
+      <h1>Logging</h1>
+      <ul>
+        <li><a href="index.html">Overview</a></li>
+        <li class="selected">Tail</li>
+      </ul>
+    </div>
+    <div id="sidebar">
+      <ul id="filter">
+        <li id="application" class="menu">
+          <span>Application</span>
+          <ul></ul>
+        </li>
+        <li id="level" class="menu">
+          <span>Level</span>
+          <ul></ul>
+        </li>
+      </ul>
+    </div>
     <div id="content">
-      <h1>CouchLog Tail</h1>
       <table id="tail" class="logging">
         <thead>
           <tr>
@@ -40,18 +58,6 @@
         <tbody>
         </tbody>
       </table>
-    </div>
-    <div id="sidebar">
-      <ul id="filter">
-        <li id="application" class="">
-          <span>Application</span>
-          <ul></ul>
-        </li>
-        <li id="level" class="">
-          <span>Level</span>
-          <ul></ul>
-        </li>
-      </ul>
     </div>
   </body>
 </html>

@@ -3,17 +3,49 @@
 @import url(reset.css);
 @import url(typography.css);
 
+#header {
+  display: block;
+  height: 7.0em;
+  width: 100%;
+}
+#header h1 {
+  color: #fff;
+  background-color: #333;
+  padding: 0.5em 42px 0.3em 42px;
+  margin: 0;
+  font-size: 2em;
+}
+#header ul {
+  display: block;
+  margin: 0;
+  padding: 0 42px;
+  color: #fff;
+  background-color: #161616;
+  font-size: 1.2em;
+}
+#header ul li {
+  display: inline;
+  margin: 0;
+  margin-right: 1.0em;
+  padding: 0;
+}
+#header ul li a {
+  color: #fff;
+  text-decoration: none;
+}
+#header ul li a:hover { background-color: #333 }
+
 #content {
   display: block;
-  padding-right: 210px;
+  padding: 0 220px 0 42px;
 }
 
 #sidebar {
-  height: 100%;
   position: absolute;
   right: 0;
-  top: 0;
-  width: 210px;
+  top: 7.0em;
+  width: 168px;
+  padding-right: 42px;
 }
 
 #filter,
@@ -25,6 +57,16 @@
 }
 #filter li {
   padding: 0 1.0em;
+}
+#filter li.menu {
+  margin-top: 0.5em;
+  margin-bottom: 1.0em;
+}
+#filter li.menu span {
+  color: #222;
+  font-size: 1.2em;
+  font-weight: bold;
+  text-shadow: #999 2px 1px 2px;
 }
 #filter ul {
   border: 1px solid #ccc;
