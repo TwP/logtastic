@@ -3,6 +3,12 @@
 @import url(reset.css);
 @import url(typography.css);
 
+a {
+  color: #469;
+  text-decoration: none;
+  font-weight: bold;
+}
+
 #header {
   display: block;
   height: 7.0em;
@@ -16,24 +22,36 @@
   font-size: 2em;
 }
 #header ul {
-  display: block;
+  list-style: none;
   margin: 0;
   padding: 0 42px;
+  height: 1.5em;
   color: #fff;
   background-color: #161616;
   font-size: 1.2em;
+  border-bottom: 3px solid #469;
 }
 #header ul li {
-  display: inline;
+  float: left;
   margin: 0;
   margin-right: 1.0em;
+  margin-left: -1.0em;
   padding: 0;
+  height: 1.5em;
+}
+#header ul li.selected {
+  background-color: #333;
+  padding: 0 1.0em;
 }
 #header ul li a {
+  display: block;
   color: #fff;
   text-decoration: none;
+  padding: 0 1.0em;
+  height: 1.5em;
+  font-weight: normal;
 }
-#header ul li a:hover { background-color: #333 }
+#header ul li a:hover { background-color: #469 }
 
 #content {
   display: block;
