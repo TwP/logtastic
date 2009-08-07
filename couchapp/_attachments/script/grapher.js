@@ -1,7 +1,4 @@
 
-/**
- *
- */
 logging.grapher = function( opts ) {
   var app_id = opts.app_id;
   var type = opts.type;
@@ -37,9 +34,6 @@ logging.Grapher = function( app, app_id, type, step ) {
   var colors = ['#469', '#099', '#444', '#880', '#a22'];
   var datasets = null;
 
-  /**
-   *
-   */
   this.reset = function() {
     var ary = [];
     $.each(logging.levels, function(index, level) {
@@ -53,9 +47,6 @@ logging.Grapher = function( app, app_id, type, step ) {
     datasets = ary;
   };
 
-  /**
-   *
-   */
   function homogenize ( json, s, e ) {
     if (json.rows.length === 0) { return null; }
 
@@ -85,9 +76,6 @@ logging.Grapher = function( app, app_id, type, step ) {
     }
   };
 
-  /**
-   *
-   */
   function display() {
     $.plot($("#"+type), datasets, {
       yaxis: { min: 0 },
@@ -99,9 +87,6 @@ logging.Grapher = function( app, app_id, type, step ) {
     });
   };
 
-  /**
-   *
-   */
   this.poll = function() {
     var end = this.end();
     var start = (new Date(Date.parse(end) - (24*step))).toUTC();
@@ -116,9 +101,6 @@ logging.Grapher = function( app, app_id, type, step ) {
     });
   };
 
-  /**
-   *
-   */
   this.end = function() {
     time = (new Date()).getTime();
     time = new Date(time + step);
