@@ -66,8 +66,8 @@ module Logging::Appenders
 
       @flush_thread = Thread.new(self) {
         loop {
-          Thread.stop unless @flush_events or closed?
           break if closed?
+          sleep(60) unless @flush_events or closed?
           sync {
             @flush_events = false
             @buffer, @flush_buffer = @flush_buffer, @buffer
@@ -75,6 +75,14 @@ module Logging::Appenders
           flush_events
         }
       }
+    end
+
+    # Close the appender and wait for the internal writer thread to finish.
+    #
+    def close( *args )
+      super
+      @flush_thread.join(60)
+      self
     end
 
     # Send all buffered log events to the CouchDB instance. If the messages
