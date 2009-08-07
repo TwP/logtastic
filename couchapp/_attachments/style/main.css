@@ -89,7 +89,7 @@ a {
   margin-bottom: 1.0em;
 }
 #filter li.menu span {
-  color: #222;
+  color: #469;
   font-size: 1.2em;
   font-weight: bold;
   text-shadow: #999 2px 1px 2px;
@@ -124,7 +124,21 @@ a {
 }
 
 table { width: auto }
-div.legend table tbody tr td {
+h2.graph {
+  clear: both;
+  color: #469;
+  text-shadow: #999 2px 1px 2px;
+  margin: 0;
+}
+h2.graph + div {
+  float: left;
+  margin-bottom: 2.0em;
+}
+h2.graph + div + div {
+  float: left;
+  margin: 1.0em 0 0 2.0em;
+}
+h2.graph + div + div table tbody tr td {
   padding: 0.2em 0.4em;
 }
 

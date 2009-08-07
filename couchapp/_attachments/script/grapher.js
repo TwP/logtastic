@@ -93,7 +93,8 @@ logging.Grapher = function( app, app_id, type, step ) {
       yaxis: { min: 0 },
       xaxis: { tickDecimals: 0, mode: 'time' },
       legend: {
-        position: 'nw'
+        show: true,
+        container: $('#'+type+'Legend')
       }
     });
   };
