@@ -136,7 +136,7 @@ logging.TailTable = function( app, table ) {
       if (time.interval_id !== 0) { clearInterval(time.interval_id); }
       time.interval_id = 0;
       time.format = 'normal';
-      $('thead th.timestamp', table).css('width', '9.0em');
+      $('thead th.timestamp', table).css('width', '10.0em');
       prettyDate();
     } else {
       time.format = 'pretty';

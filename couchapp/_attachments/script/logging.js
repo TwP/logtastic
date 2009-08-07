@@ -10,7 +10,7 @@ var logging = {};
  *
  * @type couch_db
  */
-logging.app = undefined;
+logging.app = null;
 
 /**
  * The names associated with numeric log levels.
@@ -20,7 +20,10 @@ logging.app = undefined;
 logging.levels = ['debug', 'info', 'warn', 'error', 'fatal'];
 
 /**
+ * Given a level number, returns a level name. If the level number does not
+ * correspond to a known level name then 'Unknown' is returned.
  *
+ * @parm {number} num the level number
  */
 logging.levelName = function( num ) {
   if (num >= 0 && num < this.levels.length) {
@@ -31,7 +34,11 @@ logging.levelName = function( num ) {
 };
 
 /**
+ * Takes a logging timestamp and returns a string representation that can be
+ * parsed by the javascript Date object. This method accepts either a CouchDB
+ * logging document or a timestamp string from a logging document.
  *
+ * @param {object} obj the CouchDB logging document or a timestamp string
  */
 logging.formatTimestamp = function( obj ) {
   var ts = obj.timestamp;
@@ -43,7 +50,11 @@ logging.formatTimestamp = function( obj ) {
 };
 
 /**
+ * Takes an <tt>app_id</tt> and returns a formatted version suitable for use as
+ * a CSS selector. This method does not prepend a hash symbol, so you will need
+ * to manually add that in order to select the desired element via JQuery.
  *
+ * @param {object} obj the CouchDB logging document or an app_id string
  */
 logging.cssSelector = function( obj ) {
   var app_id = obj.app_id;
@@ -52,7 +63,10 @@ logging.cssSelector = function( obj ) {
 };
 
 /**
- *
+ * Parses the search parameters from the page URI and returns them as members
+ * of an object. For example, if the URI has the following search string
+ * <tt>?app_id=Foo&level=1</tt> this method would return
+ * <tt>{'app_id':'Foo', 'level':1}</tt>.
  */
 logging.searchParams = function() {
   var obj = {};
