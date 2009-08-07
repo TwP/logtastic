@@ -5,18 +5,11 @@ h2. Logging CouchDB
 
 h3. Description
 
-Brings together CouchDB with the Log4(X) style logging frameworks. The goal is
-to collect log messages from most any application and display those messages in
-a convenient web interface. Some nice plots and summary data is provided.
+Brings together CouchDB with the Log4(X) style logging frameworks. The goal is to collect log messages from most any application and display those messages in a convenient web interface. Some nice plots and summary data is provided.
 
 h3. Features
 
-There are two components included with the logging-couchdb package. The first
-is a language specific appender that formats and posts log events to a CouchDB
-instance. The second is a _couchapp_ for viewing log messages stored in the
-CouchDB instance. A _couchapp_ is a web application that is stored in and served
-from a CouchDB instance. These two components work together to allow you to
-collect log messages and view them in a single location.
+There are two components included with the logging-couchdb package. The first is a language specific appender that formats and posts log events to a CouchDB instance. The second is a _couchapp_ for viewing log messages stored in the CouchDB instance. A _couchapp_ is a web application that is stored in and served from a CouchDB instance. These two components work together to allow you to collect log messages and view them in a single location.
 
 Log event appenders are provided for the following programming languages:
 
@@ -27,21 +20,13 @@ Contributions for other languages are welcome.
 
 h3. Installation
 
-First, you will need to "install":http://wiki.apache.org/couchdb/Installation
-CouchDB and get it running.
+First, you will need to "install":http://wiki.apache.org/couchdb/Installation CouchDB and get it running.
 
-Next, you will need to install
-"couchapp":http://github.com/jchris/couchapp/tree/master. This is a collection
-of Python scripts that simplify the process of developing and deploying a
-couchapp to a CouchDB instance. This tool will be used to deploy the
-logging-couchdb couchapp to your CouchDB instance.
+Next, you will need to install "couchapp":http://github.com/jchris/couchapp/tree/master. This is a collection of Python scripts that simplify the process of developing and deploying a couchapp to a CouchDB instance. This tool will be used to deploy the logging-couchdb couchapp to your CouchDB instance.
 
-Finally, you will need to install the appender for your chosen language. Each
-appender provides documentation on how to configure and use the appender in
-your own software.
+Finally, you will need to install the appender for your chosen language. Each appender provides documentation on how to configure and use the appender in your own software.
 
-It is highly recommended that you deploy the logging-couchdb couchapp before
-attempting to use any appender to log to your CouchDB instance.
+It is highly recommended that you deploy the logging-couchdb couchapp before attempting to use any appender to log to your CouchDB instance.
 
 h4. License
 
@@ -49,21 +34,8 @@ _The MIT License_
 
 Copyright (c) 2009
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sub-license, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sub-license, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
