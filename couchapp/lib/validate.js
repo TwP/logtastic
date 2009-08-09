@@ -18,7 +18,10 @@ function require() {
   for (var i=0; i < arguments.length; i++) {
     var field = arguments[i];
     message = "The '"+field+"' field is required.";
-    if (!newDoc[field]) forbidden(message);
+    if (newDoc[field] === null ||
+        newDoc[field] === undefined) {
+      forbidden(message);
+    }
   };
 };
 

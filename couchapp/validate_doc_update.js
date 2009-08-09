@@ -17,7 +17,7 @@ function( newDoc, oldDoc, userCtx ) {
 
   // the log level must be a number >= 0
   assert(typeof newDoc['level'] === 'number',
-         'Log event level must be a number');
+         'Log level must be a number');
   assert(newDoc['level'] >= 0,
-         'Log event level must be greater than or equal to zero');
+         'Log level must be greater than or equal to zero');
 }
