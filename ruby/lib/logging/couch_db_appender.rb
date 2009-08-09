@@ -60,27 +60,16 @@ module Logging::Appenders
       self.app_id = opts.getopt(:app_id, name)
 
       @db_uri = uri + '/' + db_name + '/_bulk_docs'
-      @flush_buffer = []
-      @flush_events = false
       configure_buffering(opts)
-
-      @flush_thread = Thread.new(self) {
-        loop {
-          break if closed?
-          sleep(60) unless @flush_events or closed?
-          sync {
-            @flush_events = false
-            @buffer, @flush_buffer = @flush_buffer, @buffer
-          }
-          flush_events
-        }
-      }
+      start_thread
     end
 
     # Close the appender and wait for the internal writer thread to finish.
     #
     def close( *args )
       super
+      Thread.pass until @flush_thread.status == 'sleep' or !@flush_thread.status
+      @flush_thread.wakeup if @flush_thread.status
       @flush_thread.join(60)
       self
     end
@@ -92,7 +81,7 @@ module Logging::Appenders
     def flush
       return self if buffer.empty?
       @flush_events = true
-      @flush_thread.wakeup
+      @flush_thread.wakeup if @flush_thread.status == 'sleep'
       self
     end
 
@@ -132,6 +121,7 @@ module Logging::Appenders
 
       payload = {:docs => @flush_buffer}.to_json
       RestClient.post(@db_uri, payload)
+      #JSON.parse(RestClient.post(@db_uri, payload))
       self
     rescue StandardError => err
       self.level = :off
@@ -140,6 +130,37 @@ module Logging::Appenders
       raise
     ensure
       @flush_buffer.clear
+    end
+
+    # Creats the flush thread that reads from the buffer and writes log
+    # events to the CouchDB instance.
+    #
+    def start_thread
+      @flush_buffer = []
+      @flush_events = false
+
+      @flush_thread = Thread.new(self) {
+        loop {
+          sleep(60) unless @flush_events or closed?
+
+          if closed?
+            sync {
+              @flush_events = false
+              @flush_buffer.concat @buffer
+              @buffer.clear
+            }
+            flush_events
+            break
+
+          else
+            sync {
+              @flush_events = false
+              @buffer, @flush_buffer = @flush_buffer, @buffer
+            }
+            flush_events
+          end
+        }  # loop
+      }  # Thread.new
     end
 
   end  # class CouchDB
