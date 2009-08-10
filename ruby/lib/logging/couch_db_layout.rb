@@ -51,7 +51,7 @@ module Logging::Layouts
     # Arguments to sprintf keyed to directive letters
     DIRECTIVE_TABLE = {
       'logger'    => 'event.logger',
-      'timestamp' => 'CouchDB.timestamp',
+      'timestamp' => 'CouchDB.timestamp(event.time)',
       'level'     => 'event.level',
       'message'   => 'format_obj(event.data)',
       'file'      => 'event.file',
@@ -61,7 +61,7 @@ module Logging::Layouts
       'thread_id' => 'Thread.current.object_id',
       'thread'    => 'Thread.current[:name]'
     }
-    TIME_FMT = '%Y-%m-%dT%H:%M:%S.%%dZ'
+    TIME_FMT = '%Y-%m-%dT%H:%M:%S.%%06dZ'
 
     # call-seq:
     #    CouchDB.create_format_method( layout )
@@ -87,8 +87,8 @@ module Logging::Layouts
     #
     # Returns a timestamp that can be sorted in CouchDB.
     #
-    def self.timestamp
-      utc = Time.now.utc
+    def self.timestamp( time = nil )
+      utc = (time || Time.now).utc
       utc.strftime(TIME_FMT) % utc.usec
     end
 
