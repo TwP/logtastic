@@ -149,7 +149,7 @@ public class CouchDbAppender extends AppenderSkeleton {
   }
 
   /**
-   * Close this appender.  
+   * Close this appender.
    *
    * <p>This will mark the appender as closed and then call {@link
    * #cleanUp} method.
@@ -163,7 +163,7 @@ public class CouchDbAppender extends AppenderSkeleton {
 
   /**
    * Drop the connection to the remote host and release the underlying
-   * connector thread if it has been created 
+   * connector thread if it has been created
    */
   public void cleanUp() {
   }
@@ -179,7 +179,7 @@ public class CouchDbAppender extends AppenderSkeleton {
 
   /**
    * The CouchDbAppender does not use a layout. Hence, this method
-   * returns <code>false</code>.  
+   * returns <code>false</code>.
    */
   public boolean requiresLayout() {
     return false;
@@ -276,35 +276,35 @@ public class CouchDbAppender extends AppenderSkeleton {
     public LoggingEventDocument() {}
     public LoggingEventDocument( LoggingEvent event ) { this.event = event; }
 
-    @JSONProperty( value = "_id", ignoreIfNull = true)
+    @JSONProperty(value = "_id", ignoreIfNull = true)
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
-    @JSONProperty( value = "_rev", ignoreIfNull = true)
+    @JSONProperty(value = "_rev", ignoreIfNull = true)
     public String getRevision() { return revision; }
     public void setRevision(String revision) { this.revision = revision; }
 
-    @JSONProperty( value = "_attachments", ignoreIfNull = true)
+    @JSONProperty(value = "_attachments", ignoreIfNull = true)
     @JSONTypeHint(Attachment.class)
     public Map<String,Attachment> getAttachments() { return null; }
     public void setAttachments(Map<String,Attachment> attachments) { return; }
 
-    @JSONProperty( value = "app_id", ignoreIfNull = true) 
+    @JSONProperty(value = "app_id", ignoreIfNull = true)
     public String getApplication() { return application; }
 
-    @JSONProperty( value = "timestamp", ignoreIfNull = true) 
+    @JSONProperty(value = "timestamp", ignoreIfNull = true)
     public String getTimeStamp() {
       Date date = new Date(event.getTimeStamp());
       return isoDateFormat.format(date);
     }
 
-    @JSONProperty( value = "level", ignoreIfNull = true) 
+    @JSONProperty(value = "level", ignoreIfNull = true)
     public int getLevel() { return event.getLevel().toInt(); }
 
-    @JSONProperty( value = "logger", ignoreIfNull = true) 
+    @JSONProperty(value = "logger", ignoreIfNull = true)
     public String getLoggerName() { return event.getLoggerName(); }
 
-    @JSONProperty( value = "message", ignoreIfNull = true) 
+    @JSONProperty(value = "message", ignoreIfNull = true)
     public Object getMessage() { return event.getMessage(); }
   }
 }
