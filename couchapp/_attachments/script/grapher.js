@@ -66,7 +66,8 @@ logging.Grapher = function( app, app_id, type, step ) {
       for (var level=0; level<logging.levels.length; level++) {
         if (!row) { row = rows.shift(); }
 
-        if (row && row.key[1] === timestamp && row.key[2] === level) {
+        if (row && row.key[1] === timestamp
+                && logging.levelMap[row.key[2]] === level) {
           datasets[level].data.push([time, row.value]);
           row = null;
         } else {

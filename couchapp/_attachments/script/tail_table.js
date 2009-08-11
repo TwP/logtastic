@@ -173,7 +173,7 @@ logging.TailTable = function( app, table ) {
       var doc = json.rows[ii].doc;
       var timestamp = logging.formatTimestamp(doc);
       tbody.prepend(
-        '<tr id="'+doc._id+'" class="color'+doc.level+'" style="display:none">'
+        '<tr id="'+doc._id+'" class="'+logging.cssColorClass(doc.level)+'" style="display:none">'
         + '<td data-timestamp="'+timestamp+'">'+prettyDate(timestamp)+'</td>'
         + '<td>'+doc.app_id+'</td>'
         + '<td>'+doc.logger+'</td>'

@@ -23,7 +23,8 @@ logging.CountTable = function( app, table ) {
   this.setup = function() {
     header = '<tr><th>Application</th>';
     for (ii in logging.levels) {
-      header += '<th class="count color'+ii+'">'+logging.levelName(ii)+'</th>'
+      header += '<th class="count ' + logging.cssColorClass(ii) + '">'
+             + logging.levelName(ii) + '</th>'
     }
     header += '</tr>';
     table.find('thead').append(header);
@@ -51,7 +52,7 @@ logging.CountTable = function( app, table ) {
       for (ii in json.rows) {
         row = json.rows[ii];
         tr = findOrCreateRow(row.key[0]);
-        $('td.color'+row.key[1], tr).text(row.value);
+        $('td.'+logging.cssColorClass(row.key[1]), tr).text(row.value);
       }
       updated();
     }
@@ -84,7 +85,7 @@ logging.CountTable = function( app, table ) {
     var str = '<tr id="'+logging.cssSelector(app_id)+'">'
         + '<td><a href="graphs.html?app_id='+app_id+'">'+app_id+'</a></td>';
     for (ii in logging.levels) {
-      str += '<td class="count color'+ii+'"></td>';
+      str += '<td class="count '+logging.cssColorClass(ii)+'">0</td>';
     }
     str += '</tr>';
     return str;

@@ -20,16 +20,53 @@ logging.app = null;
 logging.levels = ['debug', 'info', 'warn', 'error', 'fatal'];
 
 /**
+ *
+ */
+logging.levelMap = {
+  // Ruby logging levels
+  0: 0,
+  1: 1,
+  2: 2,
+  3: 3,
+  4: 4,
+  // Java Log4j levels
+  10000: 0,
+  20000: 1,
+  30000: 2,
+  40000: 3,
+  50000: 4,
+  // Python logging levels
+  10: 0,
+  20: 1,
+  30: 2,
+  40: 3,
+  50: 4
+}
+
+/**
  * Given a level number, returns a level name. If the level number does not
  * correspond to a known level name then 'Unknown' is returned.
  *
  * @parm {number} num the level number
  */
 logging.levelName = function( num ) {
-  if (num >= 0 && num < this.levels.length) {
-    return this.levels[num].capitalize();
+  ii = this.levelMap[num];
+  if (ii !== undefined) {
+    return this.levels[ii].capitalize();
   } else {
     return 'Unknown';
+  }
+};
+
+/**
+ *
+ */
+logging.cssColorClass = function( num ) {
+  ii = this.levelMap[num];
+  if (ii !== undefined) {
+    return 'color'+ii;
+  } else {
+    return '';
   }
 };
 
