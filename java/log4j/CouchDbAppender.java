@@ -1,14 +1,19 @@
 
 package com.pea53.log4j.couchdb;
 
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Hierarchy;
 import org.apache.log4j.helpers.LogLog;
-import org.apache.log4j.spi.ErrorCode;
 import org.apache.log4j.spi.LoggingEvent;
 
 import org.svenson.JSON;
@@ -90,18 +95,28 @@ import org.jcouchdb.document.Document;
 
 public class CouchDbAppender extends AppenderSkeleton {
 
-  static public final String DEFAULT_HOST     = "localhost";
-  static public final int    DEFAULT_PORT     = 5984;
-  static public final String DEFAULT_DATABASE = "logging";
+  public static final String DEFAULT_HOST        = "localhost";
+  public static final int    DEFAULT_PORT        = 5984;
+  public static final String DEFAULT_DATABASE    = "logging";
+  public static final int    DEFAULT_BUFFER_SIZE = 128;
 
   String host;
   int port;
   String database;
   String application;
   boolean locationInfo;
+  int bufferSize;
 
   private Database db;
   private SimpleDateFormat isoDateFormat;
+  private final ArrayList<LoggingEventDocument> buffer;
+  private final Thread dispatcher;
+  private static int discriminator = 0;
+
+  synchronized private static int getDiscriminator() {
+    discriminator = (discriminator + 1) % 1000;
+    return discriminator;
+  }
 
   /**
    * Connects to the CouchDB server at the default host and port.
@@ -136,9 +151,16 @@ public class CouchDbAppender extends AppenderSkeleton {
 
     application = null;
     locationInfo = false;
+    buffer = new ArrayList<LoggingEventDocument>();
+    bufferSize = DEFAULT_BUFFER_SIZE;
 
-    isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'%03dZ'");
     isoDateFormat.setTimeZone(TimeZone.getTimeZone("Etc/UTC"));
+
+    dispatcher = new Thread(new Dispatcher(this, buffer));
+    dispatcher.setDaemon(true);
+    dispatcher.setName("Dispatcher-" + dispatcher.getName());
+    dispatcher.start();
   }
 
   /**
@@ -154,27 +176,53 @@ public class CouchDbAppender extends AppenderSkeleton {
    * <p>This will mark the appender as closed and then call {@link
    * #cleanUp} method.
    */
-  synchronized public void close() {
+  public void close() {
     if (closed) { return; }
 
-    this.closed = true;
-    cleanUp();
-  }
+    synchronized (buffer) {
+      closed = true;
+      db.bulkCreateDocuments(buffer);
+      buffer.clear();
+      buffer.notifyAll();
+    }
 
-  /**
-   * Drop the connection to the remote host and release the underlying
-   * connector thread if it has been created
-   */
-  public void cleanUp() {
+    try {
+      dispatcher.join();
+    } catch (InterruptedException ex) {
+      Thread.currentThread().interrupt();
+      LogLog.error(
+        "Got an InterruptedException while waiting for the "
+        + "dispatcher to finish.", ex);
+    }
   }
 
   /**
    *
    */
   public void append( LoggingEvent event ) {
-    if (locationInfo) { event.getLocationInformation(); }
+    Date date = new Date(event.getTimeStamp());
+
+    // Set the NDC, MDC and thread name for the calling thread as these
+    // LoggingEvent fields were not set at event creation time.
+    event.getNDC();
+    event.getMDCCopy();
+    event.getThreadName();
+
+    if (locationInfo) {
+      event.getLocationInformation();
+    }
+
     LoggingEventDocument doc = new LoggingEventDocument(event);
-    db.createDocument(doc);
+    doc.setTimeStamp(String.format(
+      isoDateFormat.format(date), CouchDbAppender.getDiscriminator()
+    ));
+
+    synchronized (buffer) {
+      buffer.add(doc);
+      if (buffer.size() >= bufferSize) {
+        buffer.notifyAll();
+      }
+    }
   }
 
   /**
@@ -264,6 +312,32 @@ public class CouchDbAppender extends AppenderSkeleton {
   }
 
   /**
+   * Sets the number of messages allowed in the event buffer
+   * before the dispatch thread is executed. Changing the size
+   * will not affect messages already in the buffer.
+   *
+   * @param size buffer size, must be positive.
+   */
+  public void setBufferSize( int size ) {
+    if (size < 0) {
+      throw new java.lang.NegativeArraySizeException("size");
+    }
+
+    synchronized (buffer) {
+      this.bufferSize = (size < 1) ? 1 : size;
+      buffer.notifyAll();
+    }
+  }
+
+  /**
+   * Gets the current buffer size.
+   * @return the current value of the <b>BufferSize</b> option.
+   */
+  public int getBufferSize() {
+    return bufferSize;
+  }
+
+  /**
    *
    * @author Tim Pease
    * @since 0.1.0
@@ -271,6 +345,7 @@ public class CouchDbAppender extends AppenderSkeleton {
   public class LoggingEventDocument implements Document {
     private String id;
     private String revision;
+    private String timestamp;
     private LoggingEvent event;
 
     public LoggingEventDocument() {}
@@ -293,10 +368,8 @@ public class CouchDbAppender extends AppenderSkeleton {
     public String getApplication() { return application; }
 
     @JSONProperty(value = "timestamp", ignoreIfNull = true)
-    public String getTimeStamp() {
-      Date date = new Date(event.getTimeStamp());
-      return isoDateFormat.format(date);
-    }
+    public String getTimeStamp() { return timestamp; }
+    public void setTimeStamp( String timestamp ) { this.timestamp = timestamp; }
 
     @JSONProperty(value = "level", ignoreIfNull = true)
     public int getLevel() { return event.getLevel().toInt(); }
@@ -307,4 +380,76 @@ public class CouchDbAppender extends AppenderSkeleton {
     @JSONProperty(value = "message", ignoreIfNull = true)
     public Object getMessage() { return event.getMessage(); }
   }
+
+  /**
+   *
+   */
+  private class Dispatcher implements Runnable {
+    private final CouchDbAppender parent;
+    private final ArrayList<LoggingEventDocument> buffer;
+    private List<LoggingEventDocument> docs;
+    private final Hashtable mutex;
+
+    /**
+     *
+     */
+    public Dispatcher( CouchDbAppender parent,
+		       ArrayList<LoggingEventDocument> buffer ) {
+      this.parent = parent;
+      this.buffer = buffer;
+      docs = null;
+
+      // We need a mutex that will prevent Log4j from shutting down while we
+      // are in the middle of writing log messages to CouchDB. Log4j
+      // synchronizes on a hashtable of appenders during shutdown and during
+      // requests for loggers. This bit of Jva reflection is used to get a
+      // reference to the hashtable. We will synchronize on the hastable
+      // before writing to CouchDB.
+      try {
+        Hierarchy repo = (Hierarchy) LogManager.getLoggerRepository();
+        Class<?> clazz = repo.getClass();
+	Field field = clazz.getDeclaredField("ht");
+	field.setAccessible(true);
+	mutex = (Hashtable) field.get(repo);
+      } catch (Exception e) {
+	throw new RuntimeException(e);
+      }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void run() {
+      try {
+	while (!parent.closed) {
+          dispatch();
+	}
+      } catch (InterruptedException ex) {
+        Thread.currentThread().interrupt();  // reassert
+      }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void dispatch() throws InterruptedException {
+      try {
+        synchronized (buffer) {
+	  while (buffer.isEmpty() && !parent.closed) {
+            buffer.wait(60000);
+	  }
+
+	  if (parent.closed) { return; }
+
+          if (!buffer.isEmpty()) {
+            docs = (List<LoggingEventDocument>) buffer.clone();
+            buffer.clear();
+          }
+        }
+        
+        synchronized (mutex) {
+          if (docs != null) { db.bulkCreateDocuments(docs); }
+        }
+      }
+      finally { docs = null; }
+    }
+  }  // class Dispatcher
 }
