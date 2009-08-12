@@ -11,8 +11,7 @@
     <script src="script/logging.js"></script>
     <script src="script/grapher.js"></script>
     <script type="text/javascript" charset="utf-8">
-      $.CouchApp(function(app) {
-        logging.app = app;
+      logging.ready(function() {
         var app_id = logging.searchParams().app_id;
         var hourly = logging.grapher({
           app_id: app_id,

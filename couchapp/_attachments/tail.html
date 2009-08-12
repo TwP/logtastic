@@ -11,8 +11,7 @@
     <script src="script/log_event_poller.js"></script>
     <script src="script/tail_table.js"></script>
     <script type="text/javascript" charset="utf-8">
-      $.CouchApp(function(app) {
-        logging.app = app;
+      logging.ready(function() {
         var table = logging.tailTable({table: '#tail'});
         table.setup();
       });

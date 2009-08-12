@@ -56,6 +56,10 @@ logging.TailTable = function( app, table ) {
 
     $('thead th.timestamp', table).click(function() { toggleTimeFormat(); });
     $(window).resize(function() { initScrolling(); });
+
+    updateFilters();
+    filter();
+    poller.start();
   };
 
   /**
@@ -111,20 +115,14 @@ logging.TailTable = function( app, table ) {
       filters.columns.push($(this).text());
     });
 
-    var list = $('#level ul');
-    for (ii in logging.levels) {
-      list.append('<li class="selected">'+logging.levelName(ii)+'</li>');
-    }
+    list = $('#level ul');
+    logging.eachLevel(function(ii, level) {
+      list.append('<li class="selected">'+level+'</li>');
+    });
 
-    app.design.view('app_ids', {
-      group: true,
-      success: function(json) {
-        var list = $('#application ul');
-        for (ii in json.rows) {
-          list.append('<li class="selected">'+json.rows[ii].key+'</li>');
-        }
-        start();
-      }
+    list = $('#application ul');
+    logging.eachAppId(function(ii, app_id) {
+      list.append('<li class="selected">'+app_id+'</li>');
     });
   };
 

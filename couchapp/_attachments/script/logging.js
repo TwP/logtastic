@@ -5,12 +5,48 @@
 var logging = {};
 
 /**
+ *
+ */
+logging.ready = function( cmd ) {
+  $.CouchApp(function(app) {
+    var count = 0;
+    var app_ids = [];
+
+    function success() {
+      count += 1;
+      if (count >= 1) {
+        logging.app = app;
+        logging.app_ids = app_ids;
+        cmd();
+      }
+    }
+
+    app.design.view('app_ids', {
+      group: true,
+      success: function(json) {
+        for (ii in json.rows) {
+          app_ids.push(json.rows[ii].key);
+        }
+        success();
+      }
+    });
+  });
+}
+
+/**
  * The CouchDB instance that contains the Logging couchapp we will
  * communicate with.
  *
  * @type couch_db
  */
 logging.app = null;
+
+/**
+ * A list of all the unique "app_id" values in the CouchDB database.
+ *
+ * @type array
+ */
+logging.app_ids = null;
 
 /**
  * The names associated with numeric log levels.
@@ -118,6 +154,15 @@ logging.searchParams = function() {
   return obj;
 };
 
+logging.eachLevel = function( iter ) {
+  $.each(logging.levels, function(ii, val) {
+    iter(ii, logging.levelName(ii));
+  });
+};
+
+logging.eachAppId = function( iter ) {
+  $.each(logging.app_ids, function(ii, val) { iter(ii, val); });
+};
 
 // Helper methods below this line
 // -------------------------------------------------------------------------
