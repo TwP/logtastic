@@ -68,9 +68,9 @@ module Logging::Appenders
     #
     def close( *args )
       super
-      Thread.pass until @flush_thread.status == 'sleep' or !@flush_thread.status
-      @flush_thread.wakeup if @flush_thread.status
-      @flush_thread.join(60)
+      Thread.pass until @dispatcher.status == 'sleep' or !@dispatcher.status
+      @dispatcher.wakeup if @dispatcher.status
+      @dispatcher.join(60)
       self
     end
 
@@ -80,8 +80,8 @@ module Logging::Appenders
     #
     def flush
       return self if buffer.empty?
-      @flush_events = true
-      @flush_thread.wakeup if @flush_thread.status == 'sleep'
+      @dispatch = true
+      @dispatcher.wakeup if @dispatcher.status == 'sleep'
       self
     end
 
@@ -116,10 +116,10 @@ module Logging::Appenders
     # messages in the buffer are posted using the CouchDB bulk storage
     # semantics.
     #
-    def flush_events
-      return if @flush_buffer.empty?
+    def post_events
+      return if @dispatch_buffer.empty?
 
-      payload = {:docs => @flush_buffer}.to_json
+      payload = {:docs => @dispatch_buffer}.to_json
       RestClient.post(@db_uri, payload)
       #JSON.parse(RestClient.post(@db_uri, payload))
       self
@@ -129,35 +129,35 @@ module Logging::Appenders
       ::Logging.log_internal(-2) {err}
       raise
     ensure
-      @flush_buffer.clear
+      @dispatch_buffer.clear
     end
 
-    # Creats the flush thread that reads from the buffer and writes log
+    # Creats the dispatcher thread that reads from the buffer and writes log
     # events to the CouchDB instance.
     #
     def start_thread
-      @flush_buffer = []
-      @flush_events = false
+      @dispatch_buffer = []
+      @dispatch = false
 
-      @flush_thread = Thread.new(self) {
+      @dispatcher = Thread.new(self) {
         loop {
-          sleep(60) unless @flush_events or closed?
+          sleep(60) unless @dispatch or closed?
 
           if closed?
             sync {
-              @flush_events = false
-              @flush_buffer.concat @buffer
+              @dispatch = false
+              @dispatch_buffer.concat @buffer
               @buffer.clear
             }
-            flush_events
+            post_events
             break
 
           else
             sync {
-              @flush_events = false
-              @buffer, @flush_buffer = @flush_buffer, @buffer
+              @dispatch = false
+              @buffer, @dispatch_buffer = @dispatch_buffer, @buffer
             }
-            flush_events
+            post_events
           end
         }  # loop
       }  # Thread.new
