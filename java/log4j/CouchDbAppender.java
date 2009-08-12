@@ -23,77 +23,67 @@ import org.svenson.JSONTypeHint;
 import org.jcouchdb.db.Database;
 import org.jcouchdb.document.Attachment;
 import org.jcouchdb.document.Document;
+import org.jcouchdb.exception.CouchDBException;
 
 
 /**
-    Sends {@link LoggingEvent} objects to a CouchDB instance.
-
-    <p>The CouchDbAppender  has the following properties:
-
-    <ul>
-
-      <p><li>If sent to a {@link SocketNode}, remote logging is
-      non-intrusive as far as the log event is concerned. In other
-      words, the event will be logged with the same time stamp, {@link
-      org.apache.log4j.NDC}, location info as if it were logged locally by
-      the client.
-
-      <p><li>SocketAppenders do not use a layout. They ship a
-      serialized {@link LoggingEvent} object to the server side.
-
-      <p><li>Remote logging uses the TCP protocol. Consequently, if
-      the server is reachable, then log events will eventually arrive
-      at the server.
-
-      <p><li>If the remote server is down, the logging requests are
-      simply dropped. However, if and when the server comes back up,
-      then event transmission is resumed transparently. This
-      transparent reconneciton is performed by a <em>connector</em>
-      thread which periodically attempts to connect to the server.
-
-      <p><li>Logging events are automatically <em>buffered</em> by the
-      native TCP implementation. This means that if the link to server
-      is slow but still faster than the rate of (log) event production
-      by the client, the client will not be affected by the slow
-      network connection. However, if the network connection is slower
-      then the rate of event production, then the client can only
-      progress at the network rate. In particular, if the network link
-      to the the server is down, the client will be blocked.
-
-      <p>On the other hand, if the network link is up, but the server
-      is down, the client will not be blocked when making log requests
-      but the log events will be lost due to server unavailability.
-
-      <p><li>Even if a <code>SocketAppender</code> is no longer
-      attached to any category, it will not be garbage collected in
-      the presence of a connector thread. A connector thread exists
-      only if the connection to the server is down. To avoid this
-      garbage collection problem, you should {@link #close} the the
-      <code>SocketAppender</code> explicitly. See also next item.
-
-      <p>Long lived applications which create/destroy many
-      <code>SocketAppender</code> instances should be aware of this
-      garbage collection problem. Most other applications can safely
-      ignore it.
-
-      <p><li>If the JVM hosting the <code>SocketAppender</code> exits
-      before the <code>SocketAppender</code> is closed either
-      explicitly or subsequent to garbage collection, then there might
-      be untransmitted data in the pipe which might be lost. This is a
-      common problem on Windows based systems.
-
-      <p>To avoid lost data, it is usually sufficient to {@link
-      #close} the <code>SocketAppender</code> either explicitly or by
-      calling the {@link org.apache.log4j.LogManager#shutdown} method
-      before exiting the application.
-
-
-     </ul>
-
-    @author  Tim Pease
-    @since 0.1.0 */
-
-public class CouchDbAppender extends AppenderSkeleton {
+ * Sends {@link LoggingEvent} objects to a CouchDB instance.
+ *
+ * The CouchDBAppender  has the following properties:
+ *
+ * If sent to a {@link SocketNode}, remote logging is
+ * non-intrusive as far as the log event is concerned. In other
+ * words, the event will be logged with the same time stamp, {@link
+ * org.apache.log4j.NDC}, location info as if it were logged locally by
+ * the client.
+ *
+ * SocketAppenders do not use a layout. They ship a
+ * serialized {@link LoggingEvent} object to the server side.
+ *
+ * Remote logging uses the TCP protocol. Consequently, if
+ * the server is reachable, then log events will eventually arrive
+ * at the server.
+ *
+ * If the remote server is down, the logging requests are
+ * simply dropped. However, if and when the server comes back up,
+ * then event transmission is resumed transparently. This
+ * transparent reconneciton is performed by a <em>connector</em>
+ * thread which periodically attempts to connect to the server.
+ *
+ * Logging events are automatically <em>buffered</em> by the
+ * native TCP implementation. This means that if the link to server
+ * is slow but still faster than the rate of (log) event production
+ * by the client, the client will not be affected by the slow
+ * network connection. However, if the network connection is slower
+ * then the rate of event production, then the client can only
+ * progress at the network rate. In particular, if the network link
+ * to the the server is down, the client will be blocked.
+ *
+ * On the other hand, if the network link is up, but the server
+ * is down, the client will not be blocked when making log requests
+ * but the log events will be lost due to server unavailability.
+ *
+ * Even if a <code>SocketAppender</code> is no longer
+ * attached to any category, it will not be garbage collected in
+ * the presence of a connector thread. A connector thread exists
+ * only if the connection to the server is down. To avoid this
+ * garbage collection problem, you should {@link #close} the the
+ * <code>SocketAppender</code> explicitly. See also next item.
+ *
+ * Long lived applications which create/destroy many
+ * <code>SocketAppender</code> instances should be aware of this
+ * garbage collection problem. Most other applications can safely
+ * ignore it.
+ *
+ * To avoid lost data, it is usually sufficient to {@link
+ * #close} the <code>CouchDBAppender</code> either explicitly or by
+ * calling the {@link org.apache.log4j.LogManager#shutdown} method
+ * before exiting the application.
+ *
+ * @author  Tim Pease
+ * @since 0.1.0
+ */
+public class CouchDBAppender extends AppenderSkeleton {
 
   public static final String DEFAULT_HOST        = "localhost";
   public static final int    DEFAULT_PORT        = 5984;
@@ -121,7 +111,7 @@ public class CouchDbAppender extends AppenderSkeleton {
   /**
    * Connects to the CouchDB server at the default host and port.
    */
-  public CouchDbAppender() {
+  public CouchDBAppender() {
     this(DEFAULT_HOST, DEFAULT_PORT, DEFAULT_DATABASE);
   }
 
@@ -129,7 +119,7 @@ public class CouchDbAppender extends AppenderSkeleton {
    * Connects to the CouchDB server at <code>host</code> using the default
    * port.
    */
-  public CouchDbAppender( String host ) {
+  public CouchDBAppender( String host ) {
     this(host, DEFAULT_PORT, DEFAULT_DATABASE);
   }
 
@@ -137,14 +127,14 @@ public class CouchDbAppender extends AppenderSkeleton {
    * Connects to the CouchDB server at <code>host</code> and
    * <code>port</code>.
    */
-  public CouchDbAppender( String host, int port ) {
+  public CouchDBAppender( String host, int port ) {
     this(host, port, DEFAULT_DATABASE);
   }
 
   /**
    *
    */
-  public CouchDbAppender( String host, int port, String database ) {
+  public CouchDBAppender( String host, int port, String database ) {
     this.host = host;
     this.port = port;
     this.database = database;
@@ -181,7 +171,15 @@ public class CouchDbAppender extends AppenderSkeleton {
 
     synchronized (buffer) {
       closed = true;
-      db.bulkCreateDocuments(buffer);
+
+      try {
+        db.bulkCreateDocuments(buffer);
+      } catch (CouchDBException ex) {
+        LogLog.error(
+          "Could not send logging events to CouchDB at 'http://"
+          + host + ":" + port + "/" + database + "'", ex);
+      }
+
       buffer.clear();
       buffer.notifyAll();
     }
@@ -205,7 +203,7 @@ public class CouchDbAppender extends AppenderSkeleton {
     // Set the NDC, MDC and thread name for the calling thread as these
     // LoggingEvent fields were not set at event creation time.
     event.getNDC();
-    event.getMDCCopy();
+    // event.getMDCCopy();
     event.getThreadName();
 
     if (locationInfo) {
@@ -214,7 +212,7 @@ public class CouchDbAppender extends AppenderSkeleton {
 
     LoggingEventDocument doc = new LoggingEventDocument(event);
     doc.setTimeStamp(String.format(
-      isoDateFormat.format(date), CouchDbAppender.getDiscriminator()
+      isoDateFormat.format(date), CouchDBAppender.getDiscriminator()
     ));
 
     synchronized (buffer) {
@@ -226,7 +224,7 @@ public class CouchDbAppender extends AppenderSkeleton {
   }
 
   /**
-   * The CouchDbAppender does not use a layout. Hence, this method
+   * The CouchDBAppender does not use a layout. Hence, this method
    * returns <code>false</code>.
    */
   public boolean requiresLayout() {
@@ -379,13 +377,46 @@ public class CouchDbAppender extends AppenderSkeleton {
 
     @JSONProperty(value = "message", ignoreIfNull = true)
     public Object getMessage() { return event.getMessage(); }
+
+    @JSONProperty(value = "class", ignoreIfNull = true)
+    public String getClassName() {
+      if (!locationInfo) { return null; }
+      return event.getLocationInformation().getClassName();
+    }
+
+    @JSONProperty(value = "file", ignoreIfNull = true)
+    public String getFileName() {
+      if (!locationInfo) { return null; }
+      return event.getLocationInformation().getFileName();
+    }
+
+    @JSONProperty(value = "line", ignoreIfNull = true)
+    public String getLineNumber() {
+      if (!locationInfo) { return null; }
+      return event.getLocationInformation().getLineNumber();
+    }
+
+    @JSONProperty(value = "method", ignoreIfNull = true)
+    public String getMethodName() {
+      if (!locationInfo) { return null; }
+      return event.getLocationInformation().getMethodName();
+    }
+
+    @JSONProperty(value = "thread", ignoreIfNull = true)
+    public String getThreadName() { return event.getThreadName(); }
+
+    @JSONProperty(value = "throwable", ignoreIfNull = true)
+    public String[] getThrowable() { return event.getThrowableStrRep(); }
+
+    @JSONProperty(value = "NDC", ignoreIfNull = true)
+    public String getNDC() { return event.getNDC(); }
   }
 
   /**
    *
    */
   private class Dispatcher implements Runnable {
-    private final CouchDbAppender parent;
+    private final CouchDBAppender parent;
     private final ArrayList<LoggingEventDocument> buffer;
     private List<LoggingEventDocument> docs;
     private final Hashtable mutex;
@@ -393,7 +424,7 @@ public class CouchDbAppender extends AppenderSkeleton {
     /**
      *
      */
-    public Dispatcher( CouchDbAppender parent,
+    public Dispatcher( CouchDBAppender parent,
 		       ArrayList<LoggingEventDocument> buffer ) {
       this.parent = parent;
       this.buffer = buffer;
@@ -445,8 +476,16 @@ public class CouchDbAppender extends AppenderSkeleton {
           }
         }
         
+	// we don't want the LogManager.shutdown() method to run until
+	// after we have dispatched all the event documents to CouchDB
         synchronized (mutex) {
-          if (docs != null) { db.bulkCreateDocuments(docs); }
+          try {
+            if (docs != null) { db.bulkCreateDocuments(docs); }
+          } catch (CouchDBException ex) {
+            LogLog.error(
+              "Could not send logging events to CouchDB at 'http://"
+              + host + ":" + port + "/" + database + "'", ex);
+          }
         }
       }
       finally { docs = null; }
