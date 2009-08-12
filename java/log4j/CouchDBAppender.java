@@ -27,61 +27,49 @@ import org.jcouchdb.exception.CouchDBException;
 
 
 /**
- * Sends {@link LoggingEvent} objects to a CouchDB instance.
+ * Sends {@link org.apache.log4j.spi.LoggingEvent} objects to a CouchDB server.
  *
- * The CouchDBAppender  has the following properties:
+ * This appender does not use a layout. Logging events are formatted as JSON
+ * documents and then dispatched to the CouchDB server. See the {@link
+ * LoggingEventDocument} for information on which information from logging
+ * events are stored in the CouchDB server.
  *
- * If sent to a {@link SocketNode}, remote logging is
- * non-intrusive as far as the log event is concerned. In other
- * words, the event will be logged with the same time stamp, {@link
- * org.apache.log4j.NDC}, location info as if it were logged locally by
- * the client.
- *
- * SocketAppenders do not use a layout. They ship a
- * serialized {@link LoggingEvent} object to the server side.
- *
- * Remote logging uses the TCP protocol. Consequently, if
- * the server is reachable, then log events will eventually arrive
- * at the server.
- *
- * If the remote server is down, the logging requests are
- * simply dropped. However, if and when the server comes back up,
- * then event transmission is resumed transparently. This
- * transparent reconneciton is performed by a <em>connector</em>
- * thread which periodically attempts to connect to the server.
- *
- * Logging events are automatically <em>buffered</em> by the
- * native TCP implementation. This means that if the link to server
- * is slow but still faster than the rate of (log) event production
- * by the client, the client will not be affected by the slow
- * network connection. However, if the network connection is slower
- * then the rate of event production, then the client can only
- * progress at the network rate. In particular, if the network link
- * to the the server is down, the client will be blocked.
- *
- * On the other hand, if the network link is up, but the server
- * is down, the client will not be blocked when making log requests
- * but the log events will be lost due to server unavailability.
- *
- * Even if a <code>SocketAppender</code> is no longer
- * attached to any category, it will not be garbage collected in
- * the presence of a connector thread. A connector thread exists
- * only if the connection to the server is down. To avoid this
- * garbage collection problem, you should {@link #close} the the
- * <code>SocketAppender</code> explicitly. See also next item.
- *
- * Long lived applications which create/destroy many
- * <code>SocketAppender</code> instances should be aware of this
- * garbage collection problem. Most other applications can safely
- * ignore it.
+ * Events are dispatched asynchronously. The events are stored as JSON
+ * documents in a buffer. An internal thread empties the buffer and dispatches
+ * the JSON documents to the CouchDB server in bulk. Logging performance is
+ * minimally affected. However, some messages can be lost if care is not taken
+ * to close this appender before application exit.
  *
  * To avoid lost data, it is usually sufficient to {@link
  * #close} the <code>CouchDBAppender</code> either explicitly or by
  * calling the {@link org.apache.log4j.LogManager#shutdown} method
  * before exiting the application.
  *
+ * The CouchDBAppender has the following properties:
+ *
+ * <em>Host</em>: This is the host where the CoucDB server is running.
+ *
+ * <em>Port</em>: The port number where CouchDB is accepting connections.
+ *
+ * <em>Database</em>: The database name where logging events will be posted.
+ *
+ * <em>Application</em>: A unique String identifying the particular
+ * appcliation. This identifer is used in the logging CouchApp for filter log
+ * messages particular to this application. A convenient naming convention is
+ * something like "ApplicationName:HostName:PortNumber(or unique ID number)".
+ *
+ * <em>BufferSize</em>: Logging events are buffered and then sent in bulk to
+ * CouchDB. If the number of events in the buffer reaches the BufferSize, then
+ * the events are dispatched. Regardless of the number of events in the buffer,
+ * an attempt is made to dispatch events once every minute. If there are no
+ * events in the buffer then no action is taken.
+ *
+ * <em>LocationInfo</em>: When set to <em>true</em> location information about
+ * the logging event will be included in the document sent to CouchDB. This
+ * information includes the class, file, line, and method.
+ *
  * @author  Tim Pease
- * @since 0.1.0
+ * @since   0.1.0
  */
 public class CouchDBAppender extends AppenderSkeleton {
 
@@ -195,7 +183,8 @@ public class CouchDBAppender extends AppenderSkeleton {
   }
 
   /**
-   *
+   * Append the logging event to the internal buffer for later dispatch to the
+   * CouchDB server.
    */
   public void append( LoggingEvent event ) {
     Date date = new Date(event.getTimeStamp());
@@ -203,7 +192,7 @@ public class CouchDBAppender extends AppenderSkeleton {
     // Set the NDC, MDC and thread name for the calling thread as these
     // LoggingEvent fields were not set at event creation time.
     event.getNDC();
-    // event.getMDCCopy();
+    event.getMDCCopy();
     event.getThreadName();
 
     if (locationInfo) {
@@ -336,6 +325,8 @@ public class CouchDBAppender extends AppenderSkeleton {
   }
 
   /**
+   * This class maps a {@link LoggingEvent} instance to a JSON document
+   * suitable for dispatch to the CouchDB server.
    *
    * @author Tim Pease
    * @since 0.1.0
@@ -413,7 +404,7 @@ public class CouchDBAppender extends AppenderSkeleton {
   }
 
   /**
-   *
+   * The dispatcher thread logic.
    */
   private class Dispatcher implements Runnable {
     private final CouchDBAppender parent;
