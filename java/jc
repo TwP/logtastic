@@ -2,4 +2,4 @@
 
 javac -classpath jars/jcouchdb-0.9.1-1.jar:jars/log4j-1.2.15.jar:jars/svenson-1.3.1.jar \
       -d classes -Xlint:unchecked \
-      log4j/CouchDbAppender.java log4j/Test.java
+      log4j/CouchDBAppender.java log4j/Test.java
