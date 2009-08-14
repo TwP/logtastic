@@ -187,7 +187,7 @@ public class CouchDBAppender extends AppenderSkeleton {
    * CouchDB server.
    */
   public void append( LoggingEvent event ) {
-    Date date = new Date(event.getTimeStamp());
+    Date date = new Date(event.timeStamp);
 
     // Set the NDC, MDC and thread name for the calling thread as these
     // LoggingEvent fields were not set at event creation time.
