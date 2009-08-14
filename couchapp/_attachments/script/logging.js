@@ -154,14 +154,14 @@ logging.searchParams = function() {
   return obj;
 };
 
-logging.eachLevel = function( iter ) {
+logging.eachLevel = function( callback ) {
   $.each(logging.levels, function(ii, val) {
-    iter(ii, logging.levelName(ii));
+    callback(logging.levelName(ii));
   });
 };
 
-logging.eachAppId = function( iter ) {
-  $.each(logging.app_ids, function(ii, val) { iter(ii, val); });
+logging.eachAppId = function( callback ) {
+  $.each(logging.app_ids, function(ii, val) { callback(val); });
 };
 
 // Helper methods below this line
@@ -170,6 +170,12 @@ String.prototype.capitalize = function() {
   return this.replace(/\w+/g, function(s) {
     return s.charAt(0).toUpperCase() + s.substr(1).toLowerCase();
   });
+};
+
+String.prototype.compare = function( other ) {
+  if (this > other) { return 1; }
+  if (this < other) { return -1; }
+  return 0;
 };
 
 function f(n) {    // Format integers to have at least two digits.
@@ -183,4 +189,13 @@ Date.prototype.toUTC = function() {
          f(this.getUTCHours())     + ':' +
          f(this.getUTCMinutes())   + ':' +
          f(this.getUTCSeconds())   + ' UTC';
+};
+
+Date.prototype.toCouchDB = function() {
+    return this.getUTCFullYear()   + '-' +
+         f(this.getUTCMonth() + 1) + '-' +
+         f(this.getUTCDate())      + 'T' +
+         f(this.getUTCHours())     + ':' +
+         f(this.getUTCMinutes())   + ':' +
+         f(this.getUTCSeconds())   + '.000Z';
 };

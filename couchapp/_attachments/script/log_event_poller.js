@@ -99,7 +99,9 @@ logging.LogEventPoller = function( app, opts ) {
       include_docs: true,
       success: function(json) {
         if (json.rows.length > 0) {
-          timestamp = json.rows[0].doc.timestamp + '~';
+          //timestamp = json.rows[0].doc.timestamp + '~';
+          ms = Date.parse(logging.formatTimestamp(json.rows[0].doc.timestamp));
+          timestamp = (new Date(ms - 120000)).toCouchDB();
         }
         success(json);
         if (running) {

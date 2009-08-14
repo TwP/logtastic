@@ -9,11 +9,29 @@
     <script src="vendor/couchapp/jquery.couchapp.js"></script>
     <script src="script/logging.js"></script>
     <script src="script/log_event_poller.js"></script>
-    <script src="script/tail_table.js"></script>
+    <script src="script/event_table.js"></script>
+    <script src="script/event_filters.js"></script>
     <script type="text/javascript" charset="utf-8">
       logging.ready(function() {
-        var table = logging.tailTable({table: '#tail'});
+        var table = logging.eventTable({table: '#tail'});
+        var filters = logging.eventFilters({table: table});
         table.setup();
+
+        var poller = logging.logEventPoller({
+          interval: 5000,
+          success: function( json ) { table.addEvents(json); }
+        });
+        poller.start();
+
+        $('#tail tfoot button').click(function() {
+          if (poller.running()) {
+            poller.stop();
+            $(this).text('Play');
+          } else {
+            poller.start();
+            $(this).text('Pause');
+          }
+        });
       });
     </script>
   </head>
@@ -27,14 +45,6 @@
     </div>
     <div id="sidebar">
       <ul id="filter">
-        <li id="application" class="menu">
-          <span>Application</span>
-          <ul></ul>
-        </li>
-        <li id="level" class="menu">
-          <span>Level</span>
-          <ul></ul>
-        </li>
       </ul>
     </div>
     <div id="content">
@@ -51,7 +61,9 @@
         <tfoot>
           <tr>
             <td colspan="4">Latest: </td>
-            <td style="text-align:right"><button class="play">Pause</button></td>
+            <td style="text-align:right">
+              <button>Pause</button>
+            </td>
           </tr>
         </tfoot>
         <tbody>
