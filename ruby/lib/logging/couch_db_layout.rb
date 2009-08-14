@@ -92,6 +92,20 @@ module Logging::Layouts
       utc.strftime(TIME_FMT) % utc.usec
     end
 
+    # The JRuby platform does not have microsecond resolution, so we use a
+    # counter to discriminate between timestamps of the same value.
+    if RUBY_PLATFORM == 'java'
+      @@discriminator = 0
+      class << self
+        undef :timestamp
+        def timestamp( time = nil )
+          @@discriminator = (@@discriminator + 1) % 1_000_000
+          utc = (time || Time.now).utc
+          utc.strftime(TIME_FMT) % @@discriminator
+        end
+      end
+    end
+
     # call-seq:
     #    CouchDB.new( opts )
     #
