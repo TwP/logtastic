@@ -127,6 +127,10 @@ module Logging::Layouts
     def format_obj( value )
       case value
       when nil, Numeric, String, Array, Hash; value
+      when Exception
+        ary = ["<#{obj.class.name}> #{obj.message}"]
+        ary.concat(obj.backtrace) unless obj.backtrace.nil?
+        ary
       else super(value) end
     end
 

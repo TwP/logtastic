@@ -7,13 +7,6 @@
 Provides a CouchDB appender to the Ruby Logging framework. This appender
 enables log messages to be written to a CouchDB instance.
 
-== FEATURES:
-
-Provides an appender for the Ruby Logging framework that is capable of writing
-log messages to a CouchDB instance.
-
-Provides a "couchapp" that gives a nice web interface to the log messages.
-
 == SYNOPSIS:
 
   Logging.plugin :couch_db
@@ -23,8 +16,8 @@ Provides a "couchapp" that gives a nice web interface to the log messages.
 == REQUIREMENTS:
 
 logging
-couchrest
-couchapp
+rest-client
+json (or json_pure)
 
 == INSTALL:
 
