@@ -1,3 +1,8 @@
+== 1.0.2 / 2009-08-14
+
+* 1 bug fix
+  * Darn it! That timestamp needed fixing again!
+
 == 1.0.1 / 2009-08-14
 
 * 1 bug fix

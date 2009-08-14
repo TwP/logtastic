@@ -99,9 +99,9 @@ module Logging::Layouts
       class << self
         undef :timestamp
         def timestamp( time = nil )
-          @@discriminator = (@@discriminator + 1) % 1_000_000
+          @@discriminator = (@@discriminator + 1) % 1000
           utc = (time || Time.now).utc
-          utc.strftime(TIME_FMT) % @@discriminator
+          utc.strftime(TIME_FMT) % (utc.usec + @@discriminator)
         end
       end
     end
