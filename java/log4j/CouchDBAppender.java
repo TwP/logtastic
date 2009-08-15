@@ -1,19 +1,20 @@
 
 package com.pea53.log4j.couchdb;
 
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.LogManager;
-import org.apache.log4j.Hierarchy;
 import org.apache.log4j.helpers.LogLog;
+import org.apache.log4j.spi.AppenderAttachable;
 import org.apache.log4j.spi.LoggingEvent;
 
 import org.svenson.JSON;
@@ -71,7 +72,8 @@ import org.jcouchdb.exception.CouchDBException;
  * @author  Tim Pease
  * @since   0.1.0
  */
-public class CouchDBAppender extends AppenderSkeleton {
+public class CouchDBAppender extends AppenderSkeleton
+                             implements AppenderAttachable {
 
   public static final String DEFAULT_HOST        = "localhost";
   public static final int    DEFAULT_PORT        = 5984;
@@ -324,6 +326,20 @@ public class CouchDBAppender extends AppenderSkeleton {
     return bufferSize;
   }
 
+  // These are all noop methods that satisfy the AppenderAttachable interface.
+  // Implementing this interface ensures that our CouchDB appender is closed
+  // *before* the LogManager.shutdown method acquires a mutex on it's internal
+  // appender hashtable. This is important -- it allows the internal dispatch
+  // thread to flush all events to the CouchDB server.
+
+  public void addAppender(Appender newAppender) { return; }
+  public Enumeration getAllAppenders() { return null; }
+  public Appender getAppender(String name) { return null; }
+  public boolean isAttached(Appender appender) { return false; }
+  public void removeAllAppenders() { return; }
+  public void removeAppender(Appender appender) { return; }
+  public void removeAppender(String name) { return; }
+
   /**
    * This class maps a {@link LoggingEvent} instance to a JSON document
    * suitable for dispatch to the CouchDB server.
@@ -410,7 +426,6 @@ public class CouchDBAppender extends AppenderSkeleton {
     private final CouchDBAppender parent;
     private final ArrayList<LoggingEventDocument> buffer;
     private List<LoggingEventDocument> docs;
-    private final Hashtable mutex;
 
     /**
      *
@@ -420,22 +435,6 @@ public class CouchDBAppender extends AppenderSkeleton {
       this.parent = parent;
       this.buffer = buffer;
       docs = null;
-
-      // We need a mutex that will prevent Log4j from shutting down while we
-      // are in the middle of writing log messages to CouchDB. Log4j
-      // synchronizes on a hashtable of appenders during shutdown and during
-      // requests for loggers. This bit of Jva reflection is used to get a
-      // reference to the hashtable. We will synchronize on the hastable
-      // before writing to CouchDB.
-      try {
-        Hierarchy repo = (Hierarchy) LogManager.getLoggerRepository();
-        Class<?> clazz = repo.getClass();
-	Field field = clazz.getDeclaredField("ht");
-	field.setAccessible(true);
-	mutex = (Hashtable) field.get(repo);
-      } catch (Exception e) {
-	throw new RuntimeException(e);
-      }
     }
 
     /**
@@ -467,16 +466,12 @@ public class CouchDBAppender extends AppenderSkeleton {
           }
         }
         
-	// we don't want the LogManager.shutdown() method to run until
-	// after we have dispatched all the event documents to CouchDB
-        synchronized (mutex) {
-          try {
-            if (docs != null) { db.bulkCreateDocuments(docs); }
-          } catch (CouchDBException ex) {
-            LogLog.error(
-              "Could not send logging events to CouchDB at 'http://"
-              + host + ":" + port + "/" + database + "'", ex);
-          }
+        try {
+          if (docs != null) { db.bulkCreateDocuments(docs); }
+        } catch (CouchDBException ex) {
+          LogLog.error(
+            "Could not send logging events to CouchDB at 'http://"
+            + host + ":" + port + "/" + database + "'", ex);
         }
       }
       finally { docs = null; }
