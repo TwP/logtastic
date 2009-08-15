@@ -20,4 +20,8 @@ function( newDoc, oldDoc, userCtx ) {
          'Log level must be a number');
   assert(newDoc['level'] >= 0,
          'Log level must be greater than or equal to zero');
+
+  // the app_id cannot be empty
+  assert(typeof newDoc['app_id'] === 'string' && newDoc['app_id'] !== '',
+         'The app_id must be a non-empty string');
 }
