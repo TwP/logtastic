@@ -67,14 +67,14 @@ logging.EventTable = function( app, table ) {
   this.prepend = function( doc ) {
     if (document.getElementById(doc._id)) { return; }
     tbody.prepend(row(doc));
-    if (show(doc)) { $('#'+doc._id).fadeIn('fast'); }
+    showRow(doc);
     time.head = doc.timestamp;
   };
 
   this.append = function( doc ) {
     if (document.getElementById(doc._id)) { return; }
     tbody.append(row(doc));
-    if (show(doc)) { $('#'+doc._id).fadeIn('fast'); }
+    showRow(doc);
     time.tail = doc.timestamp;
   };
 
@@ -106,7 +106,7 @@ logging.EventTable = function( app, table ) {
       ts = tr.attr('data-sortby');
       if (doc.timestamp.compare(ts) >= 0) {
         tr.before(row(doc));
-        if (show(doc)) { $('#'+doc._id).fadeIn('fast'); }
+        showRow(doc);
         return false;  // break out of the each loop
       }
     });
@@ -181,7 +181,19 @@ logging.EventTable = function( app, table ) {
         + '<td>'+doc.app_id+'</td>'
         + '<td>'+doc.logger+'</td>'
         + '<td>'+logging.levelName(doc.level)+'</td>'
-        + '<td>'+doc.message+'</td>'
+        + '<td></td>'
         + '</tr>'
+  };
+
+  /**
+   *
+   */
+  function showRow( doc ) {
+    msg = typeof doc.message === 'string' ?
+          doc.message : JSON.stringify(doc.message);
+
+    r = $('#'+doc._id);
+    $('td:last-child', r).text(msg);
+    if (show(doc)) { r.fadeIn('fast'); }
   };
 };
