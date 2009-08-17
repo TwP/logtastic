@@ -47,7 +47,7 @@ logging.Grapher = function( app, app_id, type, step ) {
     datasets = ary;
   };
 
-  function homogenize ( json, s, e ) {
+  function homegenize( json, s, e ) {
     if (json.rows.length === 0) { return null; }
 
     var rows   = json.rows,
@@ -58,22 +58,28 @@ logging.Grapher = function( app, app_id, type, step ) {
     end.setUTCMinutes(0);
     end.setUTCSeconds(0);
 
-    var row = null;
+    var row = null,
+        data = {zeros: []};
+    for (ii in logging.levels) { data.zeros.push(0); }
 
     for (var time=start; time<=end; time+=step) {
-      var timestamp = (new Date(time)).toUTC();
+      timestamp = (new Date(time)).toUTC();
+      levels = data[timestamp] = data.zeros.slice(0);
 
-      for (var level=0; level<logging.levels.length; level++) {
-        if (!row) { row = rows.shift(); }
+      if (!row) { row = rows.shift(); }
 
-        if (row && row.key[1] === timestamp
-                && logging.levelMap[row.key[2]] === level) {
-          datasets[level].data.push([time, row.value]);
-          row = null;
-        } else {
-          datasets[level].data.push([time, 0]);
-        }
+      while (row && row.key[1] === timestamp) {
+        level = logging.levelMap[row.key[2]];
+        levels[level] += row.value;
+        row = rows.shift();
       }
+    }
+
+    for (var time=start; time<=end; time+=step) {
+      timestamp = (new Date(time)).toUTC();
+      $.each(data[timestamp], function(ii, val) {
+        datasets[ii].data.push([time, val]);
+      });
     }
   };
 
@@ -96,7 +102,7 @@ logging.Grapher = function( app, app_id, type, step ) {
       startkey: [app_id, start],
       endkey: [app_id, end],
       success: function(json) {
-        homogenize(json, start, end);
+        homegenize(json, start, end);
         display();
       }
     });
