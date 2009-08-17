@@ -138,14 +138,15 @@ module Logging::Layouts
     # Take the given _value_ and convert it into a format suitable for use
     # in a JSON object structure.
     #
-    def format_obj( value )
-      case value
-      when nil, Numeric, String, Array, Hash; value
+    def format_obj( obj )
+      case obj
+      when nil, Numeric, String, Array, Hash
+        obj
       when Exception
         ary = ["<#{obj.class.name}> #{obj.message}"]
         ary.concat(obj.backtrace) unless obj.backtrace.nil?
         ary
-      else super(value) end
+      else super(obj) end
     end
 
   end  # class CouchDB
