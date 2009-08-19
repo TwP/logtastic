@@ -123,6 +123,8 @@ module Logging::Appenders
       RestClient.post(@db_uri, payload)
       #JSON.parse(RestClient.post(@db_uri, payload))
       self
+    rescue Errno::EINTR
+      return self
     rescue StandardError => err
       self.level = :off
       ::Logging.log_internal {"appender #{name.inspect} has been disabled"}
