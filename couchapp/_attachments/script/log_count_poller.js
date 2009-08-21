@@ -18,7 +18,7 @@ logging.logCountPoller = function( opts ) {
   }
 
   if (!opts.interval) { opts.interval = 5000; }
-  return new logging.LogCountPoller(this.app, opts);
+  return new logging.LogCountPoller(opts);
 };
 
 /**
@@ -29,11 +29,10 @@ logging.logCountPoller = function( opts ) {
  * instance and request the latest log event counts from the database.
  *
  * @extends Function
- * @param {couchdb} app the CouchDB application
  * @param {object} opts optional parameters
  * @see logging.logCountPoller
  */
-logging.LogCountPoller = function( app, opts ) {
+logging.LogCountPoller = function( opts ) {
   var success = opts.success;
   var interval = opts.interval;
   var running = false;
@@ -103,7 +102,7 @@ logging.LogCountPoller = function( app, opts ) {
       }
     };
 
-    app.design.view('count', opts);
+    logging.view('count', opts);
     return null;
   };
 };

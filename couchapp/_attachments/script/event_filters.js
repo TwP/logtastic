@@ -6,7 +6,7 @@ logging.eventFilters = function( opts ) {
   if (!opts.table) {
     throw {
       name: 'ArgumentError',
-      message: 'A table function must be provided.'
+      message: 'A table JQuery object must be provided.'
     }
   }
 
@@ -29,7 +29,8 @@ logging.EventFilters = function( table ) {
     }
   };
 
-  list = '<li id="application" class="menu">'
+  list = '<ul id="filter">'
+       + '<li id="application" class="menu">'
        + '<span>Application</span>'
        + '<ul>';
   logging.eachAppId(function(app_id) {
@@ -43,8 +44,8 @@ logging.EventFilters = function( table ) {
   logging.eachLevel(function(level) {
     list += '<li class="selected">'+level+'</li>';
   });
-  list += '</ul></li>';
-  $('#filter').append(list);
+  list += '</ul></li></ul>';
+  $('#sidebar').append(list);
 
   $('#filter').bind('click', function(e) {
     if (e.target.nodeName !== 'LI') { return; }

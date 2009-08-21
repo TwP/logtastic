@@ -3,8 +3,7 @@
  * Returns a poller that will make periodic AJAX calls to the CouchDB instance
  * and request the latest log event douments from the database. The user needs
  * to supply a <tt>success</tt> function that can be called with the returned
- * JSON documents. Optionally, the uesr can supply a polling <tt>interval</tt>
- * in milliseconds.
+ * JSON documents.
  *
  * @param {object} opts optional parameters
  * @returns {logging.LogEventPoller} an AJAX poller for log events
@@ -17,8 +16,7 @@ logging.logEventPoller = function( opts ) {
     }
   }
 
-  if (!opts.interval) { opts.interval = 5000; }
-  return new logging.LogEventPoller(this.app, opts);
+  return new logging.LogEventPoller(opts);
 };
 
 /**
@@ -29,15 +27,14 @@ logging.logEventPoller = function( opts ) {
  * instance and request the latest log event documents from the database.
  *
  * @extends Function
- * @param {couchdb} app the CouchDB application
  * @param {object} opts optional parameters
  * @see logging.logEventPoller
  */
-logging.LogEventPoller = function( app, opts ) {
+logging.LogEventPoller = function( opts ) {
   var success = opts.success;
-  var interval = opts.interval;
+  var interval = 5000;
   var running = false;
-  var timeoutId = 0;
+  var timeoutId = null;
   var timestamp = null;
 
   /**
@@ -76,8 +73,8 @@ logging.LogEventPoller = function( app, opts ) {
   this.stop = function() {
     if (!running) { return this; }
     running = false;
-    if (timeoutId !== 0) { clearTimeout(timeoutId); }
-    timeoutId = 0;
+    clearTimeout(timeoutId);
+    timeoutId = null;
     return this;
   };
 
@@ -92,7 +89,7 @@ logging.LogEventPoller = function( app, opts ) {
    * @returns {null} null.
    * */
   function poll() {
-    if (!running || timeoutId !== 0) { return null; }
+    if (!running || timeoutId) { return null; }
 
     opts = {
       descending: true,
@@ -105,7 +102,7 @@ logging.LogEventPoller = function( app, opts ) {
         }
         success(json);
         if (running) {
-          timeoutId = setTimeout(function() { timeoutId = 0; poll(); }, interval);
+          timeoutId = setTimeout(function() { timeoutId = null; poll(); }, interval);
         }
       }
     };
@@ -113,7 +110,53 @@ logging.LogEventPoller = function( app, opts ) {
     if (timestamp) { opts.endkey = timestamp; }
     else { opts.limit = 23; }
 
-    app.design.view('events', opts);
+    logging.view('events', opts);
     return null;
   };
+
+  var slider = function( callback ) {
+    $('#sidebar').prepend(
+      '<div id="interval">' +
+      '  <label>Poll interval:' +
+      '    <input type="range" min="1" max="30" value="5" size="3">' +
+      '    <span class="secs">5</span> second(s)' +
+      '  </label>' +
+      '</div>'
+    );
+
+    var input = $('#interval input');
+    input.val(parseInt($.cookies.get("pollinterval", "5")) || 5);
+
+    function updateInterval( value ) {
+      if (isNaN(value)) {
+        value = 5;
+        input.val(value);
+      }
+      $.cookies.set("pollinterval", value);
+      callback(value);
+    };
+
+    if (input[0].type === 'range') {
+      input.bind('input', function() {
+        updateInterval(this.value);
+        $('#interval span.secs').text(this.value);
+      });
+    } else {
+      input.bind('change', function() {
+        updateInterval(this.value);
+      });
+      $('#interval span.secs').hide();
+    }
+    updateInterval(input.val());
+  };
+
+  slider(function(value) {
+    interval = parseInt(value, 10) * 1000;
+    if (running) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+      poll();
+    }
+  });
+
 };

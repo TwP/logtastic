@@ -9,13 +9,13 @@ logging.countTable = function( opts ) {
       message: 'A table selector must be provided.'
     }
   }
-  return new logging.CountTable(this.app, $(opts.table));
+  return new logging.CountTable($(opts.table));
 };
 
 /**
  *
  */
-logging.CountTable = function( app, table ) {
+logging.CountTable = function( table ) {
 
   /**
    *

@@ -63,14 +63,14 @@ a {
 
 #content {
   display: block;
-  padding: 0 220px 0 42px;
+  padding: 0 240px 0 42px;
 }
 
 #sidebar {
   position: absolute;
   right: 0;
   top: 7.0em;
-  width: 168px;
+  width: 188px;
   padding-right: 42px;
 }
 
@@ -178,6 +178,7 @@ table.logging tfoot td:last-child {
   -webkit-border-bottom-right-radius: 7px;
 }
 
+
 #summary { width: 45.0em }
 #summary td.count,
 #summary thead th.count { text-align: center; width: 5.0em }
@@ -207,4 +208,16 @@ table.logging tfoot td:last-child {
 #tail tr.color2 { background: #fbfbfb; border-color: #ddd; color: #444 }
 #tail tr.color1 { background: #e7ffff; border-color: #cee; color: #099 }
 #tail tr.color0 { background: #e7eeff; border-color: #cde; color: #469 }
+
+
+#inspector table { width: 100%; table-layout: fixed }
+#inspector table thead th:first-child { width: 8.0em }
+#inspector table tbody tr:last-child td:first-child {
+  -moz-border-radius-bottomleft: 7px;
+  -webkit-border-bottom-left-radius: 7px;
+}
+#inspector table tbody tr:last-child td:last-child {
+  -moz-border-radius-bottomright: 7px;
+  -webkit-border-bottom-right-radius: 7px;
+}
 

@@ -8,20 +8,82 @@ var logging = {};
  *
  */
 logging.ready = function( cmd ) {
-  $.CouchApp(function(app) {
+
+  String.prototype.capitalize = function() {
+    return this.replace(/\w+/g, function(s) {
+      return s.charAt(0).toUpperCase() + s.substr(1).toLowerCase();
+    });
+  };
+
+  String.prototype.compare = function( other ) {
+    if (this > other) { return 1; }
+    if (this < other) { return -1; }
+    return 0;
+  };
+
+  function f(n) {    // Format integers to have at least two digits.
+    return n < 10 ? '0' + n : n;
+  }
+
+  Date.prototype.toUTC = function() {
+      return this.getUTCFullYear()   + '/' +
+           f(this.getUTCMonth() + 1) + '/' +
+           f(this.getUTCDate())      + ' ' +
+           f(this.getUTCHours())     + ':' +
+           f(this.getUTCMinutes())   + ':' +
+           f(this.getUTCSeconds())   + ' UTC';
+  };
+
+  Date.prototype.toCouchDB = function() {
+      return this.getUTCFullYear()   + '-' +
+           f(this.getUTCMonth() + 1) + '-' +
+           f(this.getUTCDate())      + 'T' +
+           f(this.getUTCHours())     + ':' +
+           f(this.getUTCMinutes())   + ':' +
+           f(this.getUTCSeconds())   + '.000Z';
+  };
+
+  Date.prototype.toJSON = function() {
+      return this.getUTCFullYear()   + '/' +
+           f(this.getUTCMonth() + 1) + '/' +
+           f(this.getUTCDate())      + ' ' +
+           f(this.getUTCHours())     + ':' +
+           f(this.getUTCMinutes())   + ':' +
+           f(this.getUTCSeconds())   + ' +0000';
+  };
+
+  // This function will be executed when the document is ready
+  $(function() {
+    var dbname = document.location.href.split('/')[3];
+    var dname = unescape(document.location.href).split('/')[5];
+    var db = $.couch.db(dbname);
+
+    /**
+     *
+     */
+    logging.view = function( view, opts ) {
+      db.view(dname+'/'+view, opts);
+    };
+
+    /**
+     *
+     */
+    logging.doc = function( id, options ) {
+      db.openDoc(id, options);
+    };
+
     var count = 0;
     var app_ids = [];
 
     function success() {
       count += 1;
       if (count >= 1) {
-        logging.app = app;
         logging.app_ids = app_ids;
         cmd();
       }
     }
 
-    app.design.view('app_ids', {
+    logging.view('app_ids', {
       group: true,
       success: function(json) {
         for (ii in json.rows) {
@@ -31,15 +93,7 @@ logging.ready = function( cmd ) {
       }
     });
   });
-}
-
-/**
- * The CouchDB instance that contains the Logging couchapp we will
- * communicate with.
- *
- * @type couch_db
- */
-logging.app = null;
+};
 
 /**
  * A list of all the unique "app_id" values in the CouchDB database.
@@ -154,48 +208,41 @@ logging.searchParams = function() {
   return obj;
 };
 
+/**
+ *
+ */
 logging.eachLevel = function( callback ) {
   $.each(logging.levels, function(ii, val) {
     callback(logging.levelName(ii));
   });
 };
 
+/**
+ *
+ */
 logging.eachAppId = function( callback ) {
   $.each(logging.app_ids, function(ii, val) { callback(val); });
 };
 
-// Helper methods below this line
-// -------------------------------------------------------------------------
-String.prototype.capitalize = function() {
-  return this.replace(/\w+/g, function(s) {
-    return s.charAt(0).toUpperCase() + s.substr(1).toLowerCase();
-  });
-};
+/**
+ *
+ */
+logging.prettyDate = function( time ) {
+  var date = new Date(time),
+      diff = (((new Date()).getTime() - date.getTime()) / 1000),
+      day_diff = Math.floor(diff / 86400);
 
-String.prototype.compare = function( other ) {
-  if (this > other) { return 1; }
-  if (this < other) { return -1; }
-  return 0;
-};
+  // if ( isNaN(day_diff) || day_diff < 0 || day_diff >= 31 ) return;
 
-function f(n) {    // Format integers to have at least two digits.
-  return n < 10 ? '0' + n : n;
-}
-
-Date.prototype.toUTC = function() {
-    return this.getUTCFullYear()   + '/' +
-         f(this.getUTCMonth() + 1) + '/' +
-         f(this.getUTCDate())      + ' ' +
-         f(this.getUTCHours())     + ':' +
-         f(this.getUTCMinutes())   + ':' +
-         f(this.getUTCSeconds())   + ' UTC';
-};
-
-Date.prototype.toCouchDB = function() {
-    return this.getUTCFullYear()   + '-' +
-         f(this.getUTCMonth() + 1) + '-' +
-         f(this.getUTCDate())      + 'T' +
-         f(this.getUTCHours())     + ':' +
-         f(this.getUTCMinutes())   + ':' +
-         f(this.getUTCSeconds())   + '.000Z';
+  return day_diff < 1 && (
+                  diff < 60 && "just now" ||
+                  diff < 120 && "1 minute ago" ||
+                  diff < 3600 && Math.floor( diff / 60 ) + " minutes ago" ||
+                  diff < 7200 && "1 hour ago" ||
+                  diff < 86400 && Math.floor( diff / 3600 ) + " hours ago") ||
+          day_diff == 1 && "yesterday" ||
+          day_diff < 21 && day_diff + " days ago" ||
+          day_diff < 45 && Math.ceil( day_diff / 7 ) + " weeks ago" ||
+          day_diff < 730 && Math.ceil( day_diff / 31 ) + " months ago" ||
+          Math.ceil( day_diff / 365 ) + " years ago";
 };

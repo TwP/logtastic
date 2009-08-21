@@ -10,13 +10,13 @@ logging.eventTable = function( opts ) {
     }
   }
 
-  return new logging.EventTable(this.app, $(opts.table));
+  return new logging.EventTable($(opts.table));
 };
 
 /**
  *
  */
-logging.EventTable = function( app, table ) {
+logging.EventTable = function( table ) {
 
   var tbody = $('tbody', table);
 
@@ -138,7 +138,7 @@ logging.EventTable = function( app, table ) {
   function prettyDate( timestamp ) {
     if (arguments.length == 1) {
       if (time.format === 'pretty') {
-        return app.prettyDate(timestamp);
+        return logging.prettyDate(timestamp);
       } else {
         return timestamp.replace(/ UTC$/, '');
       }

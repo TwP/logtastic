@@ -25,12 +25,12 @@ logging.grapher = function( opts ) {
     }
   }
 
-  var grapher = new logging.Grapher(this.app, app_id, type, step);
+  var grapher = new logging.Grapher(app_id, type, step);
   grapher.reset();
   return grapher;
 };
 
-logging.Grapher = function( app, app_id, type, step ) {
+logging.Grapher = function( app_id, type, step ) {
   var colors = ['#469', '#099', '#444', '#880', '#a22'];
   var datasets = null;
 
@@ -97,7 +97,7 @@ logging.Grapher = function( app, app_id, type, step ) {
   this.poll = function() {
     var end = this.end();
     var start = (new Date(Date.parse(end) - (24*step))).toUTC();
-    app.design.view(type, {
+    logging.view(type, {
       group: true,
       startkey: [app_id, start],
       endkey: [app_id, end],
