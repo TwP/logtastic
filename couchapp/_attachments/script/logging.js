@@ -81,11 +81,11 @@ logging.ready = function( cmd ) {
       }
     }
 
-    logging.view('app_ids', {
-      group: true,
+    logging.view('latest', {
+      group_level: 1,
       success: function(json) {
         for (ii in json.rows) {
-          app_ids.push(json.rows[ii].key);
+          app_ids.push(json.rows[ii].key[0]);
         }
         success();
       }
