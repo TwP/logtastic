@@ -212,12 +212,32 @@ table.logging tfoot td:last-child {
 
 #inspector table { width: 100%; table-layout: fixed }
 #inspector table thead th:first-child { width: 8.0em }
-#inspector table tbody tr:last-child td:first-child {
+#inspector table tbody tr:last-child th {
+  text-shadow: none;
   -moz-border-radius-bottomleft: 7px;
   -webkit-border-bottom-left-radius: 7px;
 }
-#inspector table tbody tr:last-child td:last-child {
+#inspector table tbody tr:last-child td {
   -moz-border-radius-bottomright: 7px;
   -webkit-border-bottom-right-radius: 7px;
 }
+#inspector table tbody tr.even th,
+#inspector table tbody tr.even td { background: #feffea }
 
+#inspector code.color4 { color: #a22 }
+#inspector code.color3 { color: #880 }
+#inspector code.color2 { color: #444 }
+#inspector code.color1 { color: #099 }
+#inspector code.color0 { color: #469 }
+
+code, tt, pre { font-family: "DejaVu Sans Mono",Monaco,monospace; }
+code.label { color: #333; }
+code.key { color: #333; font-weight: bold; }
+code.string { color: #393; }
+code.number, code.boolean { color: #339; }
+code.null { color: #666; }
+
+#inspector tbody td pre {
+  color: #999;
+  margin: 0; overflow: auto; white-space: pre-wrap; width: 100%;
+}

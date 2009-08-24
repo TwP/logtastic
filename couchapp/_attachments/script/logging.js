@@ -16,9 +16,7 @@ logging.ready = function( cmd ) {
   };
 
   String.prototype.compare = function( other ) {
-    if (this > other) { return 1; }
-    if (this < other) { return -1; }
-    return 0;
+    return this > other ? 1 : this < other ? -1 : 0;
   };
 
   function f(n) {    // Format integers to have at least two digits.

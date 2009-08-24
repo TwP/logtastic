@@ -21,7 +21,6 @@ logging.EventInspector = function( table ) {
   $('tbody', table).bind('click', function(e) {
     tr = e.target.nodeName === 'TD' ? $(e.target).parent() : $(e.target);
     logging.doc(tr.attr('id'), {success: function(json) {
-      json.level = logging.levelName(json.level)+'  ['+json.level+']';
       inspect(json);
     }});
   });
@@ -45,12 +44,48 @@ logging.EventInspector = function( table ) {
    */
   function inspect( doc ) {
     tbody.empty();
-    tbody.append('<tr><td>app_id</td><td colspan="2">'+doc.app_id+'</td></tr>');
-    tbody.append('<tr><td>level</td><td colspan="2">'+doc.level+'</td></tr>');
-    tbody.append('<tr><td>logger</td><td colspan="2">'+doc.logger+'</td></tr>');
-    tbody.append('<tr><td>message</td><td colspan="2">'+doc.message+'</td></tr>');
-    tbody.append('<tr><td>timestamp</td><td colspan="2">'+doc.timestamp+'</td></tr>');
+
+    var fields = []
+    $.each(doc, function(key, val) { if (!key.match(/^_/)) fields.push(key); });
+    fields.sort(function(a, b) { return a.compare(b); });
+
+    $.each(fields, function(ii, key) {
+      $('<tr><th></th><td colspan="2"></td></tr>')
+        .find('th').text(key).end()
+        .find('td').append(_renderValue(key, doc[key])).end()
+        .appendTo(tbody);
+    });
+
+    $('tr', tbody).filter(':even').addClass('even');
 
     if (inspector.css('display') === 'none') { inspector.slideDown('slow'); }
   };
+
+  /**
+   *
+   */
+  function _renderValue( key, val ) {
+    switch (key) {
+    case 'app_id':
+    case 'logger':
+      return $('<code class="label"></code>').text(val);
+
+    case 'level':
+      return $('<pre></pre>').html(
+               '<code class="color' + logging.levelMap[val] + '">'
+               + logging.levelName(val) + '</code> :: '
+               + '<code class="number">' + val + '</code>'
+             );
+
+    case 'timestamp':
+      ts = val.replace(/-/g, '/')
+              .replace(/T/, ' ')
+              .replace(/Z$/, ' UTC')
+      return $('<code class="label"></code>').text(ts);
+
+    default:
+      return $('<pre></pre>').html($.futon.formatJSON(val, {html: true}));
+    }
+  };
+
 };
