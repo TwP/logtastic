@@ -1,7 +1,8 @@
 
 
 function( keys, values, rereduce ) {
+
 // !code lib/array.js 
 
-  return values.uniq();
+  return uniq(values);
 }

@@ -1,5 +1,5 @@
 
-var is_array = function( value ) {
+function is_array( value ) {
   return value &&
     typeof value === 'object' &&
     typeof value.length === 'number' &&
@@ -7,7 +7,7 @@ var is_array = function( value ) {
     !(value.propertyIsEnumerable('length'));
 }
 
-var for_each = function( values, fn ) {
+function for_each( values, fn ) {
   if (is_array(values)) {
     for (ii in values) {
       for_each(values[ii], fn);
@@ -18,17 +18,10 @@ var for_each = function( values, fn ) {
   return null;
 }
 
-Array.prototype.contains = function( value ) {
-  for (ii in this) {
-    if (this[ii] === value) { return true; }
-  }
-  return false;
-}
-
-Array.prototype.uniq = function() {
+function uniq( values ) {
   var hash = {},
       output = [];
-  for_each(this, function(v) { hash[v] = true; });
+  for_each(values, function(v) { if (v != null) { hash[v] = true; } });
   for (v in hash) {output.push(v);}
   return output;
 }
