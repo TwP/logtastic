@@ -196,18 +196,18 @@ table.logging tfoot td:last-child {
 #summary td.color0 { background: #e7eeff; border-color: #cde; color: #469 }
 
 
-#tail { width: 100%; min-width: 40.0em; table-layout: fixed }
-#tail tbody td { white-space: nowrap; overflow: hidden; }
-#tail thead th.timestamp { width: 8.0em; cursor: pointer }
-#tail thead th.app-id    { width: 8.0em }
-#tail thead th.logger    { width: 8.0em }
-#tail thead th.level     { width: 4.0em }
+#events { width: 100%; min-width: 40.0em; table-layout: fixed }
+#events tbody td { white-space: nowrap; overflow: hidden; }
+#events thead th.timestamp { width: 8.0em; cursor: pointer }
+#events thead th.app-id    { width: 8.0em }
+#events thead th.logger    { width: 8.0em }
+#events thead th.level     { width: 4.0em }
 
-#tail tr.color4 { background: #fdc;    border-color: #e88; color: #a22 }
-#tail tr.color3 { background: #ffb;    border-color: #eea; color: #880 }
-#tail tr.color2 { background: #fbfbfb; border-color: #ddd; color: #444 }
-#tail tr.color1 { background: #e7ffff; border-color: #cee; color: #099 }
-#tail tr.color0 { background: #e7eeff; border-color: #cde; color: #469 }
+#events tr.color4 { background: #fdc;    border-color: #e88; color: #a22 }
+#events tr.color3 { background: #ffb;    border-color: #eea; color: #880 }
+#events tr.color2 { background: #fbfbfb; border-color: #ddd; color: #444 }
+#events tr.color1 { background: #e7ffff; border-color: #cee; color: #099 }
+#events tr.color0 { background: #e7eeff; border-color: #cde; color: #469 }
 
 
 #inspector table { width: 100%; table-layout: fixed }

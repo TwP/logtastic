@@ -9,7 +9,6 @@
     <script src="/_utils/script/jquery.couch.js?0.9.0"></script>
     <script src="/_utils/script/futon.format.js"></script>
     <script src="script/logging.js"></script>
-    <script src="script/log_event_poller.js"></script>
     <script src="script/event_table.js"></script>
     <script src="script/event_filters.js"></script>
     <script src="script/event_inspector.js"></script>
@@ -19,11 +18,6 @@
         var filters = logging.eventFilters({table: table});
         var inspector = logging.eventInspector({table: '#events'});
         table.setup();
-
-        var poller = logging.logEventPoller({
-          success: function( json ) { table.addEvents(json); }
-        });
-        poller.start();
       });
     </script>
   </head>
@@ -33,8 +27,8 @@
       <h1>Logging</h1>
       <ul>
         <li><a href="index.html">Overview</a></li>
-        <li><a href="search.html">Search</a></li>
-        <li class="selected">Tail</li>
+        <li class="selected">Search</li>
+        <li><a href="tail.html">Tail</a></li>
       </ul>
     </div>
 
@@ -42,6 +36,8 @@
 
     <div id="content">
       <div id="inspector"></div>
+
+      <div id="search"></div>
 
       <table id="events" class="logging">
         <thead><tr>
