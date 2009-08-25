@@ -25,10 +25,10 @@ Array.prototype.contains = function( value ) {
   return false;
 }
 
-var uniq = function( values ) {
-  var output = [];
-  for_each(values, function(v) {
-    if (v != null && !output.contains(v)) { output.push(v) }
-  });
+Array.prototype.uniq = function() {
+  var hash = {},
+      output = [];
+  for_each(this, function(v) { hash[v] = true; });
+  for (v in hash) {output.push(v);}
   return output;
 }
