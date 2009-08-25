@@ -47,7 +47,7 @@ logging.EventInspector = function( table ) {
 
     var fields = []
     $.each(doc, function(key, val) { if (!key.match(/^_/)) fields.push(key); });
-    fields.sort(function(a, b) { return a.compare(b); });
+    fields.sort(function(a, b) { return a.toLowerCase().compare(b.toLowerCase()); });
 
     $.each(fields, function(ii, key) {
       $('<tr><th></th><td colspan="2"></td></tr>')
