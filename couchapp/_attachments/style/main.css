@@ -2,11 +2,22 @@
 
 @import url(reset.css);
 @import url(typography.css);
+@import url(jquery-ui-1.7.2.custom.css);
+
+.ui-widget thead th { background: inherit; }
+.ui-widget { line-height: 1.0em; }
+.ui-datepicker { z-index: 42; }
 
 a {
   color: #469;
   text-decoration: none;
   font-weight: bold;
+}
+
+input {
+  margin-bottom: 0.5em;
+  padding: 0.25em;
+  border: 0px solid red;
 }
 
 #header {
@@ -145,8 +156,6 @@ h2.graph + div + div table tbody tr td {
 table.logging {
   clear: both;
   border: 1px solid #ccc;
-  -moz-border-radius: 7px;
-  -webkit-border-radius: 7px;
 }
 table.logging thead th {
   background: #eee;
@@ -156,26 +165,10 @@ table.logging thead th {
   text-transform: capitalize;
   white-space: nowrap;
 }
-table.logging thead th:first-child {
-  -moz-border-radius-topleft: 7px;
-  -webkit-border-top-left-radius: 7px;
-}
-table.logging thead th:last-child {
-  -moz-border-radius-topright: 7px;
-  -webkit-border-top-right-radius: 7px;
-}
 table.logging tfoot td {
   background: #eee; color: #888;
   border-top: 1px solid #ccc;
   white-space: nowrap;
-}
-table.logging tfoot td:first-child {
-  -moz-border-radius-bottomleft: 7px;
-  -webkit-border-bottom-left-radius: 7px;
-}
-table.logging tfoot td:last-child {
-  -moz-border-radius-bottomright: 7px;
-  -webkit-border-bottom-right-radius: 7px;
 }
 
 
@@ -212,15 +205,6 @@ table.logging tfoot td:last-child {
 
 #inspector table { width: 100%; table-layout: fixed }
 #inspector table thead th:first-child { width: 8.0em }
-#inspector table tbody tr:last-child th {
-  text-shadow: none;
-  -moz-border-radius-bottomleft: 7px;
-  -webkit-border-bottom-left-radius: 7px;
-}
-#inspector table tbody tr:last-child td {
-  -moz-border-radius-bottomright: 7px;
-  -webkit-border-bottom-right-radius: 7px;
-}
 #inspector table tbody tr.even th,
 #inspector table tbody tr.even td { background: #feffea }
 
@@ -240,4 +224,9 @@ code.null { color: #666; }
 #inspector tbody td pre {
   color: #999;
   margin: 0; overflow: auto; white-space: pre-wrap; width: 100%;
+}
+
+#search {
+  margin-bottom: 1.5em;
+  padding: 0.5em;
 }

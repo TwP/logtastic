@@ -4,7 +4,16 @@
     <title>CouchApp Logging</title>
     <link rel="stylesheet" href="style/main.css" type="text/css">
     <script src="/_utils/script/json2.js"></script>
-    <script src="/_utils/script/jquery.js?1.3.1"></script>
+
+    <!--
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+    -->
+
+    <script src="/_utils/script/jquery.js?1.3.1"></script> 
+    <script src="script/jquery-ui-1.7.2.custom.min.js"></script>
+    <script src="script/timepicker.js"></script>
+
     <script src="/_utils/script/jquery.cookies.js?0.9.0"></script>
     <script src="/_utils/script/jquery.couch.js?0.9.0"></script>
     <script src="/_utils/script/futon.format.js"></script>
@@ -18,6 +27,25 @@
         var filters = logging.eventFilters({table: table});
         var inspector = logging.eventInspector({table: '#events'});
         table.setup();
+
+        // Datepicker
+        $('#datepicker').datepicker({
+          duration: '',
+          dateFormat: 'yy-mm-dd',
+          showOn: 'focus',
+          showTime: true,
+          constrainInput: false,
+          time24h: true
+        });
+        $('#datepicker').val((new Date()).toDateTime());
+
+        // Slider
+        $('#slider').slider({
+          range: true,
+          values: [-5, 5],
+          min: -60,
+          max: 60
+        });
       });
     </script>
   </head>
@@ -37,17 +65,23 @@
     <div id="content">
       <div id="inspector"></div>
 
-      <div id="search"></div>
+      <div id="search" class="ui-widget ui-widget-content ui-corner-all">
+        <input type="text" id="datepicker" name="datepicker" value="" class="ui-widget-content ui-corner-all"></input>
+        <span>UTC</span>
+        <div id="slider"></div>
+      </div>
 
-      <table id="events" class="logging">
+      <table id="events" class="logging ui-corner-all">
         <thead><tr>
-          <th class="timestamp">Time</th>
+          <th class="timestamp ui-corner-tl">Time</th>
           <th class="app-id">Application</th>
           <th class="logger">Logger</th>
           <th class="level">Level</th>
-          <th class="message">Message</th>
+          <th class="message ui-corner-tr">Message</th>
         </tr></thead>
-        <tfoot><tr><td colspan="5">Latest: </td></tr></tfoot>
+        <tfoot><tr>
+            <td colspan="5" class="ui-corner-bottom">Latest: </td>
+        </tr></tfoot>
         <tbody></tbody>
       </table>
     </div>

@@ -28,11 +28,11 @@ logging.EventInspector = function( table ) {
   var inspector = $('#inspector');
   inspector.hide();
   inspector.append(
-    '<table class="logging">' +
-    '  <thead>' +
-    '    <tr><th>Field</th><th>Value</th>' +
-    '    <th style="text-align:right"><button>Hide</button></th></tr>' +
-    '  </thead>' +
+    '<table class="logging ui-corner-all">' +
+    '  <thead><tr>' +
+    '    <th class="ui-corner-tl">Field</th><th>Value</th>' +
+    '    <th style="text-align:right" class="ui-corner-tr"><button>Hide</button></th>' +
+    '  </tr></thead>' +
     '  <tbody></tbody>' +
     '</table>'
   );
@@ -57,6 +57,8 @@ logging.EventInspector = function( table ) {
     });
 
     $('tr', tbody).filter(':even').addClass('even');
+    $('tr:last-child', tbody).find('th:first-child').addClass('ui-corner-bl').end()
+                             .find('td:last-child').addClass('ui-corner-br').end();
 
     if (inspector.css('display') === 'none') { inspector.slideDown('slow'); }
   };

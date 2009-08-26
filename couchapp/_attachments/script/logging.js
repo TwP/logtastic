@@ -50,6 +50,14 @@ logging.ready = function( cmd ) {
            f(this.getUTCSeconds())   + ' +0000';
   };
 
+  Date.prototype.toDateTime = function() {
+      return this.getUTCFullYear()   + '-' +
+           f(this.getUTCMonth() + 1) + '-' +
+           f(this.getUTCDate())      + ' ' +
+           f(this.getUTCHours())     + ':' +
+           f(this.getUTCMinutes());
+  };
+
   // This function will be executed when the document is ready
   $(function() {
     var dbname = document.location.href.split('/')[3];
