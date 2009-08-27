@@ -21,16 +21,17 @@ logging.CountTable = function( table ) {
    *
    */
   this.setup = function() {
-    header = '<tr><th>Application</th>';
+    header = '<tr><th class="ui-corner-tl">Application</th>';
     for (ii in logging.levels) {
       header += '<th class="count ' + logging.cssColorClass(ii) + '">'
              + logging.levelName(ii) + '</th>'
     }
     header += '</tr>';
-    table.find('thead').append(header);
+    table.find('thead').append(header).end()
+         .find('thead tr th:last-child').addClass('ui-corner-tr');
 
-    footer = '<tr><td colspan="' + logging.levels.length + '"></td>'
-           + '<td><button class="play">Pause</button></td></tr>';
+    footer = '<tr><td class="ui-corner-bl" colspan="' + logging.levels.length + '"></td>'
+           + '<td class="ui-corner-br"><button class="play">Pause</button></td></tr>';
     table.find('tfoot').append(footer);
 
     $('button.play').click(function() {

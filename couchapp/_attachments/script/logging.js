@@ -64,17 +64,34 @@ logging.ready = function( cmd ) {
     var dname = unescape(document.location.href).split('/')[5];
     var db = $.couch.db(dbname);
 
+    $('body').append(
+      '<div id="notice" class="ui-widget">' +
+      '<div class="ui-corner-all">' +
+      '<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span><span id="noticeText"></span></p>' +
+      '</div></div>'
+    );
+    $('#notice').hide().click(function() { $(this).fadeOut(); });
+
     /**
      *
      */
-    logging.view = function( view, opts ) {
-      db.view(dname+'/'+view, opts);
+    logging.view = function( view, options ) {
+      options = $.extend({
+          error: function(status, error, reason) {
+            logging.alarm('Could not access view "'+view+'" :: '+reason);
+          }}, options);
+
+      db.view(dname+'/'+view, options);
     };
 
     /**
      *
      */
     logging.doc = function( id, options ) {
+      options = $.extend({
+          error: function(status, error, reason) {
+            logging.alarm('Could not open document "'+ id + '" :: ' + reason);
+          }}, options);
       db.openDoc(id, options);
     };
 
@@ -251,4 +268,22 @@ logging.prettyDate = function( time ) {
           day_diff < 45 && Math.ceil( day_diff / 7 ) + " weeks ago" ||
           day_diff < 730 && Math.ceil( day_diff / 31 ) + " months ago" ||
           Math.ceil( day_diff / 365 ) + " years ago";
+};
+
+/**
+ * 
+ */
+logging.alarm = function( msg ) {
+  $('#noticeText').empty().text(' ' + msg).prepend('<strong>Alert:</strong>');
+  $('#notice').find('div').removeClass('ui-state-error ui-state-highlight')
+              .addClass('ui-state-error').end().fadeIn('fast');
+};
+
+/**
+ * 
+ */
+logging.info = function( msg ) {
+  $('#noticeText').empty().text(' ' + msg).prepend('<strong>Info:</strong>');
+  $('#notice').find('div').removeClass('ui-state-error ui-state-highlight')
+              .addClass('ui-state-highlight').end().fadeIn('fast');
 };

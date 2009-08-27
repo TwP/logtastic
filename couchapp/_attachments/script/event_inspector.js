@@ -80,9 +80,7 @@ logging.EventInspector = function( table ) {
              );
 
     case 'timestamp':
-      ts = val.replace(/-/g, '/')
-              .replace(/T/, ' ')
-              .replace(/Z$/, ' UTC')
+      ts = val.replace(/T/, ' ').replace(/Z$/, ' UTC')
       return $('<code class="label"></code>').text(ts);
 
     default:

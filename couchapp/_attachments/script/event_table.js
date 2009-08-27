@@ -153,6 +153,15 @@ logging.EventTable = function( table ) {
   /**
    *
    */
+  this.empty = function() {
+    tbody.empty();
+    time.head = '';
+    time.tail = '~';
+  };
+
+  /**
+   *
+   */
   this.addEvents = function( json ) {
     for (var ii=json.rows.length-1; ii>=0; ii--) {
       this.insert(json.rows[ii].doc);

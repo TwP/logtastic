@@ -21,6 +21,7 @@
     <script src="script/event_table.js"></script>
     <script src="script/event_filters.js"></script>
     <script src="script/event_inspector.js"></script>
+    <script src="script/event_search.js"></script>
     <script type="text/javascript" charset="utf-8">
       logging.ready(function() {
         var table = logging.eventTable({table: '#events'});
@@ -28,24 +29,7 @@
         var inspector = logging.eventInspector({table: '#events'});
         table.setup();
 
-        // Datepicker
-        $('#datepicker').datepicker({
-          duration: '',
-          dateFormat: 'yy-mm-dd',
-          showOn: 'focus',
-          showTime: true,
-          constrainInput: false,
-          time24h: true
-        });
-        $('#datepicker').val((new Date()).toDateTime());
-
-        // Slider
-        $('#slider').slider({
-          range: true,
-          values: [-5, 5],
-          min: -60,
-          max: 60
-        });
+        var search = logging.eventSearch({table: table});
       });
     </script>
   </head>
@@ -65,11 +49,7 @@
     <div id="content">
       <div id="inspector"></div>
 
-      <div id="search" class="ui-widget ui-widget-content ui-corner-all">
-        <input type="text" id="datepicker" name="datepicker" value="" class="ui-widget-content ui-corner-all"></input>
-        <span>UTC</span>
-        <div id="slider"></div>
-      </div>
+      <div id="search"></div>
 
       <table id="events" class="logging ui-corner-all">
         <thead><tr>
