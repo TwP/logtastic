@@ -18,6 +18,7 @@ logging.eventTable = function( opts ) {
  */
 logging.EventTable = function( table ) {
 
+  var self = this;
   var tbody = $('tbody', table);
 
   var time = {
@@ -41,6 +42,41 @@ logging.EventTable = function( table ) {
       }
     }
   };
+
+  $('thead button', table).click(function() {
+    var start = time.head === '' ? (new Date()).toCouchDB() : time.head;
+
+    logging.view('events', {
+      include_docs: true,
+      startkey: start,
+      limit: 23,
+      success: function(json) {
+        if (json.rows.length > 1) {
+          $.each(json.rows, function(ii, row) { self.prepend(row.doc); });
+        } else {
+          logging.info('At the newest logging event.');
+        }
+      }
+    });
+  });
+
+  $('tfoot button', table).click(function() {
+    var start = time.tail === '~' ? (new Date()).toCouchDB() : time.tail;
+
+    logging.view('events', {
+      include_docs: true,
+      descending: true,
+      startkey: start,
+      limit: 23,
+      success: function(json) {
+        if (json.rows.length > 1) {
+          $.each(json.rows, function(ii, row) { self.append(row.doc); });
+        } else {
+          logging.info('At the oldest logging event.');
+        }
+      }
+    });
+  });
 
   /**
    *
@@ -190,7 +226,7 @@ logging.EventTable = function( table ) {
         + '<td>'+doc.app_id+'</td>'
         + '<td>'+doc.logger+'</td>'
         + '<td>'+logging.levelName(doc.level)+'</td>'
-        + '<td></td>'
+        + '<td colspan="2"></td>'
         + '</tr>'
   };
 

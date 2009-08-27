@@ -48,14 +48,13 @@ logging.EventSearch = function( table ) {
     constrainInput: false,
     time24h: true,
     onClose: function(txt, inst) {
+      timestamp.removeClass('ui-state-focus').addClass('ui-state-active');
       if (timestamp.val() !== prev) {
         _search();
       }
     }
   }).focus(function() {
     $(this).removeClass('ui-state-active').addClass('ui-state-focus');
-  }).blur(function() {
-    $(this).removeClass('ui-state-focus').addClass('ui-state-active');
   });
 
   $('#contextSlider').slider({

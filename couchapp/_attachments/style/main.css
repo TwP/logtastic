@@ -189,6 +189,8 @@ table.logging tfoot td {
 #events thead th.app-id    { width: 8.0em }
 #events thead th.logger    { width: 8.0em }
 #events thead th.level     { width: 4.0em }
+#events thead th:last-child,
+#events tfoot td:last-child { text-align: right }
 
 #events tr.color4 { background: #fdc;    border-color: #e88; color: #a22 }
 #events tr.color3 { background: #ffb;    border-color: #eea; color: #880 }
