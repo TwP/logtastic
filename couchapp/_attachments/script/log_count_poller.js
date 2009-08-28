@@ -17,7 +17,6 @@ logging.logCountPoller = function( opts ) {
     }
   }
 
-  if (!opts.interval) { opts.interval = 5000; }
   return new logging.LogCountPoller(opts);
 };
 
@@ -34,9 +33,9 @@ logging.logCountPoller = function( opts ) {
  */
 logging.LogCountPoller = function( opts ) {
   var success = opts.success;
-  var interval = opts.interval;
+  var interval = 5000;
   var running = false;
-  var timeoutId = 0;
+  var timeoutId = null;
 
   /**
    * Returns the running state of the poller. If the poller is active then
@@ -74,8 +73,8 @@ logging.LogCountPoller = function( opts ) {
   this.stop = function() {
     if (!running) { return this; }
     running = false;
-    if (timeoutId != 0) { clearTimeout(timeoutId); }
-    timeoutId = 0;
+    clearTimeout(timeoutId);
+    timeoutId = null;
     return this;
   };
 
@@ -90,14 +89,14 @@ logging.LogCountPoller = function( opts ) {
    * @returns {null} null.
    * */
   function poll() {
-    if (!running || timeoutId !== 0) { return null; }
+    if (!running || timeoutId) { return null; }
 
     opts = {
       group_level: 2,
       success: function( json ) {
         success(json);
         if (running) {
-          timeoutId = setTimeout(function() {timeoutId = 0; poll()}, interval);
+          timeoutId = setTimeout(function() {timeoutId = null; poll()}, interval);
         }
       }
     };
@@ -105,4 +104,38 @@ logging.LogCountPoller = function( opts ) {
     logging.view('count', opts);
     return null;
   };
+
+  var slider = function( callback ) {
+
+    var div = $('<div class="ui-poll-interval ui-widget"><div>Poll interval: <span>5</span> second(s)</div><div></div></div>');
+    $('#sidebar').prepend(div);
+
+    var secs = $('span', div);
+    
+    $('div:last-child', div).slider({
+      range: 'min',
+      value: 5,
+      min: 1,
+      max: 30,
+      slide: function(event, ui) { secs.text(ui.value); },
+      stop: function(event, ui) {
+        secs.text(ui.value);
+        $.cookies.set("pollinterval", ui.value);
+        callback(ui.value);
+      }
+    }).slider('value', parseInt($.cookies.get("pollinterval", "5")) || 5);
+
+    secs.text($('div:last-child', div).slider('value'));
+    callback(secs.text());
+  };
+
+  slider(function(value) {
+    interval = parseInt(value, 10) * 1000;
+    if (running) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+      poll();
+    }
+  });
+
 };

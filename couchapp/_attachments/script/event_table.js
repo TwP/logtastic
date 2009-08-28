@@ -176,7 +176,7 @@ logging.EventTable = function( table ) {
       if (time.format === 'pretty') {
         return logging.prettyDate(timestamp);
       } else {
-        return timestamp.replace(/ UTC$/, '');
+        return timestamp.replace(/\//g, '-').replace(/ UTC$/, '');
       }
     }
 

@@ -29,30 +29,38 @@ logging.EventFilters = function( table ) {
     }
   };
 
-  list = '<ul id="filter">'
-       + '<li id="application" class="menu">'
-       + '<span>Application</span>'
-       + '<ul>';
-  logging.eachAppId(function(app_id) {
-    list += '<li class="selected">'+app_id+'</li>';
-  });
-  list += '</ul></li>';
+  /**
+   *
+   */
+  function filterBox( title, iterFn ) {
+    var box = $('<div class="ui-event-filter ui-widget-content ui-corner-all"><div class="ui-event-filter-header ui-widget-header ui-corner-all"></div><ul></ul></div>');
+    box.attr('id', title).find('div').text(title.capitalize());
 
-  list += '<li id="level" class="menu">'
-        + '<span>Level</span>'
-        + '<ul>';
-  logging.eachLevel(function(level) {
-    list += '<li class="selected">'+level+'</li>';
-  });
-  list += '</ul></li></ul>';
-  $('#sidebar').append(list);
+    iterFn(function(name) {
+      $('<li class="ui-state-active ui-helper-clearfix"></li>')
+        .text(name)
+        .prepend('<span class="ui-icon ui-icon-circle-check"></span>')
+        .appendTo($('ul', box));
+    });
 
-  $('#filter').bind('click', function(e) {
-    if (e.target.nodeName !== 'LI') { return; }
-    $(e.target).toggleClass('selected');
-    updateFilters();
-    filter();
-  });
+    box.find('ul li:last-child').addClass('ui-corner-bottom').end()
+       .find('ul li').hover(function() {$(this).addClass('ui-state-highlight')},
+                            function() {$(this).removeClass('ui-state-highlight')});
+
+    return box;
+  };
+
+  $('<div class="ui-widget"></div')
+    .append(filterBox('application', logging.eachAppId))
+    .append(filterBox('level', logging.eachLevel))
+    .bind('click', function(e) {
+      if (e.target.nodeName !== 'LI') { return; }
+      $(e.target).toggleClass('ui-state-active').toggleClass('ui-state-disabled');
+      updateFilters();
+      filter();
+    })
+    .appendTo($('#sidebar'));
+
 
   /**
    *
@@ -70,13 +78,13 @@ logging.EventFilters = function( table ) {
   function updateFilters() {
     $('#application ul li').each(function() {
       var li = $(this);
-      if (li.hasClass('selected')) { filters.Application[li.text()] = true; }
+      if (li.hasClass('ui-state-active')) { filters.Application[li.text()] = true; }
       else { filters.Application[li.text()] = false; }
     });
 
     $('#level ul li').each(function() {
       var li = $(this);
-      if (li.hasClass('selected')) { filters.Level[li.text()] = true; }
+      if (li.hasClass('ui-state-active')) { filters.Level[li.text()] = true; }
       else { filters.Level[li.text()] = false; }
     });
   };

@@ -115,39 +115,27 @@ logging.LogEventPoller = function( opts ) {
   };
 
   var slider = function( callback ) {
-    $('#sidebar').prepend(
-      '<div id="interval">' +
-      '  <label>Poll interval:' +
-      '    <input type="range" min="1" max="30" value="5" size="3">' +
-      '    <span class="secs">5</span> second(s)' +
-      '  </label>' +
-      '</div>'
-    );
 
-    var input = $('#interval input');
-    input.val(parseInt($.cookies.get("pollinterval", "5")) || 5);
+    var div = $('<div class="ui-poll-interval ui-widget"><div>Poll interval: <span>5</span> second(s)</div><div></div></div>');
+    $('#sidebar').prepend(div);
 
-    function updateInterval( value ) {
-      if (isNaN(value)) {
-        value = 5;
-        input.val(value);
+    var secs = $('span', div);
+    
+    $('div:last-child', div).slider({
+      range: 'min',
+      value: 5,
+      min: 1,
+      max: 30,
+      slide: function(event, ui) { secs.text(ui.value); },
+      stop: function(event, ui) {
+        secs.text(ui.value);
+        $.cookies.set("pollinterval", ui.value);
+        callback(ui.value);
       }
-      $.cookies.set("pollinterval", value);
-      callback(value);
-    };
+    }).slider('value', parseInt($.cookies.get("pollinterval", "5")) || 5);
 
-    if (input[0].type === 'range') {
-      input.bind('input', function() {
-        updateInterval(this.value);
-        $('#interval span.secs').text(this.value);
-      });
-    } else {
-      input.bind('change', function() {
-        updateInterval(this.value);
-      });
-      $('#interval span.secs').hide();
-    }
-    updateInterval(input.val());
+    secs.text($('div:last-child', div).slider('value'));
+    callback(secs.text());
   };
 
   slider(function(value) {

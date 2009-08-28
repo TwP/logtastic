@@ -67,7 +67,7 @@ logging.ready = function( cmd ) {
     $('body').append(
       '<div id="notice" class="ui-widget">' +
       '<div class="ui-corner-all">' +
-      '<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span><span id="noticeText"></span></p>' +
+      '<p><span class="ui-icon ui-icon-alert" style="float:left; margin-right:0.3em;"></span><span id="noticeText"></span></p>' +
       '</div></div>'
     );
     $('#notice').hide().click(function() { $(this).fadeOut(); });

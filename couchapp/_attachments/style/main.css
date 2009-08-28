@@ -79,54 +79,31 @@ a {
   padding-right: 42px;
 }
 
-#filter,
-#filter ul {
+.ui-event-filter { margin-bottom: 1.0em }
+.ui-event-filter .ui-event-filter-header {
+  margin: 3px;
+  padding: 0 0.9em;
+  line-height: 1.8em;
+  text-align: left;
+  font-weight: bold;
+}
+.ui-event-filter ul {
   padding: 0;
   margin: 0;
   width: 100%;
   list-style: none outside none;
 }
-#filter li {
-  padding: 0 1.0em;
-}
-#filter li.menu {
-  margin-top: 0.5em;
-  margin-bottom: 1.0em;
-}
-#filter li.menu span {
-  color: #469;
-  font-size: 1.2em;
-  font-weight: bold;
-  text-shadow: #999 2px 1px 2px;
-}
-#filter ul {
-  border: 1px solid #ccc;
-  -moz-border-radius: 7px;
-  -webkit-border-radius: 7px;
-}
-#filter ul li:first-child {
-  -moz-border-radius-topleft: 7px;
-  -moz-border-radius-topright: 7px;
-  -webkit-border-top-left-radius: 7px;
-  -webkit-border-top-right-radius: 7px;
-}
-#filter ul li:last-child {
-  -moz-border-radius-bottomleft: 7px;
-  -moz-border-radius-bottomright: 7px;
-  -webkit-border-bottom-left-radius: 7px;
-  -webkit-border-bottom-right-radius: 7px;
-}
-#filter ul li {
-  background: #eee; color: #888;
+.ui-event-filter ul li {
+  padding: 2px 1.0em;
   white-space: nowrap;
-  padding: 0 1.5em;
-  cursor: pointer;
+  overflow: hidden;
+  cursor: pointer !important;
+  border: none !important;
 }
-#filter ul li.selected {
-  color: #222;
-  font-weight: bold;
-  text-shadow: #999 2px 1px 2px;
-}
+.ui-event-filter ul li span { float: left; margin-right: 0.3em; }
+
+.ui-poll-interval { margin-bottom: 1.0em }
+.ui-poll-interval div:first-child { margin-bottom: 0.5em }
 
 table { width: auto }
 h2.graph {
