@@ -160,7 +160,7 @@ table.logging tfoot td {
 #summary td.color0 { background: #e7eeff; border-color: #cde; color: #469 }
 
 
-#events { width: 100%; min-width: 40.0em; table-layout: fixed }
+#events { width: 100%; min-width: 50.0em; table-layout: fixed }
 #events tbody td { white-space: nowrap; overflow: hidden; }
 #events thead th.timestamp { width: 8.0em; cursor: pointer }
 #events thead th.app-id    { width: 8.0em }
@@ -199,9 +199,9 @@ code.null { color: #666; }
   margin: 0; overflow: auto; white-space: pre-wrap; width: 100%;
 }
 
-#search td:first-child input {
+#search table { min-width: 50em }
+#search tbody td:first-child input {
   padding: 0.25em;
-  padding-bottom: 0.4em;
   text-align: center;
   vertical-align: middle;
 }

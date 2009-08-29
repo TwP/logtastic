@@ -31,7 +31,7 @@ logging.EventSearch = function( table ) {
     '  <td style="padding-left:0.25em">UTC</td>' +
     '  <td style="padding:4px 0 4px 1em">Context:</td>' +
     '  <td style="width:30em"><div id="contextSlider"></div></td>' +
-    '  <td style="padding:4px 0">' +
+    '  <td style="padding:4px 0;white-space:nowrap">' +
     '    <span id="contextSliderTarget">5</span> minutes' + 
     '  </td>' +
     '</tr></tbody></table>'
@@ -63,8 +63,12 @@ logging.EventSearch = function( table ) {
     min: 1,
     max: 60,
     slide: function(event, ui) { context.text(ui.value); },
-    stop: function(event, ui) { _search(); }
-  });
+    stop: function(event, ui) {
+      $.cookies.set('searchcontext', ui.value, null, 14);
+      _search();
+    }
+  }).slider('value', parseInt($.cookies.get('searchcontext', '5')) || 5);
+  context.text($('#contextSlider').slider('value'));
 
   function _search() {
     millis = Date.parse(timestamp.val().replace(/-/g,'/') + ':00 UTC');

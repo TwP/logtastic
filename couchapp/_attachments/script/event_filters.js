@@ -62,6 +62,18 @@ logging.EventFilters = function( table ) {
     .appendTo($('#sidebar'));
 
 
+  ary = eval($.cookies.get('filterapplication', '[]'))
+  $.each(ary, function(ii, name) {
+    selector = '#application li:contains("'+name+'")';
+    $(selector).removeClass('ui-state-active').addClass('ui-state-disabled');
+  });
+
+  ary = eval($.cookies.get('filterlevel', '[]'))
+  $.each(ary, function(ii, name) {
+    selector = '#level li:contains("'+name+'")';
+    $(selector).removeClass('ui-state-active').addClass('ui-state-disabled');
+  });
+
   /**
    *
    */
@@ -76,17 +88,29 @@ logging.EventFilters = function( table ) {
    *
    */
   function updateFilters() {
+    var ary = [];
     $('#application ul li').each(function() {
       var li = $(this);
-      if (li.hasClass('ui-state-active')) { filters.Application[li.text()] = true; }
-      else { filters.Application[li.text()] = false; }
+      if (li.hasClass('ui-state-active')) {
+        filters.Application[li.text()] = true;
+      } else {
+        filters.Application[li.text()] = false;
+        ary.push(li.text());
+      }
     });
+    $.cookies.set('filterapplication', JSON.stringify(ary), null, 14);
 
+    ary.slice(0);
     $('#level ul li').each(function() {
       var li = $(this);
-      if (li.hasClass('ui-state-active')) { filters.Level[li.text()] = true; }
-      else { filters.Level[li.text()] = false; }
+      if (li.hasClass('ui-state-active')) {
+        filters.Level[li.text()] = true;
+      } else {
+        filters.Level[li.text()] = false;
+        ary.push(li.text());
+      }
     });
+    $.cookies.set('filterlevel', JSON.stringify(ary), null, 14);
   };
   updateFilters();
 

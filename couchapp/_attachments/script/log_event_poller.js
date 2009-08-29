@@ -129,10 +129,10 @@ logging.LogEventPoller = function( opts ) {
       slide: function(event, ui) { secs.text(ui.value); },
       stop: function(event, ui) {
         secs.text(ui.value);
-        $.cookies.set("pollinterval", ui.value);
+        $.cookies.set('pollinterval', ui.value, null, 14);
         callback(ui.value);
       }
-    }).slider('value', parseInt($.cookies.get("pollinterval", "5")) || 5);
+    }).slider('value', parseInt($.cookies.get('pollinterval', '5')) || 5);
 
     secs.text($('div:last-child', div).slider('value'));
     callback(secs.text());
