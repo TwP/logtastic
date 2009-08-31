@@ -60,6 +60,8 @@ logging.ready = function( cmd ) {
 
   // This function will be executed when the document is ready
   $(function() {
+    logging.navbar();
+
     var dbname = document.location.href.split('/')[3];
     var dname = unescape(document.location.href).split('/')[5];
     var db = $.couch.db(dbname);
@@ -286,4 +288,32 @@ logging.info = function( msg ) {
   $('#noticeText').empty().text(' ' + msg).prepend('<strong>Info:</strong>');
   $('#notice').find('div').removeClass('ui-state-error ui-state-highlight')
               .addClass('ui-state-highlight').end().fadeIn('fast');
+};
+
+/**
+ *
+ */
+logging.navbar = function() {
+  href = document.location.href.split('/');
+  var current = href[href.length-1].replace(/\.html/,'');
+
+  var bar = $('<ul></ul>');
+  var map = {
+    index: 'Overview',
+    search: 'Search',
+    tail: 'Tail'
+  };
+
+  $.each(['index','search','tail'], function(ii, name) {
+    if (name === current) {
+      $('<li class="selected ui-corner-bottom"></li>')
+          .text(map[name]).appendTo(bar);
+    } else {
+      $('<li><a class="ui-corner-top"></a></li>')
+          .find('a').text(map[name]).attr('href', name + '.html').end()
+          .appendTo(bar);
+    }
+  });
+
+  $('#header').append(bar);
 };
