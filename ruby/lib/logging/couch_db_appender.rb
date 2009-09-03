@@ -126,10 +126,8 @@ module Logging::Appenders
     rescue Errno::EINTR
       return self
     rescue StandardError => err
-      self.level = :off
-      ::Logging.log_internal {"appender #{name.inspect} has been disabled"}
       ::Logging.log_internal(-2) {err}
-      raise
+      return self
     ensure
       @dispatch_buffer.clear
     end
