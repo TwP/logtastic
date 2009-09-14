@@ -97,6 +97,10 @@ a {
 .ui-poll-interval { margin-bottom: 1.0em }
 .ui-poll-interval div:first-child { margin-bottom: 0.5em }
 
+span.on-left { float: left; margin-right: 0.3em; }
+span.on-right { float: right; margin-left: 0.3em; }
+
+
 table { width: auto }
 h2.graph {
   clear: both;

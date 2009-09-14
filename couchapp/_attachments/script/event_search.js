@@ -96,6 +96,58 @@ logging.EventSearch = function( table ) {
     });
   };
 
-  _search();
+  function picker() {
+    row = $('<tr></tr>');
+    row
+      .append('<td colspan="2">Find: <select class="level"></select></td>')
+      .append('<td colspan="2">from <select class="appid"></select></td>')
+      .append('<td><span class="ui-icon ui-icon-arrowthick-1-w on-left"></span> Older</td>')
+      .append('<td>Newer <span class="ui-icon ui-icon-arrowthick-1-e on-right"></span></td>');
 
+    var levelSelect = $('td select.level', row).change(_latest);
+    var appidSelect = $('td select.appid', row).change(_latest);
+
+    $.each(logging.levels, function(ii, val) {
+      $('<option></option>')
+        .attr('value', ii)
+        .text(logging.levelName(ii))
+        .appendTo(levelSelect);
+    });
+
+    logging.eachAppId(function(name) {
+      $('<option></option>')
+        .attr('value', name)
+        .text(name)
+        .appendTo(appidSelect);
+    });
+
+    function _latest( time ) {
+      time = time || (new Date).toCouchDB();
+
+      var app_id = appidSelect.val();
+      var level = logging.app_ids[app_id][levelSelect.val()];
+
+      logging.view('latest', {
+        startkey: [app_id, level],
+        endkey: [app_id, level, time],
+        success: function(json) {
+          if (json.rows.length > 0) {
+            dt = json.rows[0].value.replace(/T/,' ').replace(/:\d+\.\d+Z$/,'');
+            if (dt !== prev) {
+              timestamp.val(dt);
+              timestamp.trigger('change');
+              _search();
+            }
+          } else {
+            logging.info('No logging events found.');
+          }
+        }
+      });
+    };
+
+    return row;
+  };
+
+  $('tbody', search).append(picker());
+  _search();
 };

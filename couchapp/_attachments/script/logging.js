@@ -98,7 +98,7 @@ logging.ready = function( cmd ) {
     };
 
     var count = 0;
-    var app_ids = [];
+    var app_ids = {};
 
     function success() {
       count += 1;
@@ -109,10 +109,14 @@ logging.ready = function( cmd ) {
     }
 
     logging.view('latest', {
-      group_level: 1,
+      group_level: 2,
       success: function(json) {
         for (ii in json.rows) {
-          app_ids.push(json.rows[ii].key[0]);
+          id = json.rows[ii].key[0]
+          level = json.rows[ii].key[1]
+
+          if (app_ids[id] === undefined) {app_ids[id] = {}}
+          app_ids[id][logging.levelMap[level]] = level;
         }
         success();
       }
@@ -246,7 +250,7 @@ logging.eachLevel = function( callback ) {
  *
  */
 logging.eachAppId = function( callback ) {
-  $.each(logging.app_ids, function(ii, val) { callback(val); });
+  $.each(logging.app_ids, function(key, val) { callback(key); });
 };
 
 /**
