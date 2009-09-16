@@ -3,6 +3,7 @@
 @import url(reset.css);
 @import url(typography.css);
 @import url(jquery-ui-1.7.2.custom.css);
+@import url(button.css);
 
 .ui-widget thead th { background: inherit; }
 .ui-widget { line-height: 1.0em; }
@@ -203,9 +204,9 @@ code.null { color: #666; }
 }
 
 #notice {
-  position: absolute;
-  right: 42px;
-  top: 5px; 
+  position: fixed;
+  right: 12px;
+  top: 12px; 
   z-index: 73;
 }
 

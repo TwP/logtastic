@@ -97,12 +97,21 @@ logging.EventSearch = function( table ) {
   };
 
   function picker() {
+    var button = logging.button({
+      text: 'Older',
+      icon: 'circle-arrow-s',
+      iconSide: 'left',
+      click: function() {
+        var time = new Date(timestamp.val().replace(/-/g,'/') + ':00 UTC').toCouchDB();
+        _latest(time);
+      }
+    });
+
     row = $('<tr></tr>');
     row
       .append('<td colspan="2">Find: <select class="level"></select></td>')
       .append('<td colspan="2">from <select class="appid"></select></td>')
-      .append('<td><span class="ui-icon ui-icon-arrowthick-1-w on-left"></span> Older</td>')
-      .append('<td>Newer <span class="ui-icon ui-icon-arrowthick-1-e on-right"></span></td>');
+      .append($('<td></td>').append(button));
 
     var levelSelect = $('td select.level', row).change(_latest);
     var appidSelect = $('td select.appid', row).change(_latest);
