@@ -1,5 +1,5 @@
 
-require 'rest_client'
+require 'couchrest'
 begin
   require 'json/ext'
 rescue LoadError
@@ -59,7 +59,9 @@ module Logging::Appenders
       db_name = opts.getopt(:db_name, 'logging')
       self.app_id = opts.getopt(:app_id, name)
 
-      @db_uri = uri + '/' + db_name + '/_bulk_docs'
+      @db = CouchRest.database uri + '/' + db_name
+      @db.bulk_save_cache_limit = 0
+
       configure_buffering(opts)
       start_thread
     end
@@ -119,9 +121,8 @@ module Logging::Appenders
     def post_events
       return if @dispatch_buffer.empty?
 
-      payload = {:docs => @dispatch_buffer}.to_json
-      RestClient.post(@db_uri, payload)
-      #JSON.parse(RestClient.post(@db_uri, payload))
+      response = @db.bulk_save @dispatch_buffer
+      #JSON.parse(response)
       self
     rescue Errno::EINTR
       return self
