@@ -1,0 +1,174 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'couchrest'
+require 'main'
+
+STDOUT.sync = true
+
+class String
+
+  # Convert the string into a numeric value. If the string does not
+  # represent a valid Integer or Float, then the string itself is returned.
+  #
+  #   "10".numeric   #=> 10
+  #   "1.0".numeric  #=> 1.0
+  #   "foo".numeric  #=> "foo"
+  #
+  def numeric
+    Integer(self) rescue (Float(self) rescue self)
+  end
+
+  # Convert the string into numeric seconds. This method recognizes hours,
+  # minutes, and seconds as valid time units. Putting 'before' or 'after'
+  # after the time units will change the numeric value to negative or
+  # positive respectively.
+  #
+  #   "5 minutes before".seconds  #=> -300
+  #   "1 hour after".seconds      #=> 3600
+  #   "12 s".seconds              #=> 12
+  #   "1 day".seconds             #=> 86400
+  #   "52 weeks".seconds          #=> 31449600
+  #
+  def seconds
+    ary = self.split
+    time = ary.shift.numeric
+    raise "#{self.inspect} is not a valid time string" if time.is_a? String
+
+    return time if ary.empty?
+
+    units = ary.shift
+    case units.downcase
+    when %r/^m(in(ute)?(s)?)?$/i; time = time * 60
+    when %r/^h(ours?|rs?)?$/i;    time = time * 3600
+    when %r/^s(ec(ond)?(s)?)?$/i; nil
+    when %r/^d(ays?)?$/i;         time = time * 86400
+    when %r/^w(eeks?|ks?)?$/i;    time = time * 604800
+    else raise "Unknown time unit #{units.inspect}" end
+
+    return time if ary.empty?
+
+    time = time.abs
+    ba = ary.shift
+
+    case ba
+    when %r/before/i; -time
+    when %r/after/i;   time
+    else raise "Expecting 'before' or 'after' but got #{ba.inspect}" end
+  end
+  alias :as_seconds :seconds
+
+end  # class String
+
+Main {
+  description <<-__
+Logtastic Maintenance Script
+
+Performns various maintenance actions on a Logtastic CouchDB instance. These
+maintenance tasks include removing old log messages, database compaction,
+and view index updating.
+  __
+
+  examples <<-__
+
+  logtastic compact
+  logtastic purge
+  logtastic update
+  __
+
+  option('host=hostname', 'H') {
+    description 'The host where the CouchDB server is running.'
+    default 'localhost'
+    attribute
+    argument :required
+  }
+
+  option('port=portnum', 'P') {
+    description 'The port number the CouchDB server is listening on. '
+    default 5984
+    cast :int
+    attribute
+    argument :required
+  }
+
+  option('database=name', 'd') {
+    description 'The database to operate upon.'
+    default 'logging'
+    attribute
+    argument :required
+  }
+
+  option('couchapp=name', 'c') {
+    description 'The CouchApp containing the views to query.'
+    default 'logging'
+    attribute
+    argument :required
+  }
+
+  option('keep=time', 'k') {
+    description 'Purge log messages farther back in time than this.'
+    default '3 weeks'
+    attribute
+    cast() {|obj| obj.seconds}
+    argument :required
+  }
+
+  def since
+    Time.at(Time.now.to_i - keep).utc.strftime '%Y-%m-%d'
+  end
+
+  def db
+    @db ||= CouchRest.database "http://#{host}:#{port}/#{database}"
+  end
+
+  def timer( msg )
+    print msg
+    start = Time.now
+    return yield
+  ensure
+    puts ' [%0.3f s]' % (Time.now - start)
+  end
+
+  mode(:update) {
+    def run
+      timer('Updating view indicies.') {
+        db.view(couchapp + '/latest', 'limit' => 0)
+      }
+    end
+  }
+
+  mode(:compact) {
+    def run
+      timer('Compacting database.') {
+        db.compact!
+      }
+    end
+  }
+
+  mode(:purge) {
+    def run
+      rows = db.view(
+          'logging/events',
+          'descending' => true,
+          'startkey' => since
+      )['rows']
+
+      unless rows.empty?
+        docs = rows.map {|row|
+          doc = row['value']
+          doc['_deleted'] = true
+          doc
+        }
+
+        timer("Deleting #{docs.length} logging events older than #{since}.") {
+          db.bulk_save(docs, false)
+        }
+      end
+
+      timer('Compacting database.') { db.compact! }
+    end
+  }
+
+  def run() help! end
+}
+
