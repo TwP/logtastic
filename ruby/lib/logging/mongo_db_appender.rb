@@ -62,10 +62,9 @@ module Logging::Appenders
       db_host = opts.getopt(:db_host, 'localhost')
       db_port = opts.getopt(:db_port, Mongo::Connection::DEFAULT_PORT, :as => Integer)
       db_name = opts.getopt(:db_name, 'logging')
-      db_collection = opts.getopt(:db_collection, 'logging')
 
       @db = Mongo::Connection.new(db_host, db_port, :auto_reconnect => true).db(db_name)
-      @collection = @db.collection(db_collection)
+      @collection = opts.getopt(:db_collection, 'logevents')
 
       configure_buffering(opts)
       start_thread
@@ -126,7 +125,7 @@ module Logging::Appenders
     def post_events
       return if @dispatch_buffer.empty?
 
-      @dispatch_buffer.each {|doc| @collection.insert doc}
+      @db.insert_into_db @collection, @dispatch_buffer
       self
     rescue StandardError => err
       ::Logging.log_internal(-2) {err}
