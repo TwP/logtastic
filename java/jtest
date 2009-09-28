@@ -1,5 +1,0 @@
-#!/bin/sh
-
-java \
-  -classpath classes:jars/jcouchdb-0.9.1-1.jar:jars/log4j-1.2.15.jar:jars/svenson-1.3.1.jar:jars/commons-httpclient-3.1.jar:jars/commons-logging-1.1.1.jar:jars/commons-codec-1.4.jar:jars/commons-beanutils-1.8.0.jar \
-  Test log4j/log4j.properties
