@@ -1,7 +1,7 @@
-h2. Synchronicity
+h2. Logtastic
 
 * by Tim Pease
-* http://github.com/TwP/synchronicity/tree/master
+* http://github.com/TwP/logtastic/tree/master
 
 h3. Description
 
@@ -9,7 +9,7 @@ Brings together CouchDB with the Log4(X) style logging frameworks. The goal is t
 
 h3. Features
 
-There are two components included with the Synchronicity package. The first is a language specific appender that formats and posts log events to a CouchDB instance. The second is a _couchapp_ for viewing log messages stored in the CouchDB instance. A _couchapp_ is a web application that is stored in and served from a CouchDB instance. These two components work together to allow you to collect log messages and view them in a single location.
+There are two components included with the Logtastic package. The first is a language specific appender that formats and posts log events to a CouchDB instance. The second is a _couchapp_ for viewing log messages stored in the CouchDB instance. A _couchapp_ is a web application that is stored in and served from a CouchDB instance. These two components work together to allow you to collect log messages and view them in a single location.
 
 Log event appenders are provided for the following programming languages:
 
@@ -22,11 +22,11 @@ h3. Installation
 
 First, you will need to "install":http://wiki.apache.org/couchdb/Installation CouchDB and get it running.
 
-Next, you will need to install "couchapp":http://github.com/jchris/couchapp/tree/master. This is a collection of Python scripts that simplify the process of developing and deploying a couchapp to a CouchDB instance. This tool will be used to deploy the Synchronicity couchapp to your CouchDB instance.
+Next, you will need to install "couchapp":http://github.com/jchris/couchapp/tree/master. This is a collection of Python scripts that simplify the process of developing and deploying a couchapp to a CouchDB instance. This tool will be used to deploy the Logtastic couchapp to your CouchDB instance.
 
 Finally, you will need to install the appender for your chosen language. Each appender provides documentation on how to configure and use the appender in your own software.
 
-It is highly recommended that you deploy the Synchronicity couchapp before attempting to use any appender to log to your CouchDB instance.
+It is highly recommended that you deploy the Logtastic couchapp before attempting to use any appender to log to your CouchDB instance.
 
 h4. License
 
