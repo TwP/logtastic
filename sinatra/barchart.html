@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>It's Logtastic!</title>
+    <style type="text/css">
+body {
+  font-size: 14px;
+}
+.ui-barchart {
+  margin: 1.0em; padding: 0; border: 1px solid #ccc; width: 210px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  font-family: Trebuchet MS,Tahoma,Verdana,Arial,sans-serif;
+  float: left;
+}
+.ui-barchart h2 {
+  margin: -1px -1px 0; padding: 0.1em 0.5em 0.2em;
+  background-color: #ccc; color: #333;
+  font-size: 1.1em;
+  -moz-border-radius-topleft: 5px;
+  -moz-border-radius-topright: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+}
+.ui-barchart ul { list-style: none; margin: 0; padding: 5px; }
+.ui-barchart ul li { margin: 0 0 3px; padding: 0; height: 15px; line-height: 15px; vertical-align: middle; }
+.ui-barchart div { margin: 0; padding: 0; }
+.ui-barchart .label { width: 50px; text-align: right; }
+.ui-barchart .bar {
+  position: relative; top: -15px; left: 55px; width: 145px; height: 15px;
+  background-color: #F7F7F7;
+}
+.ui-barchart .value {
+  position: absolute; top: 4px; left: 0; z-index: 3; height: 7px;
+  background-color: #666;
+}
+.ui-barchart .average {
+  position: absolute; top: 0; left: 0; z-index: 2; height: 100%;
+  background-color: #ccc;
+}
+
+.color-5 { border-color: #BD0000; }
+.color-5 h2 { background-color: #BD0000; color: white; }
+.ui-barchart li.color-5 { color: #BD2F2F; }
+.ui-barchart li.color-5 .value { background-color: #BD2F2F; }
+.ui-barchart li.color-5 .average { background-color: #BD8E8E; }
+
+.color-4 { border-color: #F03800; }
+.color-4 h2 { background-color: #F03800; color: white; }
+.ui-barchart li.color-4 { color: #F0663C; }
+.ui-barchart li.color-4 .value { background-color: #F0663C; }
+.ui-barchart li.color-4 .average { background-color: #F0C2B4; }
+
+.color-3 { border-color: #FF9900; }
+.color-3 h2 { background-color: #FF9900; color: white; }
+.ui-barchart li.color-3 { color: #FFB240; }
+.ui-barchart li.color-3 .value { background-color: #FFB240; }
+.ui-barchart li.color-3 .average { background-color: #FFE5BF; }
+
+.color-2 { border-color: #0B5E00; }
+.color-2 h2 { background-color: #0B5E00; color: white; }
+.ui-barchart li.color-2 { color: #205E18; }
+.ui-barchart li.color-2 .value { background-color: #205E18; }
+.ui-barchart li.color-2 .average { background-color: #8BB286; }
+
+.color-1 { border-color: #001C59; }
+.color-1 h2 { background-color: #001C59; color: white; }
+.ui-barchart li.color-1 { color: #162C59; }
+.ui-barchart li.color-1 .value { background-color: #162C59; }
+.ui-barchart li.color-1 .average { background-color: #8694B2; }
+
+    </style>
+  </head>
+  <body>
+
+  <div class="ui-barchart">
+    <h2>Application</h2>
+    <ul>
+      <li class="color-5"><div class="label">Fatal</div>
+        <div class="bar">
+          <div class="value" style="width: 0%"></div>
+          <div class="average" style="width: 0%"></div>
+        </div>
+      </li>
+      <li class="color-4"><div class="label">Error</div>
+        <div class="bar">
+          <div class="value" style="width: 1%"></div>
+          <div class="average" style="width: 2%"></div>
+        </div>
+      </li>
+      <li class="color-3"><div class="label">Warn</div>
+        <div class="bar">
+          <div class="value" style="width: 2%"></div>
+          <div class="average" style="width: 17%"></div>
+        </div>
+      </li>
+      <li class="color-2"><div class="label">Info</div>
+        <div class="bar">
+          <div class="value" style="width: 95%"></div>
+          <div class="average" style="width: 100%"></div>
+        </div>
+      </li>
+      <li class="color-1"><div class="label">Debug</div>
+        <div class="bar">
+          <div class="value" style="width: 21%"></div>
+          <div class="average" style="width: 37%"></div>
+        </div>
+      </li>
+  </ul></div>
+
+  <div class="ui-barchart">
+    <h2>Application</h2>
+    <ul>
+      <li class="color-5"><div class="label">Fatal</div>
+        <div class="bar">
+          <div class="value" style="width: 0%"></div>
+          <div class="average" style="width: 0%"></div>
+        </div>
+      </li>
+      <li class="color-4"><div class="label">Error</div>
+        <div class="bar">
+          <div class="value" style="width: 1%"></div>
+          <div class="average" style="width: 2%"></div>
+        </div>
+      </li>
+      <li class="color-3"><div class="label">Warn</div>
+        <div class="bar">
+          <div class="value" style="width: 2%"></div>
+          <div class="average" style="width: 17%"></div>
+        </div>
+      </li>
+      <li class="color-2"><div class="label">Info</div>
+        <div class="bar">
+          <div class="value" style="width: 95%"></div>
+          <div class="average" style="width: 100%"></div>
+        </div>
+      </li>
+      <li class="color-1"><div class="label">Debug</div>
+        <div class="bar">
+          <div class="value" style="width: 21%"></div>
+          <div class="average" style="width: 37%"></div>
+        </div>
+      </li>
+  </ul></div>
+  <div class="ui-barchart color-4">
+    <h2>Application</h2>
+    <ul>
+      <li class="color-5"><div class="label">Fatal</div>
+        <div class="bar">
+          <div class="value" style="width: 0%"></div>
+          <div class="average" style="width: 0%"></div>
+        </div>
+      </li>
+      <li class="color-4"><div class="label">Error</div>
+        <div class="bar">
+          <div class="value" style="width: 10%"></div>
+          <div class="average" style="width: 2%"></div>
+        </div>
+      </li>
+      <li class="color-3"><div class="label">Warn</div>
+        <div class="bar">
+          <div class="value" style="width: 2%"></div>
+          <div class="average" style="width: 17%"></div>
+        </div>
+      </li>
+      <li class="color-2"><div class="label">Info</div>
+        <div class="bar">
+          <div class="value" style="width: 95%"></div>
+          <div class="average" style="width: 100%"></div>
+        </div>
+      </li>
+      <li class="color-1"><div class="label">Debug</div>
+        <div class="bar">
+          <div class="value" style="width: 21%"></div>
+          <div class="average" style="width: 37%"></div>
+        </div>
+      </li>
+  </ul></div>
+  <div class="ui-barchart">
+    <h2>Application</h2>
+    <ul>
+      <li class="color-5"><div class="label">Fatal</div>
+        <div class="bar">
+          <div class="value" style="width: 0%"></div>
+          <div class="average" style="width: 0%"></div>
+        </div>
+      </li>
+      <li class="color-4"><div class="label">Error</div>
+        <div class="bar">
+          <div class="value" style="width: 1%"></div>
+          <div class="average" style="width: 2%"></div>
+        </div>
+      </li>
+      <li class="color-3"><div class="label">Warn</div>
+        <div class="bar">
+          <div class="value" style="width: 2%"></div>
+          <div class="average" style="width: 17%"></div>
+        </div>
+      </li>
+      <li class="color-2"><div class="label">Info</div>
+        <div class="bar">
+          <div class="value" style="width: 95%"></div>
+          <div class="average" style="width: 100%"></div>
+        </div>
+      </li>
+      <li class="color-1"><div class="label">Debug</div>
+        <div class="bar">
+          <div class="value" style="width: 21%"></div>
+          <div class="average" style="width: 37%"></div>
+        </div>
+      </li>
+  </ul></div>
+  <div class="ui-barchart">
+    <h2>Application</h2>
+    <ul>
+      <li class="color-5"><div class="label">Fatal</div>
+        <div class="bar">
+          <div class="value" style="width: 0%"></div>
+          <div class="average" style="width: 0%"></div>
+        </div>
+      </li>
+      <li class="color-4"><div class="label">Error</div>
+        <div class="bar">
+          <div class="value" style="width: 1%"></div>
+          <div class="average" style="width: 2%"></div>
+        </div>
+      </li>
+      <li class="color-3"><div class="label">Warn</div>
+        <div class="bar">
+          <div class="value" style="width: 2%"></div>
+          <div class="average" style="width: 17%"></div>
+        </div>
+      </li>
+      <li class="color-2"><div class="label">Info</div>
+        <div class="bar">
+          <div class="value" style="width: 95%"></div>
+          <div class="average" style="width: 100%"></div>
+        </div>
+      </li>
+      <li class="color-1"><div class="label">Debug</div>
+        <div class="bar">
+          <div class="value" style="width: 21%"></div>
+          <div class="average" style="width: 37%"></div>
+        </div>
+      </li>
+  </ul></div>
+  <div class="ui-barchart color-5">
+    <h2>Application</h2>
+    <ul>
+      <li class="color-5"><div class="label">Fatal</div>
+        <div class="bar">
+          <div class="value" style="width: 0%"></div>
+          <div class="average" style="width: 0%"></div>
+        </div>
+      </li>
+      <li class="color-4"><div class="label">Error</div>
+        <div class="bar">
+          <div class="value" style="width: 1%"></div>
+          <div class="average" style="width: 2%"></div>
+        </div>
+      </li>
+      <li class="color-3"><div class="label">Warn</div>
+        <div class="bar">
+          <div class="value" style="width: 2%"></div>
+          <div class="average" style="width: 17%"></div>
+        </div>
+      </li>
+      <li class="color-2"><div class="label">Info</div>
+        <div class="bar">
+          <div class="value" style="width: 95%"></div>
+          <div class="average" style="width: 100%"></div>
+        </div>
+      </li>
+      <li class="color-1"><div class="label">Debug</div>
+        <div class="bar">
+          <div class="value" style="width: 21%"></div>
+          <div class="average" style="width: 37%"></div>
+        </div>
+      </li>
+  </ul></div>
+  <div class="ui-barchart">
+    <h2>Application</h2>
+    <ul>
+      <li class="color-5"><div class="label">Fatal</div>
+        <div class="bar">
+          <div class="value" style="width: 0%"></div>
+          <div class="average" style="width: 0%"></div>
+        </div>
+      </li>
+      <li class="color-4"><div class="label">Error</div>
+        <div class="bar">
+          <div class="value" style="width: 1%"></div>
+          <div class="average" style="width: 2%"></div>
+        </div>
+      </li>
+      <li class="color-3"><div class="label">Warn</div>
+        <div class="bar">
+          <div class="value" style="width: 2%"></div>
+          <div class="average" style="width: 17%"></div>
+        </div>
+      </li>
+      <li class="color-2"><div class="label">Info</div>
+        <div class="bar">
+          <div class="value" style="width: 95%"></div>
+          <div class="average" style="width: 100%"></div>
+        </div>
+      </li>
+      <li class="color-1"><div class="label">Debug</div>
+        <div class="bar">
+          <div class="value" style="width: 21%"></div>
+          <div class="average" style="width: 37%"></div>
+        </div>
+      </li>
+  </ul></div>
+
+  <div class="ui-barchart">
+    <h2>Application</h2>
+    <ul>
+      <li class="color-5"><div class="label">Fatal</div>
+        <div class="bar">
+          <div class="value" style="width: 0%"></div>
+          <div class="average" style="width: 0%"></div>
+        </div>
+      </li>
+      <li class="color-4"><div class="label">Error</div>
+        <div class="bar">
+          <div class="value" style="width: 1%"></div>
+          <div class="average" style="width: 2%"></div>
+        </div>
+      </li>
+      <li class="color-3"><div class="label">Warn</div>
+        <div class="bar">
+          <div class="value" style="width: 2%"></div>
+          <div class="average" style="width: 17%"></div>
+        </div>
+      </li>
+      <li class="color-2"><div class="label">Info</div>
+        <div class="bar">
+          <div class="value" style="width: 95%"></div>
+          <div class="average" style="width: 100%"></div>
+        </div>
+      </li>
+      <li class="color-1"><div class="label">Debug</div>
+        <div class="bar">
+          <div class="value" style="width: 21%"></div>
+          <div class="average" style="width: 37%"></div>
+        </div>
+      </li>
+  </ul></div>
+  <div class="ui-barchart">
+    <h2>Application</h2>
+    <ul>
+      <li class="color-5"><div class="label">Fatal</div>
+        <div class="bar">
+          <div class="value" style="width: 0%"></div>
+          <div class="average" style="width: 0%"></div>
+        </div>
+      </li>
+      <li class="color-4"><div class="label">Error</div>
+        <div class="bar">
+          <div class="value" style="width: 1%"></div>
+          <div class="average" style="width: 2%"></div>
+        </div>
+      </li>
+      <li class="color-3"><div class="label">Warn</div>
+        <div class="bar">
+          <div class="value" style="width: 2%"></div>
+          <div class="average" style="width: 17%"></div>
+        </div>
+      </li>
+      <li class="color-2"><div class="label">Info</div>
+        <div class="bar">
+          <div class="value" style="width: 95%"></div>
+          <div class="average" style="width: 100%"></div>
+        </div>
+      </li>
+      <li class="color-1"><div class="label">Debug</div>
+        <div class="bar">
+          <div class="value" style="width: 21%"></div>
+          <div class="average" style="width: 37%"></div>
+        </div>
+      </li>
+  </ul></div>
+  <div class="ui-barchart">
+    <h2>Application</h2>
+    <ul>
+      <li class="color-5"><div class="label">Fatal</div>
+        <div class="bar">
+          <div class="value" style="width: 0%"></div>
+          <div class="average" style="width: 0%"></div>
+        </div>
+      </li>
+      <li class="color-4"><div class="label">Error</div>
+        <div class="bar">
+          <div class="value" style="width: 1%"></div>
+          <div class="average" style="width: 2%"></div>
+        </div>
+      </li>
+      <li class="color-3"><div class="label">Warn</div>
+        <div class="bar">
+          <div class="value" style="width: 2%"></div>
+          <div class="average" style="width: 17%"></div>
+        </div>
+      </li>
+      <li class="color-2"><div class="label">Info</div>
+        <div class="bar">
+          <div class="value" style="width: 95%"></div>
+          <div class="average" style="width: 100%"></div>
+        </div>
+      </li>
+      <li class="color-1"><div class="label">Debug</div>
+        <div class="bar">
+          <div class="value" style="width: 21%"></div>
+          <div class="average" style="width: 37%"></div>
+        </div>
+      </li>
+  </ul></div>
+  <div class="ui-barchart">
+    <h2>Application</h2>
+    <ul>
+      <li class="color-5"><div class="label">Fatal</div>
+        <div class="bar">
+          <div class="value" style="width: 0%"></div>
+          <div class="average" style="width: 0%"></div>
+        </div>
+      </li>
+      <li class="color-4"><div class="label">Error</div>
+        <div class="bar">
+          <div class="value" style="width: 1%"></div>
+          <div class="average" style="width: 2%"></div>
+        </div>
+      </li>
+      <li class="color-3"><div class="label">Warn</div>
+        <div class="bar">
+          <div class="value" style="width: 2%"></div>
+          <div class="average" style="width: 17%"></div>
+        </div>
+      </li>
+      <li class="color-2"><div class="label">Info</div>
+        <div class="bar">
+          <div class="value" style="width: 95%"></div>
+          <div class="average" style="width: 100%"></div>
+        </div>
+      </li>
+      <li class="color-1"><div class="label">Debug</div>
+        <div class="bar">
+          <div class="value" style="width: 21%"></div>
+          <div class="average" style="width: 37%"></div>
+        </div>
+      </li>
+  </ul></div>
+  <div class="ui-barchart">
+    <h2>Application</h2>
+    <ul>
+      <li class="color-5"><div class="label">Fatal</div>
+        <div class="bar">
+          <div class="value" style="width: 0%"></div>
+          <div class="average" style="width: 0%"></div>
+        </div>
+      </li>
+      <li class="color-4"><div class="label">Error</div>
+        <div class="bar">
+          <div class="value" style="width: 1%"></div>
+          <div class="average" style="width: 2%"></div>
+        </div>
+      </li>
+      <li class="color-3"><div class="label">Warn</div>
+        <div class="bar">
+          <div class="value" style="width: 2%"></div>
+          <div class="average" style="width: 17%"></div>
+        </div>
+      </li>
+      <li class="color-2"><div class="label">Info</div>
+        <div class="bar">
+          <div class="value" style="width: 95%"></div>
+          <div class="average" style="width: 100%"></div>
+        </div>
+      </li>
+      <li class="color-1"><div class="label">Debug</div>
+        <div class="bar">
+          <div class="value" style="width: 21%"></div>
+          <div class="average" style="width: 37%"></div>
+        </div>
+      </li>
+  </ul></div>
+  </body>
+</html>
