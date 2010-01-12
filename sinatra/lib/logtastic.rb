@@ -7,13 +7,14 @@ require 'yaml'
 require 'time'
 
 require 'rubygems'
-require 'json/ext'
-require 'mongo'
+require 'json'
 require 'mongoid'
 require 'logging'
 
+# TODO: remove these lines that muck with the load path
+# we need to release/install the logging mongo_db plugin
 root = File.expand_path(File.dirname(__FILE__))
-$:.unshift File.join(root, %w[.. .. ruby lib])  # TODO: remove this line
+$:.unshift File.join(root, %w[.. .. ruby lib])
 
 require 'logging/plugins/mongo_db'
 
@@ -85,10 +86,13 @@ module Logtastic
 end  # module Logtastic
 
 Logtastic.libpath {
-  require 'core_ext'
+  require 'logtastic/extensions/collection'
+  require 'logtastic/extensions/numeric'
+  require 'logtastic/extensions/string'
+  require 'logtastic/extensions/time'
   require 'logtastic/initializer'
   require 'logtastic/helpers'
-  require 'logtastic/mongo'
   require 'logtastic/bundle'
   require 'logtastic/events'
 }
+

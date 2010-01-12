@@ -39,9 +39,11 @@ module Logtastic
     end
 
     get '/' do
-      @events = ::Logtastic::Events.new 'test'
-      @db = ::Logtastic::Mongo::Adapter.database
+      @db = Mongoid.database
       @names = @db.collection_names
+
+      @bundle = ::Logtastic::Bundle.new 'test'
+      @events = @bundle.events
       @obj = @events.find_one
 
       erb <<-HTML
@@ -76,3 +78,4 @@ module Logtastic
     end
   end
 end
+
