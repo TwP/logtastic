@@ -1,0 +1,96 @@
+#!/usr/bin/env ruby
+
+root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+require File.join(root, %w[lib logtastic])
+require 'main'
+require 'irb'
+
+Main do
+  description <<-__
+Logtastic Console
+
+Gives you an irb prompt so you can interact with the domain model,
+run a simple command, or run a ruby script.
+  __
+
+  examples <<-__
+Start the console in the test environment (default):
+
+  console
+
+Specify an environment to use:
+
+  console production
+
+Run some ruby code:
+
+  console -e 'puts "There are \#{Nevs::Rules::Tickets.count} tickets"'
+
+Run a ruby script:
+
+  console -e my_script.rb
+
+  __
+
+  argument 'environment' do
+    description 'The environment to load'
+    default ENV['RACK_ENV'] || 'test'
+    attribute
+  end
+
+  option('--log-to=stdout') do
+    description 'Logging destination, defaults to STDOUT'
+    default 'stdout'
+    cast :list
+    attribute('log_to')
+  end
+
+  option('--log-level=info') do
+    description 'Log level, defaults to info'
+    default 'info'
+    attribute 'log_level'
+  end
+
+  option('--colorize=true') do
+    description "Whether or not to colorize ActiveRecord debug output, default true"
+    default true
+    attribute { |p| p.value != "false" }
+  end
+
+  option('--exec', '-e') do
+    argument :required
+    description 'A string or filename to execute in lieu of loading the console'
+    attribute 'execute'
+  end
+
+  option('--quiet', '-q') do
+    description 'Set the log_level to warn unless otherwise specified'
+    attribute
+  end
+
+  run do
+    Logtastic.env = environment
+    Logtastic::Initializer.run do |config|
+      ll = (quiet? && !params['log-level'].given?) ? :warn : log_level
+      config.log_to = log_to
+      config.log_level = ll
+#      config.active_record.log_level = ll
+#      config.active_record.colorize_logging = colorize
+    end
+
+    if execute
+      if test(?f, execute)
+        load(execute)
+      elsif test(?f, File.join(root, 'scripts', execute))
+        load(File.join(root, 'scripts', execute))
+      else
+        eval(execute, binding, 'evaluated code', 1)
+      end
+    else
+      ARGV.clear
+      IRB.start(__FILE__)
+    end
+  end
+end
+
+# EOF

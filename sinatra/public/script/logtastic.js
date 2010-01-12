@@ -32,7 +32,7 @@ logtastic.ready = function( cmd ) {
            f(this.getUTCSeconds())   + ' UTC';
   };
 
-  Date.prototype.toCouchDB = function() {
+  Date.prototype.toMongoDB = function() {
       return this.getUTCFullYear()   + '-' +
            f(this.getUTCMonth() + 1) + '-' +
            f(this.getUTCDate())      + 'T' +

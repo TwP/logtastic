@@ -16,3 +16,4 @@ doc
 pkg
 java/classes
 tmp
+sinatra/log

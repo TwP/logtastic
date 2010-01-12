@@ -1,6 +1,5 @@
 
 module Logtastic::Helpers
-  extend ERB::Util
 
   def navbar( current )
     html = %w[<ul>]

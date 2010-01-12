@@ -74,8 +74,9 @@ module Logging::Layouts
       code << layout.items.map {|name|
         "#{name.to_sym.inspect} => #{MongoDB::DIRECTIVE_TABLE[name]}"
       }.join(',')
+      code << ',"_lang" => "ruby"'
       code << "\n}\nend"
-      
+
       (class << layout; self end).class_eval(code, __FILE__, __LINE__)
     end
     # :startdoc:

@@ -61,10 +61,10 @@ module Logging::Appenders
       # initialize the connection to the MongoDB instance
       db_host = opts.getopt(:db_host, 'localhost')
       db_port = opts.getopt(:db_port, Mongo::Connection::DEFAULT_PORT, :as => Integer)
-      db_name = opts.getopt(:db_name, 'logging')
+      db_name = opts.getopt(:db_name, 'logtastic')
 
       @db = Mongo::Connection.new(db_host, db_port, :auto_reconnect => true).db(db_name)
-      @collection = opts.getopt(:db_collection, 'logevents')
+      @collection = opts.getopt(:db_collection, 'test') + '.events'
 
       configure_buffering(opts)
       start_thread

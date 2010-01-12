@@ -1,10 +1,17 @@
 
-require 'rubygems'
 require 'sinatra/base'
 require 'lib/logtastic'
 
 module Logtastic
   class Application < Sinatra::Base
+
+    configure {
+      Logtastic.env = environment
+      Logtastic::Initializer.run do |config|
+        config.program_name = 'logtastic'
+      end
+      Logging.logger[Logtastic].info "Loaded the #{RACK_ENV} environment"
+    }
 
     enable :static
     set :root, '.'

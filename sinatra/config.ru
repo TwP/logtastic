@@ -1,4 +1,4 @@
-require 'rubygems'
-require 'logtastic'
 
+load 'logtastic.rb'
 run Logtastic::Application
+
