@@ -9,18 +9,19 @@ module Logtastic
     enable :static
     set :root, '.'
 
-    helpers ::Logtastic::Helpers
+    helpers ::Logtastic::Helpers, ::ERB::Util
 
     before do
       @config = <<-YAML
       level_map:
         ruby:
-          0: 0
-          1: 1
-          2: 2
-          3: 3
-          4: 4
+          0: 1
+          1: 2
+          2: 3
+          3: 4
+          4: 5
       levels:
+        - unknown
         - debug
         - info
         - warn
@@ -31,28 +32,39 @@ module Logtastic
     end
 
     get '/' do
+      @events = ::Logtastic::Events.new 'test'
+      @db = ::Logtastic::Mongo::Adapter.database
+      @names = @db.collection_names
+      @obj = @events.find_one
+
       erb <<-HTML
-      <div class="lg-chart ui-widget"><ul>
-        <li>
-          <div class="label">1<div>
-          <div class="bar">
-            <div class="value" style="width:50%; background-color:red"></div>
-          </div>
-        </li>
-        <li>2<div style="width:100px; background-color:blue;">&nbsp;</div></li>
-      </ul></div>
+      <div><ul>
+      <% @names.each do |n| %>
+        <li><%= h n %> :: <%= @db[n].count %></li>
+      <% end %>
+      </ul>
+
+      <p><%= h @obj.inspect %></p>
+
+
+      <% @events.hourly.each do |hash| %>
+      <p><%= h hash.inspect %></p>
+      <% end %>
+
+      </div>
       HTML
     end
 
-    get '/:db/?' do
+    get '/:bundle/?' do
+      @bundle = ::Logtastic::Bundle.new params[:bundle]
       erb :overview
     end
 
-    get '/:db/search/?' do
+    get '/:bundle/search/?' do
       erb "<% @title = 'Search' %><%= 'Search' %>"
     end
 
-    get '/:db/tail/?' do
+    get '/:bundle/tail/?' do
       erb "<% @title = 'Tail' %><%= 'Tail' %>"
     end
   end
