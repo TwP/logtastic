@@ -1,178 +1,32 @@
+
 /**
  * @namespace The Logtastic namespace, <tt>logtastic</tt>. All public methods
  * and fields should be registered on this object.
  */
 var logtastic = {};
 
+(function(jq) {
+
 /**
  *
  */
 logtastic.ready = function( cmd ) {
 
-  String.prototype.capitalize = function() {
-    return this.replace(/\w+/g, function(s) {
-      return s.charAt(0).toUpperCase() + s.substr(1).toLowerCase();
-    });
-  };
-
-  String.prototype.compare = function( other ) {
-    return this > other ? 1 : this < other ? -1 : 0;
-  };
-
-  function f(n) {    // Format integers to have at least two digits.
-    return n < 10 ? '0' + n : n;
-  }
-
-  Date.prototype.toUTC = function() {
-      return this.getUTCFullYear()   + '/' +
-           f(this.getUTCMonth() + 1) + '/' +
-           f(this.getUTCDate())      + ' ' +
-           f(this.getUTCHours())     + ':' +
-           f(this.getUTCMinutes())   + ':' +
-           f(this.getUTCSeconds())   + ' UTC';
-  };
-
-  Date.prototype.toMongoDB = function() {
-      return this.getUTCFullYear()   + '-' +
-           f(this.getUTCMonth() + 1) + '-' +
-           f(this.getUTCDate())      + 'T' +
-           f(this.getUTCHours())     + ':' +
-           f(this.getUTCMinutes())   + ':' +
-           f(this.getUTCSeconds())   + '.000Z';
-  };
-
-  Date.prototype.toJSON = function() {
-      return this.getUTCFullYear()   + '/' +
-           f(this.getUTCMonth() + 1) + '/' +
-           f(this.getUTCDate())      + ' ' +
-           f(this.getUTCHours())     + ':' +
-           f(this.getUTCMinutes())   + ':' +
-           f(this.getUTCSeconds())   + ' +0000';
-  };
-
-  Date.prototype.toDateTime = function() {
-      return this.getUTCFullYear()   + '-' +
-           f(this.getUTCMonth() + 1) + '-' +
-           f(this.getUTCDate())      + ' ' +
-           f(this.getUTCHours())     + ':' +
-           f(this.getUTCMinutes());
-  };
-
-  // This function will be executed when the document is ready
-  $(function() {
-    var dbname = document.location.href.split('/')[3];
-    var dname = unescape(document.location.href).split('/')[5];
-    var db = $.couch.db(dbname);
-
-    $('body').append(
-      '<div id="notice" class="ui-widget">' +
-      '<div class="ui-corner-all">' +
-      '<p><span class="ui-icon ui-icon-alert" style="float:left; margin-right:0.3em;"></span><span id="noticeText"></span></p>' +
-      '</div></div>'
-    );
-    $('#notice').hide().click(function() { $(this).fadeOut(); });
-
-    /**
-     *
-     */
-    logtastic.view = function( view, options ) {
-      options = $.extend({
-          error: function(status, error, reason) {
-            logtastic.alarm('Could not access view "'+view+'" :: '+reason);
-          }}, options);
-
-      db.view(dname+'/'+view, options);
+    var callback = function( bundle ) {
+        jq(function() {
+            jq('body').append(
+                '<div id="notice" class="ui-widget">' +
+                '<div class="ui-corner-all">' +
+                '<p><span class="ui-icon ui-icon-alert" style="float:left; margin-right:0.3em;"></span><span id="noticeText"></span></p>' +
+                '</div></div>'
+            );
+            jq('#notice').hide().click(function() { jq(this).fadeOut(); });
+            cmd(bundle);
+        });
     };
 
-    /**
-     *
-     */
-    logtastic.doc = function( id, options ) {
-      options = $.extend({
-          error: function(status, error, reason) {
-            logtastic.alarm('Could not open document "'+ id + '" :: ' + reason);
-          }}, options);
-      db.openDoc(id, options);
-    };
-
-    var count = 0;
-    var app_ids = {};
-
-    function success() {
-      count += 1;
-      if (count >= 1) {
-        logtastic.app_ids = app_ids;
-        cmd();
-      }
-    }
-
-    logtastic.view('latest', {
-      group_level: 2,
-      success: function(json) {
-        for (ii in json.rows) {
-          id = json.rows[ii].key[0]
-          level = json.rows[ii].key[1]
-
-          if (app_ids[id] === undefined) {app_ids[id] = {}}
-          app_ids[id][logtastic.levelMap[level]] = level;
-        }
-        success();
-      }
-    });
-  });
-};
-
-/**
- * A list of all the unique "app_id" values in the CouchDB database.
- *
- * @type array
- */
-logtastic.app_ids = null;
-
-/**
- * The names associated with numeric log levels.
- *
- * @type array
- */
-logtastic.levels = ['debug', 'info', 'warn', 'error', 'fatal'];
-
-/**
- *
- */
-logtastic.levelMap = {
-  // Ruby logging levels
-  0: 0,
-  1: 1,
-  2: 2,
-  3: 3,
-  4: 4,
-  // Java Log4j levels
-  10000: 0,
-  20000: 1,
-  30000: 2,
-  40000: 3,
-  50000: 4,
-  // Python logging levels
-  10: 0,
-  20: 1,
-  30: 2,
-  40: 3,
-  50: 4
-}
-
-/**
- * Given a level number, returns a level name. If the level number does not
- * correspond to a known level name then 'Unknown' is returned.
- *
- * @parm {number} num the level number
- */
-logtastic.levelName = function( num ) {
-  ii = this.levelMap[num];
-  if (ii !== undefined) {
-    return this.levels[ii].capitalize();
-  } else {
-    return 'Unknown';
-  }
+    var bundleName = unescape(document.location.href).split('/')[3],
+        bundle = logtastic.bundle(bundleName, callback);
 };
 
 /**
@@ -192,7 +46,7 @@ logtastic.cssColorClass = function( num ) {
  * parsed by the javascript Date object. This method accepts either a CouchDB
  * logtastic document or a timestamp string from a logtastic document.
  *
- * @param {object} obj the CouchDB logtastic document or a timestamp string
+ * @param {object} obj the logtastic log event or a timestamp string
  */
 logtastic.formatTimestamp = function( obj ) {
   var ts = obj.timestamp;
@@ -219,8 +73,8 @@ logtastic.cssSelector = function( obj ) {
 /**
  * Parses the search parameters from the page URI and returns them as members
  * of an object. For example, if the URI has the following search string
- * <tt>?app_id=Foo&level=1</tt> this method would return
- * <tt>{'app_id':'Foo', 'level':1}</tt>.
+ * <tt>?name=Foo&level=1</tt> this method would return
+ * <tt>{'name':'Foo', 'level':1}</tt>.
  */
 logtastic.searchParams = function() {
   var obj = {};
@@ -233,22 +87,6 @@ logtastic.searchParams = function() {
     obj[ary[0]] = ary[1];
   }
   return obj;
-};
-
-/**
- *
- */
-logtastic.eachLevel = function( callback ) {
-  $.each(logtastic.levels, function(ii, val) {
-    callback(logtastic.levelName(ii));
-  });
-};
-
-/**
- *
- */
-logtastic.eachAppId = function( callback ) {
-  $.each(logtastic.app_ids, function(key, val) { callback(key); });
 };
 
 /**
@@ -278,8 +116,8 @@ logtastic.prettyDate = function( time ) {
  * 
  */
 logtastic.alarm = function( msg ) {
-  $('#noticeText').empty().text(' ' + msg).prepend('<strong>Alert:</strong>');
-  $('#notice').find('div').removeClass('ui-state-error ui-state-highlight')
+  jq('#noticeText').empty().text(' ' + msg).prepend('<strong>Alert:</strong>');
+  jq('#notice').find('div').removeClass('ui-state-error ui-state-highlight')
               .addClass('ui-state-error').end().fadeIn('fast');
 };
 
@@ -287,7 +125,140 @@ logtastic.alarm = function( msg ) {
  * 
  */
 logtastic.info = function( msg ) {
-  $('#noticeText').empty().text(' ' + msg).prepend('<strong>Info:</strong>');
-  $('#notice').find('div').removeClass('ui-state-error ui-state-highlight')
+  jq('#noticeText').empty().text(' ' + msg).prepend('<strong>Info:</strong>');
+  jq('#notice').find('div').removeClass('ui-state-error ui-state-highlight')
               .addClass('ui-state-highlight').end().fadeIn('fast');
 };
+
+
+/* ---- Logtastic bundle interface ---------------------------------------- */
+
+logtastic.bundle = function( name, ready ) {
+    return new logtastic.Bundle(name, ready);
+};
+
+logtastic.Bundle = function( name, ready ) {
+    this.name = name;
+    this._ready = ready;
+    this.levels = null;
+    this.levelMap = null;
+    this.appIds = null;
+    this._getConfig();
+};
+
+jq.extend(logtastic.Bundle.prototype, {
+    /**
+     * Given a log event document, returns a level name. If the language or
+     * log level does not correspond to a known level name then 'Unknown' is
+     * returned.
+     *
+     * @parm {object} doc The log event document
+     */
+    levelName: function( doc ) {
+      var ii = (typeof doc === 'object') ?  this.levelMap[doc._lang][doc.level] : parseInt(doc);
+
+      if (ii !== undefined) {
+          return this.levels[ii].capitalize();
+      } else {
+          return 'Unknown';
+      }
+    },
+
+    /**
+     *
+     */
+    eachLevel: function( callback ) {
+        var self = this;
+        jq.each(logtastic.levels, function(ii, val) {
+            callback(self.levelName(ii));
+        });
+        return this;
+    },
+
+    /**
+     *
+     */
+    eachAppId: function( callback ) {
+        jq.each(logtastic.app_ids, function(ii, val) { callback(val); });
+        return this;
+    },
+
+    /**
+     *
+     */
+    summaryData: function( callback ) {
+        jq.getJSON(this.name + '/summary_data', callback);
+        return this;
+    },
+
+    /**
+     * Helper method that makes an AJAX call to the server to retrieve the
+     * configuration information for this bundle.
+     */
+    _getConfig: function() {
+        var self = this,
+            success = function( data ) {
+                self.levels = data.levels;
+                self.levelMap = data.levelMap;
+                self.appIds = data.appIds;
+                if (self._ready) { self._ready(self) }
+                delete self._ready;
+            };
+        jq.getJSON(this.name + '/config', success)
+        return this;
+    }
+});
+
+
+/* ---- Extensions of the core Javascript types --------------------------- */
+
+function f(n) {    // Format integers to have at least two digits.
+    return n < 10 ? '0' + n : n;
+}
+
+String.prototype.capitalize = function() {
+    return this.replace(/\w+/g, function(s) {
+        return s.charAt(0).toUpperCase() + s.substr(1).toLowerCase();
+    });
+};
+
+String.prototype.compare = function( other ) {
+    return this > other ? 1 : this < other ? -1 : 0;
+};
+
+Date.prototype.toUTC = function() {
+    return this.getUTCFullYear()   + '/' +
+         f(this.getUTCMonth() + 1) + '/' +
+         f(this.getUTCDate())      + ' ' +
+         f(this.getUTCHours())     + ':' +
+         f(this.getUTCMinutes())   + ':' +
+         f(this.getUTCSeconds())   + ' UTC';
+};
+
+Date.prototype.toMongoDB = function() {
+    return this.getUTCFullYear()   + '-' +
+         f(this.getUTCMonth() + 1) + '-' +
+         f(this.getUTCDate())      + 'T' +
+         f(this.getUTCHours())     + ':' +
+         f(this.getUTCMinutes())   + ':' +
+         f(this.getUTCSeconds())   + '.000Z';
+};
+
+Date.prototype.toJSON = function() {
+    return this.getUTCFullYear()   + '/' +
+         f(this.getUTCMonth() + 1) + '/' +
+         f(this.getUTCDate())      + ' ' +
+         f(this.getUTCHours())     + ':' +
+         f(this.getUTCMinutes())   + ':' +
+         f(this.getUTCSeconds())   + ' +0000';
+};
+
+Date.prototype.toDateTime = function() {
+    return this.getUTCFullYear()   + '-' +
+         f(this.getUTCMonth() + 1) + '-' +
+         f(this.getUTCDate())      + ' ' +
+         f(this.getUTCHours())     + ':' +
+         f(this.getUTCMinutes());
+};
+
+})(jQuery);

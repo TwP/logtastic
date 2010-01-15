@@ -1,5 +1,6 @@
 
 require 'sinatra/base'
+require 'sinatra/content_for'
 require 'lib/logtastic'
 
 module Logtastic
@@ -16,66 +17,57 @@ module Logtastic
     enable :static
     set :root, '.'
 
-    helpers ::Logtastic::Helpers, ::ERB::Util
+    helpers ::Logtastic::Helpers, Sinatra::ContentFor, ERB::Util
 
-    before do
-      @config = <<-YAML
-      level_map:
-        ruby:
-          0: 1
-          1: 2
-          2: 3
-          3: 4
-          4: 5
-      levels:
-        - unknown
-        - debug
-        - info
-        - warn
-        - error
-        - fatal
-      YAML
-      @config = YAML.parse @config
+    helpers do
+      def bundle( name )
+        ::Logtastic::Bundle.new(name).rollup
+      rescue
+        halt 404, "Sorry, #{name.inspect} was not found"
+      end
     end
 
+    # before do
+    # end
+
     get '/' do
-      @db = Mongoid.database
-      @names = @db.collection_names
-
-      @bundle = ::Logtastic::Bundle.new 'test'
-      @events = @bundle.events
-      @obj = @events.find_one
-
-      erb <<-HTML
-      <div><ul>
-      <% @names.each do |n| %>
-        <li><%= h n %> :: <%= @db[n].count %></li>
-      <% end %>
-      </ul>
-
-      <p><%= h @obj.inspect %></p>
-
-
-      <% @events.hourly.each do |hash| %>
-      <p><%= h hash.inspect %></p>
-      <% end %>
-
-      </div>
-      HTML
+      erb "<p>Some intro text would be good.</p>"
     end
 
     get '/:bundle/?' do
-      @bundle = ::Logtastic::Bundle.new params[:bundle]
+      @bundle = bundle params[:bundle]
       erb :overview
     end
 
     get '/:bundle/search/?' do
+      @bundle = bundle params[:bundle]
       erb "<% @title = 'Search' %><%= 'Search' %>"
     end
 
     get '/:bundle/tail/?' do
+      @bundle = bundle params[:bundle]
       erb "<% @title = 'Tail' %><%= 'Tail' %>"
     end
+
+    get '/:bundle/config/?' do
+      content_type :json
+
+      bundle = bundle params[:bundle]
+      config = bundle.config
+      config['appIds'] = bundle.app_ids
+      config.delete '_id'
+      config['appIds'].delete '_id'
+
+      config.to_json
+    end
+
+    get '/:bundle/summary_data/?' do
+      content_type :json
+
+      bundle = bundle params[:bundle]
+      bundle.summary_data.to_json
+    end
+
   end
 end
 

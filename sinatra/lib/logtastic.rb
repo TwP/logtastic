@@ -81,6 +81,13 @@ module Logtastic
     def env
       RACK_ENV
     end
+
+    #
+    #
+    def bundle( name = nil )
+      if name.nil? then Logtastic::Bundle
+      else Logtastic::Bundle.new(name) end
+    end
   end
 
 end  # module Logtastic
@@ -93,6 +100,8 @@ Logtastic.libpath {
   require 'logtastic/initializer'
   require 'logtastic/helpers'
   require 'logtastic/bundle'
-  require 'logtastic/events'
+  require 'logtastic/bundle/events'
+  require 'logtastic/bundle/hourly'
+  require 'logtastic/bundle/daily'
 }
 

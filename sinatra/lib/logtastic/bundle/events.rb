@@ -3,18 +3,14 @@ class Logtastic::Events < Mongo::Collection
 
   DAILY = <<-__
     function() {
-      var timestamp = this.timestamp
-          .replace(/-/g,'/')
-          .replace(/T.*/, ' 00:00:00 UTC');
+      var timestamp = this.timestamp.replace(/T.*/, 'T00:00:00Z');
       emit({timestamp: timestamp, name: this.app_id.name, level: this.level, _lang: this._lang}, 1);
     }
   __
 
   HOURLY = <<-__
     function() {
-      var timestamp = this.timestamp
-          .replace(/-/g,'/')
-          .replace(/T(\\d+).*/, " $1:00:00 UTC");
+      var timestamp = this.timestamp.replace(/T(\\d+).*/, "T$1:00:00Z");
       emit({timestamp: timestamp, name: this.app_id.name, level: this.level, _lang: this._lang}, 1);
     }
   __
@@ -30,6 +26,8 @@ class Logtastic::Events < Mongo::Collection
     }
   __
 
+  SORT = [['_id.timestamp', Mongo::ASCENDING], ['_id.name', Mongo::ASCENDING], ['_id._lang', Mongo::ASCENDING], ['_id.level', Mongo::ASCENDING]].freeze
+
   attr_reader :bundle
 
   def initialize( bundle )
@@ -39,32 +37,29 @@ class Logtastic::Events < Mongo::Collection
 
   def counts( start_ts = '', end_ts = nil )
     query = _query(start_ts, end_ts)
-    _normalize map_reduce(COUNT, SUM, :query => query).find()
+    _normalize map_reduce(COUNT, SUM, :query => query).all(:sort => SORT)
   end
 
   def hourly( start_ts = '', end_ts = nil )
     query = _query(start_ts, end_ts)
-    _normalize map_reduce(HOURLY, SUM, :query => query).find()
+    _normalize map_reduce(HOURLY, SUM, :query => query).all(:sort => SORT)
   end
 
   def daily( start_ts = '', end_ts = nil )
     query = _query(start_ts, end_ts)
-    _normalize map_reduce(DAILY, SUM, :query => query).find()
+    _normalize map_reduce(DAILY, SUM, :query => query).all(:sort => SORT)
   end
 
-  def hourly_stats
-    # grab the counts for the past hour
-    counts(1.hour.ago.utc)
+  def latest
+    cursor = find({}, :fields => %w(timestamp))
+    return '' if cursor.count == 0
 
-    # grab the hourly counts average for the past two weeks
-    # - this will need to come from the counts rollup table
-    # - it would be great to have a deploy flag so stats are calculated from then
-
-    # merge the counts and averages together for name/level/lang
+    doc = cursor.skip(cursor.count-1).next_document
+    doc['timestamp'].time
+  ensure
+    cursor.close
   end
-
-  def daily_stats
-  end
+  alias :last :latest
 
 
   private
@@ -94,10 +89,11 @@ class Logtastic::Events < Mongo::Collection
   def _normalize( rows )
     rows.map do |row|
       h = row['_id']
-      h['level'] = h['level'].integer
-      h['value'] = row['value'].integer
+      h['value'] = row['value'].to_i
       h
     end
+  ensure
+    rows.close
   end
 
 end  # module Logtastic::Events
