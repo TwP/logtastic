@@ -50,7 +50,7 @@ module Logging::Layouts
     DIRECTIVE_TABLE = {
       'logger'    => 'event.logger',
       'timestamp' => 'MongoDB.timestamp(event.time)',
-      'level'     => 'event.level',
+      'level'     => 'event.level.to_s',
       'message'   => 'format_obj(event.data)',
       'file'      => 'event.file',
       'line'      => 'event.line',
