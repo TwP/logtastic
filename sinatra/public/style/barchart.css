@@ -1,0 +1,63 @@
+
+.ui-barchart {
+  margin: 1.0em; padding: 0; border: 1px solid #ccc; width: 210px;
+  font-family: Trebuchet MS,Tahoma,Verdana,Arial,sans-serif;
+  font-size: 1.5em;
+  float: left;
+  -moz-box-shadow: 5px 5px 7px #AAA;
+  -webkit-box-shadow: 5px 5px 7px #AAA;
+  box-shadow: 5px 5px 7px #AAA;
+}
+.ui-barchart h2 {
+  margin: -1px -1px 0; padding: 0.1em 0.5em 0.2em;
+  background-color: #ccc; color: #333;
+  font-size: 1.1em;
+  text-shadow: 0 1px white;
+}
+.ui-barchart ul { list-style: none; margin: 0; padding: 5px; }
+.ui-barchart ul li { margin: 0 0 4px; padding: 0; height: 19px; line-height: 19px; vertical-align: middle; }
+.ui-barchart div { margin: 0; padding: 0; border: none !important; }
+.ui-barchart .label { width: 50px; text-align: right; }
+.ui-barchart .bar {
+  position: relative; top: -19px; left: 55px; width: 145px; height: 19px;
+  background-color: #F7F7F7;
+}
+.ui-barchart .value {
+  position: absolute; top: 5px; left: 0; z-index: 3; height: 9px;
+  background-color: #666;
+}
+.ui-barchart .average {
+  position: absolute; top: 0; left: 0; z-index: 2; height: 100%;
+  background-color: #ccc;
+}
+
+.color-4 { border-color: #BD0000; }
+.color-4 h2 { background-color: #BD0000; color: white; }
+.ui-barchart li.color-4 { color: #BD2F2F; }
+.ui-barchart li.color-4 .value { background-color: #BD2F2F; }
+.ui-barchart li.color-4 .average { background-color: #BD8E8E; }
+
+.color-3 { border-color: #F03800; }
+.color-3 h2 { background-color: #F03800; color: white; }
+.ui-barchart li.color-3 { color: #F0663C; }
+.ui-barchart li.color-3 .value { background-color: #F0663C; }
+.ui-barchart li.color-3 .average { background-color: #F0C2B4; }
+
+.color-2 { border-color: #FF9900; }
+.color-2 h2 { background-color: #FF9900; color: white; }
+.ui-barchart li.color-2 { color: #FFB240; }
+.ui-barchart li.color-2 .value { background-color: #FFB240; }
+.ui-barchart li.color-2 .average { background-color: #FFE5BF; }
+
+.color-1 { border-color: #0B5E00; }
+.color-1 h2 { background-color: #0B5E00; color: white; }
+.ui-barchart li.color-1 { color: #205E18; }
+.ui-barchart li.color-1 .value { background-color: #205E18; }
+.ui-barchart li.color-1 .average { background-color: #8BB286; }
+
+.color-0 { border-color: #001C59; }
+.color-0 h2 { background-color: #001C59; color: white; }
+.ui-barchart li.color-0 { color: #162C59; }
+.ui-barchart li.color-0 .value { background-color: #162C59; }
+.ui-barchart li.color-0 .average { background-color: #8694B2; }
+
