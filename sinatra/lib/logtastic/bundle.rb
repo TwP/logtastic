@@ -72,7 +72,8 @@ class Logtastic::Bundle < Mongo::Collection
     lang = level_map[doc['_lang']]
     index = lang[index] if lang
 
-    levels.at(index.to_i) || 'unknown'
+    name = levels.at(index.to_i) || 'unknown'
+    name.capitalize
   end
 
   def drop_all
@@ -110,12 +111,32 @@ class Logtastic::Bundle < Mongo::Collection
   end
 
   def app_ids
-    events.distinct 'app_id'
+    q = {'_id' => 'app_id_cache'}
+
+    app_id_cache = find_one(q) || q.dup
+
+    from = app_id_cache['from']
+    to = events.last_id
+    query = Hash.new {|h,k| h[k] = {}}
+
+    query['_id']['$gt'] = from if from
+    query['_id']['$lte'] = to if to
+
+    ary = events.distinct('app_id', query)
+    ary = ary + Array(app_id_cache['app_ids'])
+    ary.uniq!
+
+    app_id_cache['from'] = to
+    app_id_cache['app_ids'] = ary
+    update(q, app_id_cache, :upsert => true)
+
+    ary
   end
 
   def rollup
     hourly.rollup
     daily.rollup
+    # TODO: cache the app_ids and the summary counts here, too
     self
   end
 
