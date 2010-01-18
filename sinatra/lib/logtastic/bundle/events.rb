@@ -1,5 +1,5 @@
 
-class Logtastic::Events < Mongo::Collection
+class Logtastic::Bundle::Events < Mongo::Collection
 
   DAILY = <<-__
     function() {
@@ -61,6 +61,15 @@ class Logtastic::Events < Mongo::Collection
   end
   alias :last :latest
 
+  def last_id
+    cursor = find({}, :fields => %w(_id))
+    return if cursor.count == 0
+
+    doc = cursor.skip(cursor.count-1).next_document
+    doc['_id']
+  ensure
+    cursor.close
+  end
 
   private
 
@@ -96,5 +105,5 @@ class Logtastic::Events < Mongo::Collection
     rows.close
   end
 
-end  # module Logtastic::Events
+end  # module Logtastic::Bundle::Events
 
