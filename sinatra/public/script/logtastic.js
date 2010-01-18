@@ -30,18 +30,6 @@ logtastic.ready = function( cmd ) {
 };
 
 /**
- *
- */
-logtastic.cssColorClass = function( num ) {
-  ii = this.levelMap[num];
-  if (ii !== undefined) {
-    return 'color'+ii;
-  } else {
-    return '';
-  }
-};
-
-/**
  * Takes a logtastic timestamp and returns a string representation that can be
  * parsed by the javascript Date object. This method accepts either a CouchDB
  * logtastic document or a timestamp string from a logtastic document.
@@ -93,41 +81,46 @@ logtastic.searchParams = function() {
  *
  */
 logtastic.prettyDate = function( time ) {
-  var date = new Date(time),
-      diff = (((new Date()).getTime() - date.getTime()) / 1000),
-      day_diff = Math.floor(diff / 86400);
+    var date = new Date(time),
+        diff = (((new Date()).getTime() - date.getTime()) / 1000),
+        day_diff = Math.floor(diff / 86400);
 
-  // if ( isNaN(day_diff) || day_diff < 0 || day_diff >= 31 ) return;
+    // if ( isNaN(day_diff) || day_diff < 0 || day_diff >= 31 ) return;
 
-  return day_diff < 1 && (
-                  diff < 60 && "just now" ||
-                  diff < 120 && "1 minute ago" ||
-                  diff < 3600 && Math.floor( diff / 60 ) + " minutes ago" ||
-                  diff < 7200 && "1 hour ago" ||
-                  diff < 86400 && Math.floor( diff / 3600 ) + " hours ago") ||
-          day_diff == 1 && "yesterday" ||
-          day_diff < 21 && day_diff + " days ago" ||
-          day_diff < 45 && Math.ceil( day_diff / 7 ) + " weeks ago" ||
-          day_diff < 730 && Math.ceil( day_diff / 31 ) + " months ago" ||
-          Math.ceil( day_diff / 365 ) + " years ago";
+    return day_diff < 1 && (
+            diff < 60 && "just now" ||
+            diff < 120 && "1 minute ago" ||
+            diff < 3600 && Math.floor( diff / 60 ) + " minutes ago" ||
+            diff < 7200 && "1 hour ago" ||
+            diff < 86400 && Math.floor( diff / 3600 ) + " hours ago"
+        ) ||
+        day_diff == 1 && "yesterday" ||
+        day_diff < 21 && day_diff + " days ago" ||
+        day_diff < 45 && Math.ceil( day_diff / 7 ) + " weeks ago" ||
+        day_diff < 730 && Math.ceil( day_diff / 31 ) + " months ago" ||
+        Math.ceil( day_diff / 365 ) + " years ago";
 };
 
 /**
  * 
  */
 logtastic.alarm = function( msg ) {
-  jq('#noticeText').empty().text(' ' + msg).prepend('<strong>Alert:</strong>');
-  jq('#notice').find('div').removeClass('ui-state-error ui-state-highlight')
-              .addClass('ui-state-error').end().fadeIn('fast');
+    jq('#noticeText').empty().text(' ' + msg).prepend('<strong>Alert:</strong>');
+    jq('#notice').find('div')
+        .removeClass('ui-state-error ui-state-highlight')
+        .addClass('ui-state-error').end()
+    .fadeIn('fast');
 };
 
 /**
  * 
  */
 logtastic.info = function( msg ) {
-  jq('#noticeText').empty().text(' ' + msg).prepend('<strong>Info:</strong>');
-  jq('#notice').find('div').removeClass('ui-state-error ui-state-highlight')
-              .addClass('ui-state-highlight').end().fadeIn('fast');
+    jq('#noticeText').empty().text(' ' + msg).prepend('<strong>Info:</strong>');
+    jq('#notice').find('div')
+        .removeClass('ui-state-error ui-state-highlight')
+        .addClass('ui-state-highlight').end()
+    .fadeIn('fast');
 };
 
 
@@ -155,13 +148,30 @@ jq.extend(logtastic.Bundle.prototype, {
      * @parm {object} doc The log event document
      */
     levelName: function( doc ) {
-      var ii = (typeof doc === 'object') ?  this.levelMap[doc._lang][doc.level] : parseInt(doc);
+        var ii = (typeof doc === 'object') ?  this.levelMap[doc._lang][doc.level] : parseInt(doc);
 
-      if (ii !== undefined) {
-          return this.levels[ii].capitalize();
-      } else {
-          return 'Unknown';
-      }
+        if (ii !== undefined) {
+            return this.levels[ii].capitalize();
+        } else {
+            return 'Unknown';
+        }
+    },
+
+    /**
+     * Given a log event document, returns a CSS color class for the log level
+     * of the document. If the language or log level does not correspond to a
+     * known level name then an empty string is returned.
+     *
+     * @parm {object} doc The log event document
+     */
+    cssColorClass: function( doc ) {
+        var ii = this.levelMap[doc._lang][doc.level];
+
+        if (ii !== undefined) {
+            return 'color'+ii;
+        } else {
+            return '';
+        }
     },
 
     /**
@@ -169,8 +179,8 @@ jq.extend(logtastic.Bundle.prototype, {
      */
     eachLevel: function( callback ) {
         var self = this;
-        jq.each(logtastic.levels, function(ii, val) {
-            callback(self.levelName(ii));
+        jq.each(this.levels, function(ii, val) {
+            callback(ii, self.levelName(ii));
         });
         return this;
     },
@@ -179,8 +189,28 @@ jq.extend(logtastic.Bundle.prototype, {
      *
      */
     eachAppId: function( callback ) {
-        jq.each(logtastic.app_ids, function(ii, val) { callback(val); });
+        jq.each(this.appIds, function(ii, val) { callback(val); });
         return this;
+    },
+
+    /**
+     *
+     */
+    eachAppName: function( callback ) {
+        if (!this._appNames) {
+            var ary = [], current;
+            this._appNames = [];
+
+            jq.each(this.appIds, function(ii, val) { ary.push(val.name) });
+            ary.sort();
+            for (var ii=0; ii<ary.length; ii++) {
+                if (current !== ary[ii]) {
+                    current = ary[ii];
+                    this._appNames.push(current);
+                }
+            }
+        }
+        jq.each(this._appNames, function(ii, name) { callback(name) });
     },
 
     /**
@@ -204,7 +234,7 @@ jq.extend(logtastic.Bundle.prototype, {
                 if (self._ready) { self._ready(self) }
                 delete self._ready;
             };
-        jq.getJSON(this.name + '/config', success)
+        jq.getJSON('/' + this.name + '/config', success)
         return this;
     }
 });

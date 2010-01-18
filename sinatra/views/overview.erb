@@ -2,17 +2,25 @@
   @current_page = 'Overview'
   content_for :scripts_and_styles do
 %>
+<link rel="stylesheet" href="/style/barchart.css" type="text/css">
+<script src="/script/barchart.js"></script>
 <script type="text/javascript" charset="utf-8">
   logtastic.ready(function(bundle) {
-      console.log('bundle ', bundle.name);
-      bundle.summaryData(function(data) {console.log('summary ', data)});
+      bundle.summaryData(function(data) {
+          bundle.eachAppName(function(name) {
+              var counts = data.counts[name],
+                  averages = data.averages[name] || {};
+              if (counts) {
+                  $('<div id="'+name+'"></div>').barchart({
+                      name: name,
+                      bundle: bundle,
+                      data: { counts: counts, averages: averages }
+                  })
+                  .appendTo('#content');
+              }
+          });
+      });
   });
 </script>
 <% end %>
 
-<table id="summary" class="logtastic ui-corner-all">
-  <thead></thead>
-  <tfoot></tfoot>
-  <tbody class="content">
-  </tbody>
-</table>

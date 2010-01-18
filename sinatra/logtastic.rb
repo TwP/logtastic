@@ -46,7 +46,7 @@ module Logtastic
 
     get '/:bundle/tail/?' do
       @bundle = bundle params[:bundle]
-      erb "<% @title = 'Tail' %><%= 'Tail' %>"
+      erb :tail
     end
 
     get '/:bundle/config/?' do
