@@ -15,7 +15,13 @@ module Logtastic::Helpers
   end
 
   def link_to( page, opts = {} )
-    opts[:href] ||= "/#{@params[:db]}/#{page == 'Overview' ? '' : page.downcase}"
+    unless opts[:href]
+      path = page == 'Overview' ? nil : page.downcase
+      href = "/#{@params[:bundle]}"
+      href << "/#{path}" if path
+      opts[:href] = href
+    end
+
     attrs = opts.map {|k,v|
       v = v.instance_of?(Array) ? v.join(' ') : v.to_s
       "#{k.to_s}=#{v.inspect}"
