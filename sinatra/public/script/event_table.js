@@ -37,7 +37,6 @@ logtastic.EventTable = function( table, bundle ) {
         tail: '~',
 
         toggleFormat: function() {
-console.log(this.format);
             if (this.format === 'pretty') {
                 if (this.interval_id !== 0) { clearInterval(this.interval_id); }
                 this.interval_id = 0;
@@ -86,15 +85,20 @@ console.log(this.format);
             }
         });
     });
-
-    this.time.toggleFormat();
-    this._initScrolling();
-
-    jq('thead th.timestamp', this.table[0]).click(function() { self.time.toggleFormat(); });
-    jq(window).resize(function() { self._initScrolling(); });
 };
 
 jq.extend(logtastic.EventTable.prototype, {
+    /**
+     *
+     */
+    setup: function() {
+        var self = this;
+        this.time.toggleFormat();
+        this._initScrolling();
+
+        jq('thead th.timestamp', this.table[0]).click(function() { self.time.toggleFormat(); });
+        jq(window).resize(function() { self._initScrolling(); });
+    },
 
     columnNames: function() {
         ary = []
@@ -122,7 +126,7 @@ jq.extend(logtastic.EventTable.prototype, {
         if (document.getElementById(doc._id)) { return; }
 
         // initialization case (no rows have yet been added)
-        if (time.head === '') {
+        if (this.time.head === '') {
             this.prepend(doc);
             this.time.head = this.time.tail = doc.timestamp;
             return;
@@ -172,9 +176,9 @@ jq.extend(logtastic.EventTable.prototype, {
     /**
      *
      */
-    addEvents: function( json ) {
-      for (var ii=json.rows.length-1; ii>=0; ii--) {
-        this.insert(json.rows[ii].doc);
+    addEvents: function( rows ) {
+      for (var ii=rows.length-1; ii>=0; ii--) {
+        this.insert(rows[ii]);
       }
       var timestamp = new Date(logtastic.formatTimestamp(this.time.head));
       jq('tfoot tr td:first-child', this.table).text("Latest: "+timestamp);

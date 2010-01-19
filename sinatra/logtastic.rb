@@ -77,6 +77,10 @@ module Logtastic
       query = JSON.parse query
       selector = query['selector'] || {}
 
+      if selector.has_key? '_id'
+        h = selector['_id']
+        h.each {|k,v| h[k] = Mongo::ObjectID.from_string(v)}
+      end
 
       options = {}
       %w(fields skip limit sort).each { |key| options[key.to_sym] = query[key] if query.has_key? key }
