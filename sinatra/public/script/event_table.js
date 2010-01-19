@@ -41,11 +41,11 @@ logtastic.EventTable = function( table, bundle ) {
                 if (this.interval_id !== 0) { clearInterval(this.interval_id); }
                 this.interval_id = 0;
                 this.format = 'normal';
-                jq('thead th.timestamp', table).css('width', '10.0em');
+                jq('thead th.timestamp', table[0]).css('width', '10.0em');
                 self._prettyDate();
             } else {
                 this.format = 'pretty';
-                jq('thead th.timestamp', table).css('width', '8.0em');
+                jq('thead th.timestamp', table[0]).css('width', '8.0em');
                 self._prettyDate();
                 this.interval_id = setInterval(function() { self._prettyDate() }, 10000);
             }
@@ -102,7 +102,7 @@ jq.extend(logtastic.EventTable.prototype, {
 
     columnNames: function() {
         ary = []
-        jq('thead tr:first th', table).each(function() {
+        jq('thead tr:first th', this.table[0]).each(function() {
             ary.push(jq(this).text());
         });
         return ary;
@@ -181,7 +181,7 @@ jq.extend(logtastic.EventTable.prototype, {
         this.insert(rows[ii]);
       }
       var timestamp = new Date(logtastic.formatTimestamp(this.time.head));
-      jq('tfoot tr td:first-child', this.table).text("Latest: "+timestamp);
+      jq('tfoot tr td:first-child', this.table[0]).text("Latest: "+timestamp);
     },
 
     /**

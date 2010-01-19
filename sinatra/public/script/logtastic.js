@@ -180,7 +180,7 @@ jq.extend(logtastic.Bundle.prototype, {
     eachLevel: function( callback ) {
         var self = this;
         jq.each(this.levels, function(ii, val) {
-            callback(ii, self.levelName(ii));
+            callback(self.levelName(ii), ii);
         });
         return this;
     },
@@ -189,7 +189,7 @@ jq.extend(logtastic.Bundle.prototype, {
      *
      */
     eachAppId: function( callback ) {
-        jq.each(this.appIds, function(ii, val) { callback(val); });
+        jq.each(this.appIds, function(ii, val) { callback(val, ii); });
         return this;
     },
 
@@ -210,7 +210,7 @@ jq.extend(logtastic.Bundle.prototype, {
                 }
             }
         }
-        jq.each(this._appNames, function(ii, name) { callback(name) });
+        jq.each(this._appNames, function(ii, name) { callback(name, ii) });
     },
 
     /**

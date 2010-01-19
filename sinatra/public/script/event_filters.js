@@ -11,28 +11,22 @@ logtastic.eventFilters = function( opts ) {
             message: 'A table JQuery object must be provided.'
         }
     }
-
-    if (!opts.bundle) {
-        throw {
-            name: 'ArgumentError',
-            message: 'A bundle must be provided.'
-        }
-    }
-
     return new logtastic.EventFilters(opts.table);
 };
 
 /**
  *
  */
-logtastic.EventFilters = function( opts ) {
-    this._table = opts.table;
-    this._bundle = opts.bundle;
+logtastic.EventFilters = function( table ) {
+    var self = this, ary;
+
+    this._table = table;
+    this._bundle = table.bundle;
 
     this._filters = {
         Application: {},
         Level: {},
-        columns: this._table.columnNames(),
+        columns: table.columnNames(),
         forColumn: function(num) {
             if (num >=0 && num < this.columns.length) {
                 return this[this.columns[num]];
@@ -40,11 +34,9 @@ logtastic.EventFilters = function( opts ) {
         }
     };
 
-    var self = this, ary;
-
     jq('<div class="ui-widget"></div')
-        .append(this._filterBox('application', this._bundle.eachAppName))
-        .append(this._filterBox('level', this._bundle.eachLevel))
+        .append(this._filterBox('application', function(callback) {self._bundle.eachAppName(callback)}))
+        .append(this._filterBox('level', function(callback) {self._bundle.eachLevel(callback)}))
         .bind('click', function(e) {
             if (e.target.nodeName !== 'LI') { return; }
             jq(e.target).toggleClass('ui-state-active').toggleClass('ui-state-disabled');
@@ -67,7 +59,13 @@ logtastic.EventFilters = function( opts ) {
     });
 
 
-    this._table.setShow(this.prototype._show);
+    var show = function( doc ) {
+        if (!self._filters.Application[doc.app_id.name]) { return false; }
+        if (!self._filters.Level[self._bundle.levelName(doc)]) { return false; }
+        return true;
+    };
+
+    this._table.show = show;
     this._updateFilters();
 };
 
@@ -83,7 +81,7 @@ jq.extend(logtastic.EventFilters.prototype, {
         ).attr('id', title)
         .find('div').text(title.capitalize()).end();
 
-        iterFn(function(name) {
+        iterFn(function(name, ii) {
             jq('<li class="ui-state-active ui-helper-clearfix"></li>')
                 .text(name)
                 .prepend('<span class="ui-icon ui-icon-circle-check"></span>')
@@ -95,13 +93,6 @@ jq.extend(logtastic.EventFilters.prototype, {
                                 function() {jq(this).removeClass('ui-state-highlight')});
 
         return box;
-    },
-
-
-    _show: function( doc ) {
-        if (!this._filters.Application[doc.app_id.name]) { return false; }
-        if (!this._filters.Level[this._bundle.levelName(doc)]) { return false; }
-        return true;
     },
 
     _updateFilters: function() {

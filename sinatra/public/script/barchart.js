@@ -15,7 +15,7 @@ jq.widget('ui.barchart', {
 
         var $bars = jq('ul', context);
 
-        o.bundle.eachLevel( function( index, name ) {
+        o.bundle.eachLevel( function( name, index ) {
             $bars.prepend(
                 jq('<li class="color-'+index+'"></li>')
                 .append(jq('<div class="label"></div>').text(name))
