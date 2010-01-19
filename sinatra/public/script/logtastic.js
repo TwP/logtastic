@@ -217,7 +217,18 @@ jq.extend(logtastic.Bundle.prototype, {
      *
      */
     summaryData: function( callback ) {
-        jq.getJSON(this.name + '/summary_data', callback);
+        jq.getJSON('/' + this.name + '/summary_data', callback);
+        return this;
+    },
+
+    /**
+     *
+     */
+    events: function( opts ) {
+        var callback = opts.success;
+        delete opts.success;
+        opts = JSON.stringify(opts)
+        jq.getJSON('/' + this.name + '/events', {query: opts}, callback);
         return this;
     },
 
@@ -272,15 +283,6 @@ Date.prototype.toMongoDB = function() {
          f(this.getUTCHours())     + ':' +
          f(this.getUTCMinutes())   + ':' +
          f(this.getUTCSeconds())   + '.000Z';
-};
-
-Date.prototype.toJSON = function() {
-    return this.getUTCFullYear()   + '/' +
-         f(this.getUTCMonth() + 1) + '/' +
-         f(this.getUTCDate())      + ' ' +
-         f(this.getUTCHours())     + ':' +
-         f(this.getUTCMinutes())   + ':' +
-         f(this.getUTCSeconds())   + ' +0000';
 };
 
 Date.prototype.toDateTime = function() {

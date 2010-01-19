@@ -68,6 +68,31 @@ module Logtastic
       bundle.summary_data.to_json
     end
 
+    get '/:bundle/events/?' do
+      content_type :json
+
+      query = params[:query]
+      return '[]' unless query
+      bundle = bundle params[:bundle]
+      query = JSON.parse query
+      selector = query['selector'] || {}
+
+
+      options = {}
+      %w(fields skip limit sort).each { |key| options[key.to_sym] = query[key] if query.has_key? key }
+
+      ary = bundle.events.find(selector, options).to_a
+      ary.each {|doc| doc['_id'] = doc['_id'].to_s}
+      ary.to_json
+    end
+
+    get '/:bundle/events/:id' do
+      content_type :json
+
+      bundle = bundle params[:bundle]
+      bundle.find_one(Mongo::ObjectID.from_string(params[:id])).to_json
+    end
+
   end
 end
 

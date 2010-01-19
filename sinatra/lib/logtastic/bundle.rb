@@ -18,18 +18,23 @@ class Logtastic::Bundle < Mongo::Collection
       c.insert({'_id' => 'config', 'levels' => DEFAULT_LEVELS, 'levelMap' => DEFAULT_LEVEL_MAP})
     end
 
+    # FIXME: mongo release 1.3.1 will fix the issue with capped collections
+    # and the index on the _id field -- I can remove my own indexes on that
+    # field when upgrading to the next version: http://jira.mongodb.org/browse/SERVER-545
     unless names.include?(name + '.events')
       database.create_collection(name + '.events', :capped => true, :size => size)
+      c.create_index [['_id', Mongo::ASCENDING]]
+      c.create_index [['timestamp', Mongo::DESCENDING]]
     end
 
-    # TODO: do we _really_ need these indexes?
+    # TODO: do we _really_ need these timestamp indexes?
     unless names.include?(name + '.hourly')
       c = database.create_collection(name + '.hourly', :capped => true, :size => size / ROLLUP_SCALE)
 
       time = Time.now.utc - 1.hour
       time = time.change(:hour => time.hour)
       c.insert({'_id' => 'created', 'timestamp' => time.timestamp})
-#      c.create_index [['timestamp', Mongo::DESCENDING]]
+      c.create_index [['timestamp', Mongo::DESCENDING]]
     end
 
     unless names.include?(name + '.daily')
@@ -38,7 +43,7 @@ class Logtastic::Bundle < Mongo::Collection
       time = Time.now.utc - 1.day
       time = time.change(:hour => 0)
       c.insert({'_id' => 'created', 'timestamp' => time.timestamp})
-#      c.create_index [['timestamp', Mongo::DESCENDING]]
+      c.create_index [['timestamp', Mongo::DESCENDING]]
     end
 
     return new(name)

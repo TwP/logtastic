@@ -37,6 +37,7 @@ logtastic.EventTable = function( table, bundle ) {
         tail: '~',
 
         toggleFormat: function() {
+console.log(this.format);
             if (this.format === 'pretty') {
                 if (this.interval_id !== 0) { clearInterval(this.interval_id); }
                 this.interval_id = 0;
@@ -52,17 +53,16 @@ logtastic.EventTable = function( table, bundle ) {
         }
     };
 
-    jq('thead button', table).click(function() {
+    jq('thead button', this.table[0]).click(function() {
         var start = self.time.head === '' ? (new Date()).toMongoDB() : self.time.head;
-/* TODO: replace with a call to the bundle that makes an AJAX request back to
- * the webserver. this should return log events  */
-        logtastic.view('events', {
-            include_docs: true,
-            startkey: start,
+
+        bundle.events({
+            selector: {timestamp: {'$gt': start}},
+            sort: ['timestamp', 1],
             limit: 23,
-            success: function(json) {
-                if (json.rows.length > 1) {
-                  jq.each(json.rows, function(ii, row) { self.prepend(row.doc); });
+            success: function( rows ) {
+                if (rows.length > 0) {
+                  jq.each(rows, function(ii, row) { self.prepend(row); });
                 } else {
                   logtastic.info('At the newest logging event.');
                 }
@@ -70,38 +70,31 @@ logtastic.EventTable = function( table, bundle ) {
         });
     });
 
-    jq('tfoot button', table).click(function() {
+    jq('tfoot button', this.table[0]).click(function() {
         var start = self.time.tail === '~' ? (new Date()).toMongoDB() : self.time.tail;
-/* TODO: replace with a call to the bundle that makes an AJAX request back to
- * the webserver. this should return log events  */
-        logtastic.view('events', {
-            include_docs: true,
-            descending: true,
-            startkey: start,
+
+        bundle.events({
+            selector: {timestamp: {'$lt': start}},
+            sort: ['timestamp', -1],
             limit: 23,
-            success: function(json) {
-                if (json.rows.length > 1) {
-                    jq.each(json.rows, function(ii, row) { self.append(row.doc); });
+            success: function( rows ) {
+                if (rows.length > 0) {
+                  jq.each(rows, function(ii, row) { self.append(row); });
                 } else {
-                    logtastic.info('At the oldest logging event.');
+                  logtastic.info('At the oldest logging event.');
                 }
             }
         });
     });
+
+    this.time.toggleFormat();
+    this._initScrolling();
+
+    jq('thead th.timestamp', this.table[0]).click(function() { self.time.toggleFormat(); });
+    jq(window).resize(function() { self._initScrolling(); });
 };
 
 jq.extend(logtastic.EventTable.prototype, {
-    /**
-     *
-     */
-    setup: function() {
-        var self = this;
-        this.time.toggleFormat();
-        this._initScrolling();
-
-        jq('thead th.timestamp', table).click(function() { self.time.toggleFormat(); });
-        jq(window).resize(function() { self._initScrolling(); });
-    },
 
     columnNames: function() {
         ary = []
@@ -239,7 +232,7 @@ jq.extend(logtastic.EventTable.prototype, {
             + '<td data-timestamp="'+timestamp+'">'+this._prettyDate(timestamp)+'</td>'
             + '<td>'+doc.app_id.name+'</td>'
             + '<td>'+doc.logger+'</td>'
-            + '<td>'+bundle.levelName(doc)+'</td>'
+            + '<td>'+this.bundle.levelName(doc)+'</td>'
             + '<td colspan="2"></td>'
             + '</tr>'
     },
@@ -253,11 +246,10 @@ jq.extend(logtastic.EventTable.prototype, {
 
         r = jq('#'+doc._id);
         jq('td:last-child', r[0]).text(msg);
-        if (show(doc)) { r.fadeIn('fast'); }
+        if (this.show(doc)) { r.fadeIn('fast'); }
     },
 
     show: function( doc ) { return true; }
-
 });
 
 
