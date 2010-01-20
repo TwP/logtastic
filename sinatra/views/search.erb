@@ -1,0 +1,41 @@
+<%
+  @current_page = 'Search'
+  content_for :scripts_and_styles do
+%>
+<script src="/script/timepicker.js"></script>
+<script src="/script/futon.format.js"></script>
+<script src="/script/event_table.js"></script>
+<script src="/script/event_filters.js"></script>
+<script src="/script/event_inspector.js"></script>
+<script src="/script/event_search.js"></script>
+<script src="/script/button.js"></script>
+<script type="text/javascript" charset="utf-8">
+    logtastic.ready(function(bundle) {
+        var table = logtastic.eventTable({table: '#events', bundle: bundle});
+        var filters = logtastic.eventFilters({table: table});
+        var inspector = logtastic.eventInspector({table: '#events', bundle: bundle});
+        table.setup().populate();
+
+        //var search = logtastic.eventSearch({table: table});
+    });
+</script>
+<% end %>
+
+<div id="inspector"></div>
+
+<table id="events" class="logtastic ui-corner-all">
+    <thead><tr>
+        <th class="timestamp ui-corner-tl">Time</th>
+        <th class="app-id">Application</th>
+        <th class="logger">Logger</th>
+        <th class="level">Level</th>
+        <th class="message">Message</th>
+        <th class="ui-corner-tr"><button>Newer</button></th>
+    </tr></thead>
+    <tfoot><tr>
+        <td colspan="5" class="ui-corner-bl">Latest: </td>
+        <td class="ui-corner-br"><button>Older</button></td>
+    </tr></tfoot>
+    <tbody></tbody>
+</table>
+

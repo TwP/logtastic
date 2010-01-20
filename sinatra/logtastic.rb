@@ -41,7 +41,7 @@ module Logtastic
 
     get '/:bundle/search/?' do
       @bundle = bundle params[:bundle]
-      erb "<% @title = 'Search' %><%= 'Search' %>"
+      erb :search
     end
 
     get '/:bundle/tail/?' do

@@ -54,17 +54,14 @@ logtastic.EventTable = function( table, bundle ) {
 
     jq('thead button', this.table[0]).click(function() {
         var start = self.time.head === '' ? (new Date()).toMongoDB() : self.time.head;
-
+console.log('head: ', self.time.head);
         bundle.events({
             selector: {timestamp: {'$gt': start}},
             sort: ['timestamp', 1],
             limit: 23,
             success: function( rows ) {
-                if (rows.length > 0) {
-                  jq.each(rows, function(ii, row) { self.prepend(row); });
-                } else {
-                  logtastic.info('At the newest logging event.');
-                }
+                if (rows.length > 0) { self.addEvents(rows) }
+                else { logtastic.info('At the newest logging event.') }
             }
         });
     });
@@ -77,11 +74,8 @@ logtastic.EventTable = function( table, bundle ) {
             sort: ['timestamp', -1],
             limit: 23,
             success: function( rows ) {
-                if (rows.length > 0) {
-                  jq.each(rows, function(ii, row) { self.append(row); });
-                } else {
-                  logtastic.info('At the oldest logging event.');
-                }
+                if (rows.length > 0) { self.addEvents(rows) }
+                else { logtastic.info('At the oldest logging event.') }
             }
         });
     });
@@ -98,6 +92,20 @@ jq.extend(logtastic.EventTable.prototype, {
 
         jq('thead th.timestamp', this.table[0]).click(function() { self.time.toggleFormat(); });
         jq(window).resize(function() { self._initScrolling(); });
+        return this;
+    },
+
+    populate: function() {
+        var self = this;
+        this.bundle.events({
+            sort: ['timestamp', -1],
+            limit: 23,
+            success: function( rows ) {
+                if (rows.length > 0) { self.addEvents(rows) }
+                else { logtastic.info('No logging events found.') }
+            }
+        });
+        return this;
     },
 
     columnNames: function() {
