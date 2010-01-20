@@ -94,7 +94,8 @@ module Logtastic
       content_type :json
 
       bundle = bundle params[:bundle]
-      bundle.find_one(Mongo::ObjectID.from_string(params[:id])).to_json
+      doc = bundle.events.find_one(Mongo::ObjectID.from_string(params[:id]))
+      doc.to_json
     end
 
   end

@@ -232,6 +232,11 @@ jq.extend(logtastic.Bundle.prototype, {
         return this;
     },
 
+    getEvent: function( id, callback ) {
+        jq.getJSON('/' + this.name + '/events/' + id, null, callback);
+        return this;
+    },
+
     /**
      * Helper method that makes an AJAX call to the server to retrieve the
      * configuration information for this bundle.
