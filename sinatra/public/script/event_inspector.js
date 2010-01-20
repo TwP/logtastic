@@ -90,9 +90,9 @@ logtastic.EventInspector = function( table, bundle ) {
 
         case 'level':
             return jq('<pre></pre>').html(
-                   '<code class="color' + bundle.levelMap['ruby'][val] + '">'
-                   + bundle.levelName({'_lang': 'ruby', level: val}) + '</code> :: '
-                   + '<code class="number">' + val + '</code>');
+                '<code class="color' + bundle.levelMap[val] + '">' + bundle.levelName(val) + '</code> :: ' +
+                '<code class="number">' + val.replace(/^.*-(\d+)$/, "$1") + '</code>'
+            );
 
         case 'timestamp':
             ts = val.replace(/T/, ' ').replace(/Z$/, ' UTC')

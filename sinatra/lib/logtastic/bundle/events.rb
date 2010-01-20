@@ -4,19 +4,19 @@ class Logtastic::Bundle::Events < Mongo::Collection
   DAILY = <<-__
     function() {
       var timestamp = this.timestamp.replace(/T.*/, 'T00:00:00Z');
-      emit({timestamp: timestamp, name: this.app_id.name, level: this.level, _lang: this._lang}, 1);
+      emit({timestamp: timestamp, name: this.app_id.name, level: this.level}, 1);
     }
   __
 
   HOURLY = <<-__
     function() {
       var timestamp = this.timestamp.replace(/T(\\d+).*/, "T$1:00:00Z");
-      emit({timestamp: timestamp, name: this.app_id.name, level: this.level, _lang: this._lang}, 1);
+      emit({timestamp: timestamp, name: this.app_id.name, level: this.level}, 1);
     }
   __
 
   COUNT = <<-__
-    function() { emit({name: this.app_id.name, level: this.level, _lang: this._lang}, 1); }
+    function() { emit({name: this.app_id.name, level: this.level}, 1); }
   __
 
   SUM = <<-__
@@ -26,7 +26,7 @@ class Logtastic::Bundle::Events < Mongo::Collection
     }
   __
 
-  SORT = [['_id.timestamp', Mongo::ASCENDING], ['_id.name', Mongo::ASCENDING], ['_id._lang', Mongo::ASCENDING], ['_id.level', Mongo::ASCENDING]].freeze
+  SORT = [['_id.timestamp', Mongo::ASCENDING], ['_id.name', Mongo::ASCENDING], ['_id.level', Mongo::ASCENDING]].freeze
 
   attr_reader :bundle
 

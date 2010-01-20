@@ -27,7 +27,7 @@ class Logtastic::Bundle::Hourly < Mongo::Collection
 
   AVG_MAP = <<-__
     function() {
-      emit({name: this.name, level: this.level, _lang: this._lang}, {sum: this.value, count: 1});
+      emit({name: this.name, level: this.level}, {sum: this.value, count: 1});
     }
   __
 
@@ -69,13 +69,13 @@ class Logtastic::Bundle::Hourly < Mongo::Collection
   end
 
   COUNT = <<-__
-    function() { emit({name: this.name, level: this.level, _lang: this._lang}, this.value); }
+    function() { emit({name: this.name, level: this.level}, this.value); }
   __
 
   DAILY = <<-__
     function() {
       var timestamp = this.timestamp.replace(/T.*/, 'T00:00:00Z');
-      emit({timestamp: timestamp, name: this.name, level: this.level, _lang: this._lang}, this.value);
+      emit({timestamp: timestamp, name: this.name, level: this.level}, this.value);
     }
   __
 
@@ -86,7 +86,7 @@ class Logtastic::Bundle::Hourly < Mongo::Collection
     }
   __
 
-  SORT = [['_id.name', Mongo::ASCENDING], ['_id._lang', Mongo::ASCENDING], ['_id.level', Mongo::ASCENDING]].freeze
+  SORT = [['_id.name', Mongo::ASCENDING], ['_id.level', Mongo::ASCENDING]].freeze
 
   def counts( start_ts = '', end_ts = nil )
     query = _query(start_ts, end_ts)

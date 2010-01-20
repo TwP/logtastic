@@ -50,7 +50,7 @@ module Logging::Layouts
     DIRECTIVE_TABLE = {
       'logger'    => 'event.logger',
       'timestamp' => 'MongoDB.timestamp(event.time)',
-      'level'     => 'event.level.to_s',
+      'level'     => '\'ruby-\' + event.level.to_s',
       'message'   => 'format_obj(event.data)',
       'file'      => 'event.file',
       'line'      => 'event.line',
@@ -74,7 +74,6 @@ module Logging::Layouts
       code << layout.items.map {|name|
         "#{name.to_sym.inspect} => #{MongoDB::DIRECTIVE_TABLE[name]}"
       }.join(',')
-      code << ',"_lang" => "ruby"'
       code << "\n}\nend"
 
       (class << layout; self end).class_eval(code, __FILE__, __LINE__)

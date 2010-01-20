@@ -4,9 +4,9 @@ class Logtastic::Bundle < Mongo::Collection
   ROLLUP_SCALE = 10
   DEFAULT_LEVELS = %w(debug info warn error fatal).freeze
   DEFAULT_LEVEL_MAP = {
-    'ruby' => {'0'=>0, '1'=>1, '2'=>2, '3'=>3, '4'=>4}.freeze,
-    'java' => {'10000'=>0, '20000'=>1, '30000'=>2, '40000'=>3, '50000'=>4}.freeze,
-    'python' => {'10'=>0, '20'=>1, '30'=>2, '40'=>3, '50'=>4}.freeze
+    'ruby-0'=>0, 'ruby-1'=>1, 'ruby-2'=>2, 'ruby-3'=>3, 'ruby-4'=>4,
+    'java-10000'=>0, 'java-20000'=>1, 'java-30000'=>2, 'java-40000'=>3, 'java-50000'=>4,
+    'python-10'=>0, 'python-20'=>1, 'python-30'=>2, 'python-40'=>3, 'python-50'=>4
   }.freeze
 
   def self.create( name, size )
@@ -73,11 +73,9 @@ class Logtastic::Bundle < Mongo::Collection
   end
 
   def level_name( doc )
-    index = doc['level']
-    lang = level_map[doc['_lang']]
-    index = lang[index] if lang
+    index = level_map[doc['level']]
 
-    name = levels.at(index.to_i) || 'unknown'
+    name = index ? levels.at(index) : 'unknown'
     name.capitalize
   end
 

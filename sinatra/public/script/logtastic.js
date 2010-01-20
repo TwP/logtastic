@@ -148,7 +148,21 @@ jq.extend(logtastic.Bundle.prototype, {
      * @parm {object} doc The log event document
      */
     levelName: function( doc ) {
-        var ii = (typeof doc === 'object') ?  this.levelMap[doc._lang][doc.level] : parseInt(doc);
+        var ii;
+
+        switch (typeof doc) {
+        case 'object':
+            ii = this.levelMap[doc.level];
+            break;
+        case 'string':
+            ii = this.levelMap[doc];
+            break;
+        case 'number':
+            ii = doc;
+            break;
+        default:
+            ii = undefined;
+        }
 
         if (ii !== undefined) {
             return this.levels[ii].capitalize();
@@ -165,7 +179,7 @@ jq.extend(logtastic.Bundle.prototype, {
      * @parm {object} doc The log event document
      */
     cssColorClass: function( doc ) {
-        var ii = this.levelMap[doc._lang][doc.level];
+        var ii = (typeof doc === 'object') ?  this.levelMap[doc.level] : this.levelMap[doc];
 
         if (ii !== undefined) {
             return 'color'+ii;
