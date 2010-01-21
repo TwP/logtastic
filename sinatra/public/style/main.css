@@ -105,7 +105,6 @@ table { width: auto }
 h2.graph {
   clear: both;
   color: #469;
-  text-shadow: #999 2px 1px 2px;
   margin: 0;
 }
 h2.graph + div {
@@ -128,7 +127,6 @@ table.logtastic thead th {
   background: #eee;
   border-bottom: 1px solid #ccc;
   font-weight: bold;
-  text-shadow: #999 2px 1px 2px;
   text-transform: capitalize;
   white-space: nowrap;
 }

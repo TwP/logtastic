@@ -98,6 +98,27 @@ module Logtastic
       doc.to_json
     end
 
+    get '/:bundle/latest/?' do
+      content_type :json
+
+      query = params[:query]
+      return '[]' unless query
+      bundle = bundle params[:bundle]
+      query = JSON.parse query
+
+      selector = {}
+      selector['app_id.name'] = query['name'] if query.key? 'name'
+      selector['timestamp'] = {'$lt' => query['time']} if query.key? 'time'
+      selector['level'] = {'$in' => query['levels']} if query.key? 'levels'
+
+      options = {
+        :fields => ['timestamp'],
+        :sort => [['timestamp', Mongo::DESCENDING]],
+      }
+
+      doc = bundle.events.find_one(selector, options)
+      doc['timestamp'].to_json
+    end
   end
 end
 

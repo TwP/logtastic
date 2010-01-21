@@ -16,12 +16,13 @@
         var inspector = logtastic.eventInspector({table: '#events', bundle: bundle});
         table.setup().populate();
 
-        //var search = logtastic.eventSearch({table: table});
+        var search = logtastic.eventSearch({table: table});
     });
 </script>
 <% end %>
 
 <div id="inspector"></div>
+<div id="search"></div>
 
 <table id="events" class="logtastic ui-corner-all">
     <thead><tr>

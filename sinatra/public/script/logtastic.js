@@ -102,7 +102,7 @@ logtastic.prettyDate = function( time ) {
 };
 
 /**
- * 
+ *
  */
 logtastic.alarm = function( msg ) {
     jq('#noticeText').empty().text(' ' + msg).prepend('<strong>Alert:</strong>');
@@ -113,7 +113,7 @@ logtastic.alarm = function( msg ) {
 };
 
 /**
- * 
+ *
  */
 logtastic.info = function( msg ) {
     jq('#noticeText').empty().text(' ' + msg).prepend('<strong>Info:</strong>');
@@ -211,20 +211,14 @@ jq.extend(logtastic.Bundle.prototype, {
      *
      */
     eachAppName: function( callback ) {
-        if (!this._appNames) {
-            var ary = [], current;
-            this._appNames = [];
+        jq.each(this.appNames, function(ii, name) { callback(name, ii) });
+    },
 
-            jq.each(this.appIds, function(ii, val) { ary.push(val.name) });
-            ary.sort();
-            for (var ii=0; ii<ary.length; ii++) {
-                if (current !== ary[ii]) {
-                    current = ary[ii];
-                    this._appNames.push(current);
-                }
-            }
-        }
-        jq.each(this._appNames, function(ii, name) { callback(name, ii) });
+    /**
+     *
+     */
+    eachHostName: function( callback ) {
+        jq.each(this.hostNames, function(ii, name) { callback(name, ii) });
     },
 
     /**
@@ -251,6 +245,14 @@ jq.extend(logtastic.Bundle.prototype, {
         return this;
     },
 
+    latest: function( opts ) {
+        var callback = opts.success;
+        delete opts.success;
+        opts = JSON.stringify(opts)
+        jq.getJSON('/' + this.name + '/latest', {query: opts}, callback);
+        return this;
+    },
+
     /**
      * Helper method that makes an AJAX call to the server to retrieve the
      * configuration information for this bundle.
@@ -261,11 +263,99 @@ jq.extend(logtastic.Bundle.prototype, {
                 self.levels = data.levels;
                 self.levelMap = data.levelMap;
                 self.appIds = data.appIds;
+                self._normalizeConfigData();
                 if (self._ready) { self._ready(self) }
                 delete self._ready;
             };
         jq.getJSON('/' + this.name + '/config', success)
         return this;
+    },
+
+    _normalizeConfigData: function() {
+        var self = this;
+        this.appNames = [];
+        this.hostNames = [];
+        this.reverseLevelMap = {};
+
+        jq.each(this.appIds, function(ii, val) {
+            self.appNames.push(val.name);
+            self.hostNames.push(val.host);
+        });
+        this.appNames.uniq().sort();
+        this.hostNames.uniq().sort();
+
+        jq.each(this.levelMap, function(name, level) {
+            var a = self.reverseLevelMap[level] || [];
+            a.push(name);
+            self.reverseLevelMap[level] = a;
+        });
+
+        return this;
+    }
+});
+
+
+/* ---- Logtastic buttons ----------------------------------------------- */
+
+/**
+ *
+ */
+logtastic.button = function( options ) {
+    options = jq.extend({
+        text: 'Push Me',
+        icon: null,
+        iconSide: 'right',
+        disabled: false,
+        click: null
+    }, options);
+
+    var button = logtastic.button.init(options);
+
+    if (options.click) { button.data('click-function', options.click) }
+
+    if (options.disabled) { logtastic.button.disable(button) }
+    else { logtastic.button.enable(button) }
+
+    return button;
+};
+
+jq.extend(logtastic.button, {
+
+    init: function( options ) {
+        if (options.icon) {
+            return jq('<a class="fg-button ui-state-default ui-corner-all"></a>')
+            .addClass('fg-button-icon-' + options.iconSide)
+            .text(options.text)
+            .prepend(jq('<span class="ui-icon ui-icon-' + options.icon + '"></span>'));
+        } else {
+            return jq('<button class="fg-button ui-state-default ui-corner-all"></button>')
+            .text(options.text);
+        }
+    },
+
+    enable: function( button ) {
+        button
+        .removeClass('ui-state-disabled')
+        .bind('mouseenter.button', function() { jq(this).addClass("ui-state-hover") })
+        .bind('mouseleave.button', function() { jq(this).removeClass("ui-state-hover") })
+        .bind('mousedown.button', function() {
+            jq(this).parents('.fg-buttonset-single:first').find(".fg-button.ui-state-active").removeClass("ui-state-active");
+            if (jq(this).is('.ui-state-active.fg-button-toggleable, .fg-buttonset-multi .ui-state-active') ) { jq(this).removeClass("ui-state-active") }
+            else { jq(this).addClass("ui-state-active") }
+        })
+        .bind('mouseup.button', function() {
+            if(! jq(this).is('.fg-button-toggleable, .fg-buttonset-single .fg-button,  .fg-buttonset-multi .fg-button') ){
+                jq(this).removeClass("ui-state-active");
+            }
+        });
+
+        if (button.data('click-function')) {
+            button.bind('click.button', button.data('click-function'));
+        }
+    },
+
+    disable: function( button ) {
+        button.addClass('ui-state-disabled').unbind('.button');
     }
 });
 
@@ -310,6 +400,14 @@ Date.prototype.toDateTime = function() {
          f(this.getUTCDate())      + ' ' +
          f(this.getUTCHours())     + ':' +
          f(this.getUTCMinutes());
+};
+
+Array.prototype.uniq = function() {
+    var self = this, h = {};
+    jq.each(this, function(ii, val) { h[val] = true });
+    this.length = 0;
+    jq.each(h, function(key, val) { self.push(key) });
+    return this;
 };
 
 })(jQuery);
