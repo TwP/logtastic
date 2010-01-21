@@ -1,0 +1,21 @@
+
+* trade out the "Logger" column for a "Host" column
+* add "Host" to the list of filters
+* consolidate "tail" and "search" into one view
+  - have a "tail" button that will live tail the log
+  - the search pane is removed when tailing
+* remove the "application" selector from the search pane
+  - use the list of selected apps in the filter box instead
+
+* admin page to edit configuration settings, add users, etc.
+  - show usage statistics (i.e. available space, used space,
+    time difference between the oldest and newest log message)
+  - add other users
+  - manage the list of applications / hosts
+  - reset statistics (drop and rebuild the rollup tables)
+
+* create new project page
+* user signup page / login page
+
+* look at the averages and decide to inject 0 for days / hours that have no
+  counts
