@@ -107,7 +107,7 @@ module Logging::Appenders
           {
             :timestamp => ::Logging::Layouts::MongoDB.timestamp,
             :logger    => 'Unknown',
-            :level     => 0,
+            :level     => 'ruby-0',
             :message   => event.to_s
           }
         end
